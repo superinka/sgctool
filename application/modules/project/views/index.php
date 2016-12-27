@@ -89,7 +89,17 @@
 
 				if ($percent_day<25){
 					$color = '#5cb85c';
-				}          			
+				}
+
+				$c = $row->status;
+
+				//echo $c;
+
+				$status_bg;
+
+				if ($c==1) {$status_bg = 'info';}
+				else if ($c==2) {$status_bg = 'success';}
+				else if ($c==3) {$status_bg = 'danger';}          			
           	?>
             <tr>
               <td>#</td>
@@ -123,9 +133,13 @@
                 <small><?php echo 'Tổng :' .$total_day.' Ngày'.' - Đã qua  :';printf( "%.2f",  $percent_day ); ?>%</small>
               </td>
               <td>
-                <button type="button" class="btn btn-success btn-xs">Success</button>
+                <button type="button" class="btn btn-<?php echo $status_bg ?> btn-xs"><?php echo check_status_project($c) ?></button>
               </td>
-              <td>Tiến độ</td>
+              <td>   
+	              <span class="chart" data-percent="<?php echo $row->progress ?>">
+	              	<span class="percent"></span>
+	              </span>	
+              </td>
               <td>
                 <a href="#" class="btn btn-primary btn-xs"><i class="fa fa-folder"></i> View </a>
                 <a href="#" class="btn btn-info btn-xs"><i class="fa fa-pencil"></i> Edit </a>
