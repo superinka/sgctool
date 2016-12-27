@@ -102,15 +102,15 @@
 				else if ($c==3) {$status_bg = 'danger';}          			
           	?>
             <tr>
-              <td>#</td>
-              <td>
+              <td style="padding-top: 2%;">#</td>
+              <td style="padding-top: 2%;">
                 <a style="color:blue"><?php echo $row->project_name ?></a>
                 <br />
                 <small>Ngày tạo:  <?php echo $row->create_date ?></small><br>
                 <small>Ngày bắt đầu:  <?php echo $row->start_date ?></small><br>
                 <small>Ngày kết thúc:  <?php echo $row->end_date ?></small>
               </td>
-              <td>
+              <td style="padding-top: 4%;">
                 <ul class="list-inline">
                   <li>
                     <img src="images/user.png" class="avatar" alt="Avatar">
@@ -126,13 +126,13 @@
                   </li>
                 </ul>
               </td>
-              <td class="project_progress">
+              <td class="project_progress" style="padding-top: 4%;">
                 <div class="progress progress_sm">
                   <div class="progress-bar bg-<?php echo $color;?>" role="progressbar" data-transitiongoal="<?php echo $percent_day ?>"></div>
                 </div>
                 <small><?php echo 'Tổng :' .$total_day.' Ngày'.' - Đã qua  :';printf( "%.2f",  $percent_day ); ?>%</small>
               </td>
-              <td>
+              <td style="padding-top: 4%;">
                 <button type="button" class="btn btn-<?php echo $status_bg ?> btn-xs"><?php echo check_status_project($c) ?></button>
               </td>
               <td>   
