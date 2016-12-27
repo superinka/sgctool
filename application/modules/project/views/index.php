@@ -64,12 +64,41 @@
             </tr>
           </thead>
           <tbody>
+          	<?php 
+          	foreach ($list_project as $row){  
+	      		$start_date = strtotime($row->start_date);
+	      		$end_date = strtotime($row->end_date);
+	      		$today_date = strtotime(date_create('now')->format('Y-m-d'));
+	      		$nwd = networkdays($start_date, $end_date, $holidays);
+	      		//$nwd = $nwd+1;
+	      		$percent_day = 0;
+
+				$date1 = strtotime($row->start_date);
+				$date2 = strtotime($row->end_date);
+				$total_day = ($date2 - $date1) / (60 * 60 * 24);
+				$total_day = $total_day + 1;
+				$pass_day = ($today_date - $date1) / (60 * 60 * 24);
+				$pass_day = $pass_day + 1 ;
+
+				$percent_day = percent_day($pass_day, $total_day);
+
+				$color = 'green';
+				if($percent_day>70) {
+					$color = 'red';
+				}
+
+				if ($percent_day<25){
+					$color = '#5cb85c';
+				}          			
+          	?>
             <tr>
               <td>#</td>
               <td>
-                <a>Pesamakini Backend UI</a>
+                <a style="color:blue"><?php echo $row->project_name ?></a>
                 <br />
-                <small>Created 01.01.2015</small>
+                <small>Ngày tạo:  <?php echo $row->create_date ?></small><br>
+                <small>Ngày bắt đầu:  <?php echo $row->start_date ?></small><br>
+                <small>Ngày kết thúc:  <?php echo $row->end_date ?></small>
               </td>
               <td>
                 <ul class="list-inline">
@@ -89,9 +118,9 @@
               </td>
               <td class="project_progress">
                 <div class="progress progress_sm">
-                  <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="57"></div>
+                  <div class="progress-bar bg-<?php echo $color;?>" role="progressbar" data-transitiongoal="<?php echo $percent_day ?>"></div>
                 </div>
-                <small>57% Complete</small>
+                <small><?php echo 'Tổng :' .$total_day.' Ngày'.' - Đã qua  :';printf( "%.2f",  $percent_day ); ?>%</small>
               </td>
               <td>
                 <button type="button" class="btn btn-success btn-xs">Success</button>
@@ -103,6 +132,7 @@
                 <a href="#" class="btn btn-danger btn-xs"><i class="fa fa-trash-o"></i> Delete </a>
               </td>
             </tr>
+            <?php }?>
             
           </tbody>
         </table>
@@ -157,30 +187,7 @@
 	      	<?php 
 	      	$i=1;
 	      	foreach ($list_project as $row){ 
-	      		$start_date = strtotime($row->start_date);
-	      		$end_date = strtotime($row->end_date);
-	      		$today_date = strtotime(date_create('now')->format('Y-m-d'));
-	      		$nwd = networkdays($start_date, $end_date, $holidays);
-	      		//$nwd = $nwd+1;
-	      		$percent_day = 0;
 
-				$date1 = strtotime($row->start_date);
-				$date2 = strtotime($row->end_date);
-				$total_day = ($date2 - $date1) / (60 * 60 * 24);
-				$total_day = $total_day + 1;
-				$pass_day = ($today_date - $date1) / (60 * 60 * 24);
-				$pass_day = $pass_day + 1 ;
-
-				$percent_day = percent_day($pass_day, $total_day);
-
-				$color = 'green';
-				if($percent_day>70) {
-					$color = 'red';
-				}
-
-				if ($percent_day<25){
-					$color = '#5cb85c';
-				}
 				//echo $percent_day;
 	      	?>
 
