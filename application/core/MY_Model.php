@@ -408,6 +408,14 @@ class MY_Model extends CI_Model {
 			return FALSE;
 		}
 	}
+
+	function find_leader($department_name){
+		$department_id = $this->get_column('tb_department', 'id',$where=array('name'=>$department_name));
+
+		$users_id = $this->get_column('tb_role', 'user_id',$where=array('department_id'=>$department_id[0]->department_id));
+
+	}
+
 	
 }
 ?>

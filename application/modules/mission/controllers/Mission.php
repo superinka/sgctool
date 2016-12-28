@@ -4,6 +4,12 @@ Class Mission extends MY_Controller {
 		parent::__construct();
 		$this->load->model('login/login_model','',TRUE);
 		$this->load->model('home/home_model');
+		$this->load->model('home/acc_model');
+		$this->load->model('home/role_model');
+		$this->load->model('home/department_model');
+		$this->load->model('project/project_model');
+		$this->load->model('project/project_user_model');
+		$this->load->model('mission');
 
 		if($this->session->userdata('logged_in'))
 	    {

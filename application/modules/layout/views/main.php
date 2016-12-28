@@ -71,7 +71,7 @@
     <?php $this->load->view('js');?>
     <?php //echo $this->uri->segment(2); ?>
     <?php 
-      if ($this->uri->segment(1)=='mission') {
+      if ($this->uri->segment(2)=='mission') {
         $this->load->view('js-mission');
       }
       if ($this->uri->segment(1)=='report') {
