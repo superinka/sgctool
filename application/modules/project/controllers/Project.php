@@ -299,6 +299,48 @@ Class Project extends MY_Controller {
 			$this->session->set_flashdata('message','Bạn không đủ quyền hạn');
 			redirect(base_url('project/index'));
 		}
+		else {
+			//lay id du an can sua
+			$project_id = $this->uri->segment(3);
+			$project_id = intval($project_id);
+
+			$now_user_id = $this->data_layout['id'];
+
+
+			//lay thong tin project
+
+			$info_project = $this->project_model->get_info($project_id);
+
+			if(!$info_project) {
+				$this->session->set_flashdata('message','Không tồn tại thông tin dự án');
+				redirect(base_url('project/index'));
+			}
+			else {
+				$pid = $this->project_model->get_column('tb_project', 'id',$where=array('id'=>$project_id));
+				$info_project_user = $this->project_user_model->get_info($pid[0]->id);
+
+				if($info_project_user) {
+					$this->project_model->delete($project_id);
+
+					$puid = $this->role_model->get_column('tb_project_user', 'id',$where=array('project_id'=>$project_id));
+
+					foreach ($puid as $key => $value) {
+						# code...
+						$this->project_user_model->delete($value->id);
+					}
+				}
+				else {
+					$this->project_model->delete($project_id);
+					$this->session->set_flashdata('message','Xóa dữ liệu thành công ');
+					redirect(base_url('project/index'), 'refresh');
+				}
+
+				$this->session->set_flashdata('message','Xóa dữ liệu thành công ');
+			}
+
+			redirect(base_url('project/index'), 'refresh');
+
+		}
 	}
 
 	private function check_shortname($short_name){

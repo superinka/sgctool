@@ -140,7 +140,7 @@
                 <a href="#" class="btn btn-primary btn-xs"><i class="fa fa-folder"></i> View </a>
                 <?php if($account_type < 3) { ?>
                 <a href="<?php echo base_url('project/edit/'.$row->id) ?>" class="btn btn-info btn-xs"><i class="fa fa-pencil"></i> Edit </a>
-                <a href="#" class="btn btn-danger btn-xs"><i class="fa fa-trash-o"></i> Delete </a>
+                <a onclick="return confirm('Are you sure you want to delete this item?');" href="<?php echo base_url('project/delete/'.$row->id)?>" class="btn btn-danger btn-xs"><i class="fa fa-trash-o"></i> Delete </a>
                 <?php }?>
                 
               </td>
