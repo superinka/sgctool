@@ -1,4 +1,5 @@
 <h1>Sửa thông tin tài khoản : <?php echo $info_user->username ?></h1>
+<div class="row">
 <div class="col-md-9">
 	<p style="color:red; font-weight:600"><?php echo validation_errors(); ?></p>
 	<form class="form-horizontal form-label-left input_mask"  method="post" action="">
@@ -178,4 +179,5 @@
 	  </div>
 
 	</form>
+</div>
 </div>
