@@ -7,8 +7,9 @@ Class Add extends MY_Controller {
 		$this->load->model('home/employee_model');
 		$this->load->model('home/acc_model');
 		$this->load->model('home/role_model');
+		$this->load->model('home/department_model');
 		$this->load->model('project_model');
-
+		$this->load->model('project_user_model');
 
 
 		$this->form_validation->set_error_delimiters('<div class="error" style="color:red; font-weight:600">', '</div>'); 
@@ -31,6 +32,44 @@ Class Add extends MY_Controller {
 	}
 	
 	function index() {
+		$tab = 'tb_role'; $col = 'department_id';
+
+		$list_department_employee = $this->role_model->get_column_distinct($tab,$col);
+
+		foreach ($list_department_employee as $key => $value) {
+			# code...
+
+			$dip = $value->department_id;
+			$dname = $this->department_model->get_column('tb_department', 'name',$where=array('id'=>$dip));
+			$list_emp = $this->role_model->get_column('tb_role','user_id',$where=array('department_id'=>$dip));
+			$value->department_name = $dname[0]->name;
+
+
+			foreach ($list_emp as $k => $v) {
+				# code...
+
+				$u = $this->home_model->get_column(
+					'tb_employee',
+					array('user_id', 'fullname'), 
+					$where=array('user_id'=>$v->user_id)
+				);
+				$acc_type = $this->acc_model->get_column('tb_user', 'account_type',$where=array('id'=>$v->user_id));
+				//$value->emp[] = $u[0];
+				if ($acc_type[0]->account_type==4) {
+					# code...
+					$value->emp[] = $u[0];
+					//unset($list_department_employee[$key]);
+				}
+				
+			}
+			//pre($list_emp);
+		}
+		//pre($list_department_employee);
+
+		
+		$this->data_layout['list_department_employee'] = $list_department_employee;
+
+
 
 		$id = $this->data_layout['id'];
 
@@ -78,6 +117,10 @@ Class Add extends MY_Controller {
 					'progress'      => $progress
 				);
 
+				$project_users = $this->input->post('project_users');
+
+				//pre($project_users);
+
 				$holidays = array();
 
 				$nwd = networkdays($start_date, $end_date, $holidays); 
@@ -86,6 +129,35 @@ Class Add extends MY_Controller {
 
 				if($this->project_model->create($data_project)){
 					$this->session->set_flashdata('message','Thêm dữ liệu thành công');
+					$pid = $this->project_model->get_column('tb_project', 'id',$where=array('short_name'=>$short_name));
+
+					if($project_users) {
+						for ($i=0; $i < count($project_users) ; $i++) { 
+							# code...
+
+							//echo $i;
+							$data_project_user = array(
+								'project_id'     => $pid[0]->id,
+								'user_id'     => $project_users[$i],
+								'update_time'  => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s')
+							);
+
+							if($this->project_user_model->create($data_project_user)) {
+
+								$this->session->set_flashdata('message','Tạo dữ liệu thành công');
+								//redirect(base_url('project/index'));
+
+							}
+
+							else {
+									
+								$this->session->set_flashdata('message','Sửa dữ liệu không thành công');
+
+							}
+						}
+
+						redirect(base_url('project/index'));
+					}
 				}
 				else {
 					$this->session->set_flashdata('message','Thêm dữ liệu không thành công');

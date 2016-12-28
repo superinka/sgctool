@@ -40,7 +40,7 @@
 
     <style type="text/css">
     /*.combo_truongphong {display: none;}*/
-    .select2-container {width: 100%!important;}
+/*    .select2-container {width: 100%!important;}*/
 /*    ul.select2-selection__rendered li {width: 100%}
     ul.select2-selection__rendered li input {width: 100%!important;}
     ul.dex li {float: left;padding-right: 15px;padding-top: 15px;}*/

@@ -104,7 +104,7 @@
             <tr>
               <td style="padding-top: 2%;">#</td>
               <td style="padding-top: 2%;">
-                <a style="color:blue"><?php echo $row->project_name ?></a>
+                <a href="<?php echo base_url('project/view/'.$row->id) ?>"style="color:blue"><?php echo $row->project_name ?></a>
                 <br />
                 <small>Ngày tạo:  <?php echo $row->create_date ?></small><br>
                 <small>Ngày bắt đầu:  <?php echo $row->start_date ?></small><br>
@@ -112,18 +112,14 @@
               </td>
               <td style="padding-top: 4%;">
                 <ul class="list-inline">
+                <?php foreach ($row->emp as $r) { ?>
                   <li>
-                    <img src="images/user.png" class="avatar" alt="Avatar">
+                  <a href="" title="<?php echo $r->emp_name ?>">
+                    <img src="<?php echo admin_theme('');?>/production/images/default-avatar.jpg" class="avatar" alt="Avatar">
+                  </a>
                   </li>
-                  <li>
-                    <img src="images/user.png" class="avatar" alt="Avatar">
-                  </li>
-                  <li>
-                    <img src="images/user.png" class="avatar" alt="Avatar">
-                  </li>
-                  <li>
-                    <img src="images/user.png" class="avatar" alt="Avatar">
-                  </li>
+                <?php } ?>
+
                 </ul>
               </td>
               <td class="project_progress" style="padding-top: 4%;">
@@ -142,8 +138,11 @@
               </td>
               <td>
                 <a href="#" class="btn btn-primary btn-xs"><i class="fa fa-folder"></i> View </a>
-                <a href="#" class="btn btn-info btn-xs"><i class="fa fa-pencil"></i> Edit </a>
+                <?php if($account_type < 3) { ?>
+                <a href="<?php echo base_url('project/edit/'.$row->id) ?>" class="btn btn-info btn-xs"><i class="fa fa-pencil"></i> Edit </a>
                 <a href="#" class="btn btn-danger btn-xs"><i class="fa fa-trash-o"></i> Delete </a>
+                <?php }?>
+                
               </td>
             </tr>
             <?php }?>

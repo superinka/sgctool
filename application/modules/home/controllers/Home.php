@@ -146,8 +146,9 @@ Class Home extends MY_Controller {
 	}
 
 	function edit(){
-		if ($this->data_layout['account_type']==4) {
+		if ($this->data_layout['account_type'] > 2) {
 			$this->session->set_flashdata('message','Bạn không đủ quyền hạn');
+			redirect(base_url('home/acc'));
 		}
 
 		else {
@@ -160,6 +161,7 @@ Class Home extends MY_Controller {
 
 			if(!$info_user) {
 				$this->session->set_flashdata('message','Không tồn tại thông tin tài khoản');
+				redirect(base_url('home/acc'));
 			}
 			else {
 				$this->data_layout['info_user'] = $info_user;
@@ -188,7 +190,7 @@ Class Home extends MY_Controller {
 						$room_name = $this->department_model->get_column('tb_department', 'name',$where=array('id'=>$v->department_id));
 						//pre($room_name[0]->name);
 						$v->department_name = $room_name[0]->name;
-						$this->data_layout['room_name'] = $room_name;
+						//$this->data_layout['room_name'] = $room_name;
 						//pre($room_name);
 						}
 
