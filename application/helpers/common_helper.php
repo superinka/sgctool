@@ -121,6 +121,28 @@
 
 	}
 
+	function color_room($room_name) {
+		switch ($room_name) {
+			case 'Phòng Lập Trình':
+				return '#BDC3C7';
+				break;
+			case 'Phòng Hệ Thống':
+				return '#9B59B6';
+				break;
+			case 'Phòng Web':
+				return '#E74C3C';
+				break;
+			case 'Phòng Đồ Họa':
+				return '#26B99A';
+				break;
+			
+			default:
+				# code...
+				return "#BDC3C7";
+				break;
+		}
+	}
+
 
 
 ?>

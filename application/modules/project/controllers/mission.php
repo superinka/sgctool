@@ -10,6 +10,7 @@ Class Mission extends MY_Controller {
 		$this->load->model('project_model');
 		$this->load->model('project_user_model');
 		$this->load->model('mission_model');
+		$this->load->model('proportion_department_model');
 
 		global $account_type;
 		
@@ -44,11 +45,17 @@ Class Mission extends MY_Controller {
 		//lay id du an can sua
 		$project_id = $this->uri->segment(4);
 		$project_id = intval($project_id);
+		$this->data_layout['project_id'] = $project_id;
 
 		$info_project = $this->project_model->get_info($project_id);
 		$this->data_layout['info_project'] = $info_project;
 
+		//$info_proportion_department = $this->proportion_department_model->get_info($project_id);
+
+		//pre($info_project);
+
 		$list_emp = $this->project_user_model->get_columns('tb_project_user',$where=array('project_id'=>$project_id));
+		$list_proportion_department = $this->proportion_department_model->get_columns('tb_proportion_department',$where=array('project_id'=>$project_id));
 
 		//$department_id = $this->get_column('tb_department', 'id',$where=array('name'=>$department_name));
 
@@ -64,6 +71,11 @@ Class Mission extends MY_Controller {
 
 				$list_emp['member'][] =  array($emp_name[0]->fullname,  $info_room->name);
 
+				$list_emp['room-member'][] = $info_room->name;
+				$list_emp['room-member'] = array_unique($list_emp['room-member']);
+				$list_emp['room-member'] = array_values($list_emp['room-member']);
+
+
 				$users_id = $this->role_model->get_column('tb_role', 'user_id',$where=array('department_id'=>$info_role[0]->department_id));
 					foreach ($users_id as $k => $v) {
 						$info_user = $this->acc_model->get_info($v->user_id);
@@ -71,8 +83,8 @@ Class Mission extends MY_Controller {
 							$name = $this->home_model->get_column('tb_employee', 'fullname',$where=array('user_id'=>$info_user->id));
 							$info_user->fullname = $name[0]->fullname;
 							$list_emp['leader'][] = $name[0]->fullname;
-							$list_emp['room'][] = $info_room->name;
-							$list_emp['room'] = array_unique($list_emp['room']);
+							$list_emp['room-leader'][] = $info_room->name;
+							$list_emp['room-leader'] = array_unique($list_emp['room-leader']);
 							$list_emp['leader'] = array_unique($list_emp['leader']);
 						}
 					}
@@ -80,20 +92,176 @@ Class Mission extends MY_Controller {
 				}
 
 				$total_member =  count($list_emp['leader']) + count($list_emp['member']);
+				$total_room = count($list_emp['room-member']);
+
+				$proportion = $this->proportion_department_model->get_columns('tb_proportion_department',$where=array('project_id'=>$project_id));
+				//pre($proportion);
+				if ($proportion==null) {$check =true;}
+				if($proportion!=null) {$check=false;}
+				foreach ($list_emp['room-member'] as $k => $v) {
+					//echo $v['name'];
+					//pre($proportion);
+					//echo 100/$total_room;
+					$list_emp['room-color'][$k] = color_room($v);
+					if ($proportion==null) {$list_emp['proportion-room'][$k] = (100/$total_room);}
+					else {
+						if($proportion[$k]){
+							$list_emp['proportion-room'][$k] = $proportion[$k]->proportion;
+						}
+						else {
+							$list_emp['proportion-room'][$k] = 0;
+							$proportion[$k] = array();
+						}
+					}
+				}
+				//pre($proportion);
 
 		}
 
+		//pre($list_emp);
+
+		//echo $total_room;
+		$this->data_layout['check'] = $check;
 		$this->data_layout['total_member'] = $total_member;
+		//$this->data_layout['total_room'] = $total_room;
 
 		$this->data_layout['list_emp'] = $list_emp;
 
-		$ratio = array();
-
-		//pre($list_emp);
-
-
 		$this->data_layout['temp'] = 'mission';
 	    $this->load->view('layout/main', $this->data_layout);
+	}
+
+	function add_pro(){
+
+		if ($this->data_layout['account_type']>2) {
+			$this->session->set_flashdata('message','Bạn không đủ quyền hạn');
+			redirect(base_url('project/index'));
+		}
+
+		else {
+			$project_id = $this->uri->segment(4);
+			$project_id = intval($project_id);
+
+			//lay thong tin project
+
+			$info_project = $this->project_model->get_info($project_id);
+			$this->data_layout['info_project'] = $info_project;
+			if(!$info_project) {
+				$this->session->set_flashdata('message','Không tồn tại thông tin dự án');
+				redirect(base_url('project/index'));
+			}
+			else {
+				$list_emp = $this->project_user_model->get_columns('tb_project_user',$where=array('project_id'=>$project_id));
+				//pre($list_emp);
+
+				if ($list_emp!=null) {
+					foreach ($list_emp as $k => $v) {
+
+					$emp_name = $this->home_model->get_column('tb_employee', 'fullname',$where=array('user_id'=>$v->user_id));
+					$info_role = $this->role_model->get_column('tb_role', 'department_id',$where=array('user_id'=>$v->user_id));
+					$info_room = $this->department_model->get_info($info_role[0]->department_id);
+
+					$list_emp['member'][] =  array($emp_name[0]->fullname,  $info_room->name);
+
+					$list_emp['room-member'][] = $info_room->name;
+					$list_emp['room-member'] = array_unique($list_emp['room-member']);
+					$list_emp['room-member'] = array_values($list_emp['room-member']);
+
+
+					$users_id = $this->role_model->get_column('tb_role', 'user_id',$where=array('department_id'=>$info_role[0]->department_id));
+						foreach ($users_id as $k => $v) {
+							$info_user = $this->acc_model->get_info($v->user_id);
+							if ($info_user->account_type==3) {
+								$name = $this->home_model->get_column('tb_employee', 'fullname',$where=array('user_id'=>$info_user->id));
+								$info_user->fullname = $name[0]->fullname;
+								$list_emp['leader'][] = $name[0]->fullname;
+								$list_emp['room-leader'][] = $info_room->name;
+								$list_emp['room-leader'] = array_unique($list_emp['room-leader']);
+								$list_emp['leader'] = array_unique($list_emp['leader']);
+							}
+						}
+
+					}
+					$total_member =  count($list_emp['leader']) + count($list_emp['member']);
+					$total_room = count($list_emp['room-member']);
+
+					$proportion = $this->proportion_department_model->get_columns('tb_proportion_department',$where=array('project_id'=>$project_id));
+					//pre($proportion);
+					if ($proportion==null) {$check =true;}
+					if($proportion!=null) {$check=false;}
+					foreach ($list_emp['room-member'] as $k => $v) {
+						//echo $v['name'];
+						//pre($proportion);
+						//echo 100/$total_room;
+						$list_emp['room-color'][$k] = color_room($v);
+						if ($proportion==null) {$list_emp['proportion-room'][$k] = (100/$total_room);}
+						else {
+						$list_emp['proportion-room'][$k] = $proportion[$k]->proportion;
+						}
+					}
+
+					$c = count($list_emp['room-member']);
+
+					if($this->input->post()){
+
+						for ($i=0; $i < $c ; $i++) { 
+							//echo $list_proportion_department[$i]->department;
+							//
+							$this->form_validation->set_rules('room['.$i.']', 'Trường ', 'trim|numeric',
+								array('numeric' => '%s Phải là số')
+								);
+							//echo $i;
+						}
+						if($this->form_validation->run()){
+							for ($i=0; $i < $c ; $i++) { 
+								$a[] = $this->input->post('room['.$i.']');
+								//echo $i;
+								$list_emp['new'][$i]['pro'] = $a[$i];
+								$department_id = $this->department_model->get_column('tb_department', 'id',$where=array('name'=>$list_emp['room-member'][$i]));
+								$list_emp['new'][$i]['department_id'] = $department_id[0]->id;
+								$list_emp['new'][$i]['project_id'] = $project_id;
+
+							}
+
+							//pre($list_emp);
+
+							foreach ($list_emp['new'] as $k => $v) {
+								$data = array(
+									'department_id' => $v['department_id'],
+									'proportion'    => $v['pro'],
+									'project_id'    => $v['project_id'],
+									'update_time'   => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s'),
+								);
+
+								//pre($data);
+								if($this->proportion_department_model->create($data)) {
+									$this->session->set_flashdata('message','Sửa dữ liệu thành công');
+								}
+								else {
+									$this->session->set_flashdata('message','Sửa dữ liệu không thành công');
+									redirect(base_url('project/index'));
+								}
+							}
+
+							redirect(base_url('project/index'));
+						}
+					}
+
+
+				
+
+				}
+
+				//pre($list_emp);
+			}
+
+		}
+
+
+		$this->data_layout['list_emp'] = $list_emp;
+		$this->data_layout['temp'] = 'project/add_pro';
+	    $this->load->view('layout/main', $this->data_layout);
+
 	}
 
 

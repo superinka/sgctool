@@ -9,6 +9,7 @@ Class Project extends MY_Controller {
 		$this->load->model('home/department_model');
 		$this->load->model('project_model');
 		$this->load->model('project_user_model');
+		$this->load->model('proportion_department_model');
 
 		global $account_type;
 		
@@ -88,6 +89,95 @@ Class Project extends MY_Controller {
 
 		$this->data_layout['temp'] = 'index';
 	    $this->load->view('layout/main', $this->data_layout);
+	}
+
+
+	function proportion_department() {
+
+		if ($this->data_layout['account_type']>2) {
+			$this->session->set_flashdata('message','Bạn không đủ quyền hạn');
+			redirect(base_url('project/index'));
+		}
+
+		else {
+			
+			//lay id du an can sua
+			$project_id = $this->uri->segment(3);
+			$project_id = intval($project_id);
+			$this->data_layout['project_id'] = $project_id;
+
+			$list_proportion_department = $this->proportion_department_model->get_columns('tb_proportion_department', 
+				$where=array('project_id'=>$project_id));
+
+			if ($list_proportion_department==null) {
+				$this->session->set_flashdata('message','Không tồn tại thông tin');
+				redirect(base_url('project/index'));
+
+			}
+
+
+			else {
+				$c = count($list_proportion_department);
+				foreach ($list_proportion_department as $key => $value) {
+					$department = $this->department_model->get_info($value->department_id);
+					$value->department = $department->name;
+				}
+
+				if($this->input->post()){
+					//$this->form_validation->set_rules('0', '0', 'trim|numeric');
+					for ($i=0; $i < $c ; $i++) { 
+						//echo $list_proportion_department[$i]->department;
+						$this->form_validation->set_rules('room['.$i.']', 'Trường '.$list_proportion_department[$i]->department , 'trim|numeric',
+							array('numeric' => '%s Phải là số')
+							);
+					}
+
+					if($this->form_validation->run()){
+						for ($i=0; $i < $c ; $i++) { 
+							$a[] = $this->input->post('room['.$i.']');
+							//echo $i;
+							$list_proportion_department[$i]->new = $a[$i];
+						}
+
+						foreach ($list_proportion_department as $key => $value) {
+							$data = array(
+								'proportion' => $value->new
+								);
+
+							if($this->proportion_department_model->update($value->id, $data)) {
+								$this->session->set_flashdata('message','Sửa dữ liệu thành công');
+							}
+							else {
+								$this->session->set_flashdata('message','Sửa dữ liệu không thành công');
+								redirect(base_url('project/mission/index/'.$project_id), 'refresh');
+							}
+
+						}
+
+						redirect(base_url('project/mission/index/'.$project_id),'refresh');
+
+						//pre($a);
+
+						//redirect(base_url('project/index'));
+
+						//pre($a);
+						//pre($list_proportion_department);
+					}
+
+				}
+
+
+			}
+
+
+		}
+
+
+		
+		$this->data_layout['list_proportion_department'] = $list_proportion_department;
+		$this->data_layout['temp'] = 'project/proportion';
+	    $this->load->view('layout/main', $this->data_layout);
+
 	}
 
 
@@ -239,6 +329,7 @@ Class Project extends MY_Controller {
 									//echo $v->id;
 									//$role_id = intval($v->id);
 									$this->project_user_model->delete($v->id);
+									$this->proportion_department_model->del_rule($where=array('project_id'=>$project_id));
 								}
 							}
 							
@@ -256,6 +347,16 @@ Class Project extends MY_Controller {
 
 									$this->session->set_flashdata('message','Sửa dữ liệu thành công');
 									//redirect(base_url('project/index'));
+									$department_id = $this->role_model->get_column('tb_role','department_id',$where=array('user_id'=>$project_users[$i]));
+
+								$data = array(
+									'department_id' => $department_id[0]->department_id,
+									'proportion'    => '0',
+									'project_id'    => $project_id,
+									'update_time'   => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s'),
+								);
+
+								$this->proportion_department_model->create($data);
 
 								}
 
@@ -343,7 +444,7 @@ Class Project extends MY_Controller {
 		}
 	}
 
-	private function check_shortname($short_name){
+	function check_shortname($short_name){
 		$short_name = $this->input->post('short_name');
 		$where = array('short_name' => $short_name, );
 		if($this->project_model->check_exists($where)) {
