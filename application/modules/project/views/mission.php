@@ -1,4 +1,5 @@
 <?php //pre($list_emp); ?>
+<?php if ($message){$this->load->view('layout/message',$this->data_layout); }?>
 <div class="row">
   <div class="col-md-3 col-xs-12 widget widget_tally_box">
     <div class="x_panel ui-ribbon-container fixed_height_390">
@@ -226,6 +227,11 @@
 	    <div class="x_panel">
 	      <div class="x_title">
 	        <h2>Danh sách nhiệm vụ</h2>
+	        <?php if ($list_mission!=null) { ?>
+		        <?php if($account_type<4) {?>
+		        <a href="<?php echo base_url('project/mission/add_mission/'.$project_id) ?>" class="btn btn-primary btn-xs navbar-right"><i class="fa fa-folder"></i> Thêm </a>
+		        <?php }?>
+	        <?php } ?>
 	        <div class="clearfix"></div>
 	      </div>
 	      <?php
@@ -233,49 +239,28 @@
 	      		?>
 	      		<p>Không có dữ liệu</p>
 	      		<?php if($account_type<4) {?>  
-			      	<a href="http://localhost/sgctool/home/acc/add">
+			      	<a href="<?php echo base_url('project/mission/add_mission/'.$project_id) ?>">
 			      	<button type="button" class="btn btn-primary"><i class="fa fa-plus"></i> ADD</button>
 			      	</a>
 		      	<?php }?>
 	      		<?php
 	      	}
+	      	else if ($list_mission!=null) {
+	      		foreach ($list_mission as $key => $value) {
+	      			
+	      			?>
+	      			<div>
+			          <p><a href="<?php echo base_url('project/mission/view_detail/'.$value->id) ?>"><?php echo $value->name ?></a></p>
+			          <div class="">
+			            <div class="progress progress_sm" style="width: 80%;">
+			              <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="<?php echo $value->progress ?>"></div>
+			            </div>
+			          </div>
+			        </div>
+	      			<?php
+	      		}
+	      	}
 	      ?>
-
-
-<!-- 	        <div>
-	          <p>Facebook Campaign</p>
-	          <div class="">
-	            <div class="progress progress_sm" style="width: 80%;">
-	              <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="80"></div>
-	            </div>
-	          </div>
-	        </div>
-	        <div>
-	          <p>Twitter Campaign</p>
-	          <div class="">
-	            <div class="progress progress_sm" style="width: 80%;">
-	              <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="60"></div>
-	            </div>
-	          </div>
-	        </div>
-	  
-
-	        <div>
-	          <p>Conventional Media</p>
-	          <div class="">
-	            <div class="progress progress_sm" style="width: 80%;">
-	              <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="40"></div>
-	            </div>
-	          </div>
-	        </div>
-	        <div>
-	          <p>Bill boards</p>
-	          <div class="">
-	            <div class="progress progress_sm" style="width: 80%;">
-	              <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="50"></div>
-	            </div>
-	          </div>
-	        </div> -->
 	      
 	    </div>
     </div>

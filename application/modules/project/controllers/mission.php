@@ -10,6 +10,8 @@ Class Mission extends MY_Controller {
 		$this->load->model('project_model');
 		$this->load->model('project_user_model');
 		$this->load->model('mission_model');
+		$this->load->model('task_model');
+		$this->load->model('mission_user_model');
 		$this->load->model('proportion_department_model');
 
 		global $account_type;
@@ -117,6 +119,14 @@ Class Mission extends MY_Controller {
 				//pre($proportion);
 
 		}
+
+
+		$list_mission = $this->mission_model->get_columns('tb_mission',$where=array('project_id'=>$project_id,'status'=>'1'));
+
+		//pre($list_mission);
+
+		$this->data_layout['list_mission'] = $list_mission;
+
 
 		//pre($list_emp);
 
@@ -525,6 +535,187 @@ Class Mission extends MY_Controller {
 			return false;
 		}
 		else return TRUE;
+
+	}
+
+
+	function add_mission(){
+
+		if ($this->data_layout['account_type']>3) {
+			$this->session->set_flashdata('message','Bạn không đủ quyền hạn');
+			redirect(base_url('project/index'));
+		}
+		else {
+
+			//lay id du an can sua
+			$project_id = $this->uri->segment(4);
+			$project_id = intval($project_id);
+			$this->data_layout['project_id'] = $project_id;
+			$now_user_id = $this->data_layout['id'];
+
+			$info_project = $this->project_model->get_info($project_id);
+			if(!$info_project) {
+				$this->session->set_flashdata('message','Không tồn tại thông tin dự án');
+				redirect(base_url('project/index'),'refresh');
+			}
+
+			else {
+				// /pre($info_project);
+				$this->data_layout['info_project'] = $info_project;
+				$account_type = $this->data_layout['account_type'];
+
+				$tab = 'tb_role'; $col = 'department_id';
+
+				$list_department_employee_all = $this->role_model->get_column_distinct($tab,$col);
+
+				$list_department_employee_by_id = $this->role_model->get_column('tb_role','department_id',$where=array('user_id'=>$now_user_id));
+
+				if ($account_type==3) {
+					$list_department_employee = $list_department_employee_by_id;
+				}
+
+				else if ($account_type<3) {
+					$list_department_employee = $list_department_employee_all;
+				}
+
+				//pre($list_department_employee);
+				$list_department_of_project = $this->proportion_department_model->get_column('tb_proportion_department','department_id',$where=array('project_id'=>$project_id));
+				//pre($list_department_of_project);
+
+				$list_department_id_of_project = array();
+				foreach ($list_department_of_project as $key => $value) {
+					$list_department_id_of_project[$key] = $value->department_id;
+				}
+
+				//pre($list_department_id_of_project);
+				
+
+				foreach ($list_department_employee as $key => $value) {
+					if(in_array($value->department_id, $list_department_id_of_project)==false) {
+						unset($list_department_employee[$key]);
+					}
+				}
+
+				//pre($list_department_employee);
+
+				foreach ($list_department_employee as $key => $value) {
+					$department_info = $this->department_model->get_info($value->department_id);
+					$value->department_name = $department_info->name;
+
+					$list_user_id_of_department = $this->role_model->get_column('tb_role','user_id',$where=array('department_id'=>$department_info->id));
+
+					foreach ($list_user_id_of_department as $k => $v) {
+						$info_user = $this->home_model->get_columns('tb_employee',$where=array('user_id'=>$v->user_id));
+						$value->list_employee[$k] = $info_user[0];
+					}
+				}
+
+				//pre($list_department_employee);
+
+				$this->data_layout['list_department_employee'] = $list_department_employee;
+
+
+				if($this->input->post()){
+
+					$this->form_validation->set_rules('mission_name', 'Tên nhiệm vụ', 'trim');
+					$this->form_validation->set_rules('description', 'description', 'trim');
+					
+					$this->form_validation->set_rules('start_date', 'Ngày bắt đầu');
+					$this->form_validation->set_rules('end_date', 'Ngày kết thúc');
+					$this->form_validation->set_rules('project_user', 'Nhân viên');
+
+					if($this->form_validation->run()){ 
+
+						$mission_name = $this->input->post('mission_name');
+						$description = $this->input->post('description');
+						$start_date = $this->input->post('start_date');
+						$end_date = $this->input->post('end_date');
+
+						$mission_user_id = $this->input->post('mission_user');
+
+						$start_date = strtotime($start_date);
+						$newformat_start_date = date('Y-m-d',$start_date);
+						$end_date = strtotime($end_date);
+						$newformat_end_date = date('Y-m-d',$end_date);
+
+						$code = $project_id . md5($mission_name);
+						$code = strtolower($code);
+
+						//pre($code);
+
+						$data_mission = array(
+							'name'          => $mission_name,
+							'description'   => $description,
+							'start_date'    => $newformat_start_date,
+							'end_date'      => $newformat_end_date,
+							'update_time'   => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s'),
+							'update_by'     => $now_user_id,
+							'create_by'     => $now_user_id,
+							'create_date'   => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d'),
+							'progress'      => '0',
+							'status'        => '1',
+							'project_id'    => $project_id,
+							'code'          => $code
+						);
+
+						//pre($data_mission);
+						if($this->mission_model->create($data_mission)) {
+							$this->session->set_flashdata('message','Tạo dữ liệu thành công');
+
+							$mid = $this->mission_model->get_info_rule($where=array('code'=>$code));
+
+							//pre($mid);
+
+							$data_mission_user = array(
+								'mission_id' => $mid->id,
+								'user_id'    => $mission_user_id,
+								'update_time'   => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s'),
+							);
+							if($this->mission_user_model->create($data_mission_user)) {
+								$this->session->set_flashdata('message','Tạo dữ liệu thành công');
+
+
+							}
+							else {
+								$this->session->set_flashdata('message','Tạo dữ liệu không thành công');
+							}
+						}
+						else {
+							$this->session->set_flashdata('message','Tạo dữ liệu không thành công');
+							redirect(base_url('project/mission/index/'.$project_id));
+						}
+					redirect(base_url('project/mission/index/'.$project_id));
+					}
+
+				}
+			}
+		}
+
+		$this->data_layout['temp'] = 'add_mission';
+	    $this->load->view('layout/main', $this->data_layout);
+
+	}
+
+	function view_detail(){
+
+		$message = $this->session->flashdata('message');
+	    $this->data_layout['message'] = $message;
+		
+		//lay id du an can sua
+		$mission_id = $this->uri->segment(4);
+		$mission_id = intval($mission_id);
+		$this->data_layout['mission_id'] = $mission_id;
+
+		$info_mission = $this->mission_model->get_info($mission_id);
+		$this->data_layout['info_mission'] = $info_mission;
+
+
+		$list_task = null;
+		$this->data_layout['list_task'] = $list_task;
+
+		$this->data_layout['temp'] = 'view_detail';
+	    $this->load->view('layout/main', $this->data_layout);
+
 
 	}
 }

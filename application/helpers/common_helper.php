@@ -79,6 +79,19 @@
 
 	}
 
+	function check_status_mission($i) {
+		if ($i == 1) {
+			$rs = 'Đang chạy';
+		}
+
+		else if ($i == 2) {
+			$rs = 'Hủy Bỏ';
+		}
+		return $rs;
+
+	}
+
+
 	function networkdays($s, $e, $holidays = array()) {
 	    // If the start and end dates are given in the wrong order, flip them.    
 	    if ($s > $e)
