@@ -9,7 +9,7 @@
 		    	<span class="required">*</span>
 		    </label>
 		    <div class="col-md-4 col-sm-4 col-xs-12">
-		      <input id="<?php echo $key ?>" name="room[<?php echo $key ?>]" value="<?php echo $value->proportion ?>" class="form-control col-md-7 col-xs-12" required="required" type="text">
+		      <input id="<?php echo $key ?>" name="room[<?php echo $key ?>]" value="<?php ?>" class="form-control col-md-7 col-xs-12" required="required" type="text">
 		    </div>
 		</div>
 		</div>		

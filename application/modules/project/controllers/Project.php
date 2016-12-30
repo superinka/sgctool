@@ -106,8 +106,8 @@ Class Project extends MY_Controller {
 			$project_id = intval($project_id);
 			$this->data_layout['project_id'] = $project_id;
 
-			$list_proportion_department = $this->proportion_department_model->get_columns('tb_proportion_department', 
-				$where=array('project_id'=>$project_id));
+			$list_proportion_department = $this->proportion_department_model->get_column_distinct('tb_proportion_department', array('department_id'));
+			//pre($list_proportion_department);
 
 			if ($list_proportion_department==null) {
 				$this->session->set_flashdata('message','Không tồn tại thông tin');
@@ -121,14 +121,15 @@ Class Project extends MY_Controller {
 				foreach ($list_proportion_department as $key => $value) {
 					$department = $this->department_model->get_info($value->department_id);
 					$value->department = $department->name;
-				}
 
+				}
+				pre($list_proportion_department);
 				if($this->input->post()){
 					//$this->form_validation->set_rules('0', '0', 'trim|numeric');
 					for ($i=0; $i < $c ; $i++) { 
 						//echo $list_proportion_department[$i]->department;
-						$this->form_validation->set_rules('room['.$i.']', 'Trường '.$list_proportion_department[$i]->department , 'trim|numeric',
-							array('numeric' => '%s Phải là số')
+						$this->form_validation->set_rules('room['.$i.']', 'Trường '.$list_proportion_department[$i]->department , 'trim|numeric|callback_check_percent',
+							array('numeric' => '%s Phải là số','check_percent' => 'Tính lại tỉ lệ')
 							);
 					}
 
@@ -138,6 +139,7 @@ Class Project extends MY_Controller {
 							//echo $i;
 							$list_proportion_department[$i]->new = $a[$i];
 						}
+						//pre($list_proportion_department);
 
 						foreach ($list_proportion_department as $key => $value) {
 							$data = array(
@@ -178,6 +180,23 @@ Class Project extends MY_Controller {
 		$this->data_layout['temp'] = 'project/proportion';
 	    $this->load->view('layout/main', $this->data_layout);
 
+	}
+
+	function check_percent(){
+		$list_proportion_department = $this->proportion_department_model->get_column_distinct('tb_proportion_department', array('department_id','proportion'));
+		$c = count($list_proportion_department);
+		$percent =0;
+		for ($i=0; $i < $c ; $i++) { 
+			$a[] = $this->input->post('room['.$i.']');
+			$percent = $percent + $a[$i];
+		}
+		if($percent==100) {
+			return true;
+		}
+		else {
+			return false;
+			$this->form_validation->set_message('check_percent', 'Tỉ lệ không đúng');
+		}
 	}
 
 
@@ -246,6 +265,8 @@ Class Project extends MY_Controller {
 
 				$list_emp = $this->project_user_model->get_columns('tb_project_user',$where=array('project_id'=>$project_id));
 
+				$old_data =null;
+
 				if ($list_emp!=null) {
 						foreach ($list_emp as $k => $v) {
 
@@ -254,11 +275,12 @@ Class Project extends MY_Controller {
 						$v->emp_name = $emp_name[0]->fullname;
 						//$this->data_layout['room_name'] = $room_name;
 						//pre($room_name);
+						$old_data[] = $v->user_id;
 						}
 
 					}
 
-				//pre($list_emp);
+				//pre($old_data);
 				$this->data_layout['list_emp'] = $list_emp;
 
 				if($this->input->post()){
@@ -312,6 +334,7 @@ Class Project extends MY_Controller {
 						//$uid = $this->acc_model->get_column('tb_user', 'id',$where=array('username'=>$username));
 
 						//pre($project_users);
+						//pre($old_data);
 
 						if($this->project_model->update($project_id, $data_project)) {
 
@@ -320,75 +343,153 @@ Class Project extends MY_Controller {
 							$pid = $this->project_user_model->get_column('tb_project_user', 'id',$where=array('project_id'=>$project_id));
 
 							//pre($pid);
-
-							if ($pid) {
-
-								foreach ($pid as $k => $v) {
-
-									$info_project_user = $this->project_user_model->get_info($v->id);
-									//echo $v->id;
-									//$role_id = intval($v->id);
-									$this->project_user_model->delete($v->id);
-									$this->proportion_department_model->del_rule($where=array('project_id'=>$project_id));
-								}
+							if ($project_users==null) {
+								$this->project_user_model->del_rule($where=array('project_id'=>$project_id));
+								$this->proportion_department_model->del_rule($where=array('project_id'=>$project_id));
+								redirect(base_url('project/index'));
 							}
-							
-							for ($i=0; $i < count($project_users) ; $i++) { 
-								# code...
+							else {
 
-								//echo $i;
-								$data_project_user = array(
-									'project_id'     => $project_id,
-									'user_id'     => $project_users[$i],
-									'update_time'  => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s')
-								);
+								if($list_emp==null){
 
-								if($this->project_user_model->create($data_project_user)) {
+									$arr_depart = array();
 
-									$this->session->set_flashdata('message','Sửa dữ liệu thành công');
-									//redirect(base_url('project/index'));
-									$department_id = $this->role_model->get_column('tb_role','department_id',$where=array('user_id'=>$project_users[$i]));
 
-								$data = array(
-									'department_id' => $department_id[0]->department_id,
-									'proportion'    => '0',
-									'project_id'    => $project_id,
-									'update_time'   => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s'),
-								);
+									for ($i=0; $i < count($project_users) ; $i++) { 
+										$data_project_user = array(
+											'project_id'     => $project_id,
+											'user_id'     => $project_users[$i],
+											'update_time'  => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s')
+										);
 
-								$this->proportion_department_model->create($data);
+										if($this->project_user_model->create($data_project_user)) {
 
-								}
+											$this->session->set_flashdata('message','Sửa dữ liệu thành công');
+											//redirect(base_url('project/index'));
+											$department_id = $this->role_model->get_column('tb_role','department_id',$where=array('user_id'=>$project_users[$i]));
+											//pre($department_id);
 
-								else {
+											
+
+										$data = array(
+											'department_id' => $department_id[0]->department_id,
+											'proportion'    => '0',
+											'project_id'    => $project_id,
+											'update_time'   => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s'),
+										);
+
 										
 
-									$this->session->set_flashdata('message','Sửa dữ liệu không thành công');
+										if(in_array($department_id[0]->department_id, $arr_depart)==false) {
 
+											$arr_depart[] = $department_id[0]->department_id;
+											$this->proportion_department_model->create($data);
+											//$arr_depart[] = $department_id[0]->department_id;
+										}
+
+										//pre($arr_depart);
+
+										
+
+										}
+
+										else {
+												
+
+											$this->session->set_flashdata('message','Sửa dữ liệu không thành công');
+
+										}
+									}
+									redirect(base_url('project/index'));
 								}
-							}
+								else if ($list_emp!=null){
+									//pre($project_users);
+									if(count($project_users) < count($old_data)){
+										$check_data = array_diff($old_data, $project_users);
+										$check_data = array_values($check_data);
+										//pre($check_data);
+										for ($i=0; $i < count($check_data) ; $i++) {
+											$department_id = $this->role_model->get_column('tb_role','department_id',$where=array('user_id'=>$check_data[$i]));
+											$this->project_user_model->del_rule($where=array('user_id'=>$check_data[$i]));
+											$x = $this->proportion_department_model->get_row($input['where'] = array('department_id'=>$department_id[0]->department_id));
+											//pre($x);
+											$xid = $x->id;
+											$this->proportion_department_model->delete($xid);
+										}
+										//pre($check_data);
+									}
+									else {
+										$check_data = array_diff($project_users, $old_data);
+										$check_data = array_values($check_data);
+										for ($i=0; $i < count($check_data) ; $i++) {
 
-						redirect(base_url('project/index'));
+										$arr_depart = array();
+
+										$data_project_user = array(
+											'project_id'     => $project_id,
+											'user_id'     => $check_data[$i],
+											'update_time'  => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s')
+										);
+										if($this->project_user_model->create($data_project_user)) {
+
+											$this->session->set_flashdata('message','Sửa dữ liệu thành công');
+											//redirect(base_url('project/index'));
+											$department_id = $this->role_model->get_column('tb_role','department_id',$where=array('user_id'=>$check_data[$i]));
+
+											$data = array(
+												'department_id' => $department_id[0]->department_id,
+												'proportion'    => '0',
+												'project_id'    => $project_id,
+												'update_time'   => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s'),
+											);
+
+											if(in_array($department_id[0]->department_id, $arr_depart)==false) {
+
+												$arr_depart[] = $department_id[0]->department_id;
+												//$this->proportion_department_model->create($data);
+				
+											}
+
+											//pre($arr_depart);
+										
+
+										}
+
+										else {
+												
+
+											$this->session->set_flashdata('message','Sửa dữ liệu không thành công');
+
+										}											
+										}
+									}
+								
+								}
+									redirect(base_url('project/index'));
+							}
+								
+
+						}
 
 						
-						}
-						else {
-							$this->session->set_flashdata('message','Sửa dữ liệu không thành công');
-							redirect(base_url('project/index'));
-						}
+					}
+					else {
+						$this->session->set_flashdata('message','Sửa dữ liệu không thành công');
+						redirect(base_url('project/index'));
+					}
 
 						//redirect(base_url('project/index'));
-					}
 				}
+			}
 
 
 				//pre($list_department_employee);
 				$this->data_layout['list_department_employee'] = $list_department_employee;
-			}
-
-
-
 		}
+
+
+
+	
 
 		$this->data_layout['temp'] = 'edit';
 	    $this->load->view('layout/main', $this->data_layout);
