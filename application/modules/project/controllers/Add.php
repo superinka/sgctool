@@ -10,6 +10,7 @@ Class Add extends MY_Controller {
 		$this->load->model('home/department_model');
 		$this->load->model('project_model');
 		$this->load->model('project_user_model');
+		$this->load->model('proportion_department_model');
 
 
 		$this->form_validation->set_error_delimiters('<div class="error" style="color:red; font-weight:600">', '</div>'); 
@@ -131,11 +132,14 @@ Class Add extends MY_Controller {
 					$this->session->set_flashdata('message','Thêm dữ liệu thành công');
 					$pid = $this->project_model->get_column('tb_project', 'id',$where=array('short_name'=>$short_name));
 
-					if($project_users) {
+					if ($project_users==null) {
+						redirect(base_url('project/index'));
+					}
+
+					else if ($project_users!=null){
 						for ($i=0; $i < count($project_users) ; $i++) { 
 							# code...
 
-							//echo $i;
 							$data_project_user = array(
 								'project_id'     => $pid[0]->id,
 								'user_id'     => $project_users[$i],
@@ -146,6 +150,29 @@ Class Add extends MY_Controller {
 
 								$this->session->set_flashdata('message','Tạo dữ liệu thành công');
 								//redirect(base_url('project/index'));
+								$department_id = $this->role_model->get_column('tb_role','department_id',$where=array('user_id'=>$project_users[$i]));
+
+								$project =  $this->project_user_model->get_column('tb_project_user','project_id',$where=array('user_id'=>$project_users[$i]));
+
+								//pre($department_id);
+								$project_id = $project[0]->project_id;
+
+								$d_id = $department_id[0]->department_id;
+
+
+								$dat =  $this->proportion_department_model->get_column('tb_proportion_department','id',$where=array('project_id'=>$project_id,'department_id'=>$d_id));
+
+								
+
+								if ($dat ==null) {
+									$data = array(
+										'department_id' => $department_id[0]->department_id,
+										'proportion'    => '0',
+										'project_id'    => $project_id,
+										'update_time'   => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s'),
+									);
+									$this->proportion_department_model->create($data);
+								}
 
 							}
 

@@ -123,7 +123,7 @@ Class Project extends MY_Controller {
 					$value->department = $department->name;
 
 				}
-				pre($list_proportion_department);
+				//pre($list_proportion_department);
 				if($this->input->post()){
 					//$this->form_validation->set_rules('0', '0', 'trim|numeric');
 					for ($i=0; $i < $c ; $i++) { 
@@ -146,7 +146,7 @@ Class Project extends MY_Controller {
 								'proportion' => $value->new
 								);
 
-							if($this->proportion_department_model->update($value->id, $data)) {
+							if($this->proportion_department_model->update_rule($where=array('department_id'=>$value->department_id), $data)) {
 								$this->session->set_flashdata('message','Sửa dữ liệu thành công');
 							}
 							else {
@@ -354,6 +354,8 @@ Class Project extends MY_Controller {
 
 									$arr_depart = array();
 
+									//pre($project_users);
+
 
 									for ($i=0; $i < count($project_users) ; $i++) { 
 										$data_project_user = array(
@@ -367,29 +369,26 @@ Class Project extends MY_Controller {
 											$this->session->set_flashdata('message','Sửa dữ liệu thành công');
 											//redirect(base_url('project/index'));
 											$department_id = $this->role_model->get_column('tb_role','department_id',$where=array('user_id'=>$project_users[$i]));
+
 											//pre($department_id);
+
+											$d_id = $department_id[0]->department_id;
+
+
+											$dat =  $this->proportion_department_model->get_column('tb_proportion_department','id',$where=array('project_id'=>$project_id,'department_id'=>$d_id));
 
 											
 
-										$data = array(
-											'department_id' => $department_id[0]->department_id,
-											'proportion'    => '0',
-											'project_id'    => $project_id,
-											'update_time'   => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s'),
-										);
+											if ($dat ==null) {
+												$data = array(
+													'department_id' => $department_id[0]->department_id,
+													'proportion'    => '0',
+													'project_id'    => $project_id,
+													'update_time'   => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s'),
+												);
+												$this->proportion_department_model->create($data);
+											}
 
-										
-
-										if(in_array($department_id[0]->department_id, $arr_depart)==false) {
-
-											$arr_depart[] = $department_id[0]->department_id;
-											$this->proportion_department_model->create($data);
-											//$arr_depart[] = $department_id[0]->department_id;
-										}
-
-										//pre($arr_depart);
-
-										
 
 										}
 
@@ -436,22 +435,25 @@ Class Project extends MY_Controller {
 											//redirect(base_url('project/index'));
 											$department_id = $this->role_model->get_column('tb_role','department_id',$where=array('user_id'=>$check_data[$i]));
 
-											$data = array(
-												'department_id' => $department_id[0]->department_id,
-												'proportion'    => '0',
-												'project_id'    => $project_id,
-												'update_time'   => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s'),
-											);
+											//pre($department_id);
 
-											if(in_array($department_id[0]->department_id, $arr_depart)==false) {
+											$d_id = $department_id[0]->department_id;
 
-												$arr_depart[] = $department_id[0]->department_id;
-												//$this->proportion_department_model->create($data);
-				
+
+											$dat =  $this->proportion_department_model->get_column('tb_proportion_department','id',$where=array('project_id'=>$project_id,'department_id'=>$d_id));
+
+
+											//pre($dat);
+
+											if ($dat ==null) {
+												$data = array(
+													'department_id' => $department_id[0]->department_id,
+													'proportion'    => '0',
+													'project_id'    => $project_id,
+													'update_time'   => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s'),
+												);
+												$this->proportion_department_model->create($data);
 											}
-
-											//pre($arr_depart);
-										
 
 										}
 

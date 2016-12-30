@@ -159,9 +159,6 @@
 	</div>
 	    <!-- Doughnut Chart -->
 	    <!-- jQuery -->
-
-
-
 	 <div class="col-md-3 col-sm-12 col-xs-12">
 	  <div class="x_panel fixed_height_390">
 	    <div class="x_title">
@@ -221,4 +218,65 @@
 	    <?php } ?>
 	  </div>
 	</div>
+
+</div>
+
+<div class="row">
+    <div class="col-md-6 col-sm-6 col-xs-12">
+	    <div class="x_panel">
+	      <div class="x_title">
+	        <h2>Danh sách nhiệm vụ</h2>
+	        <div class="clearfix"></div>
+	      </div>
+	      <?php
+	      	if($list_mission==null) {
+	      		?>
+	      		<p>Không có dữ liệu</p>
+	      		<?php if($account_type<4) {?>  
+			      	<a href="http://localhost/sgctool/home/acc/add">
+			      	<button type="button" class="btn btn-primary"><i class="fa fa-plus"></i> ADD</button>
+			      	</a>
+		      	<?php }?>
+	      		<?php
+	      	}
+	      ?>
+
+
+<!-- 	        <div>
+	          <p>Facebook Campaign</p>
+	          <div class="">
+	            <div class="progress progress_sm" style="width: 80%;">
+	              <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="80"></div>
+	            </div>
+	          </div>
+	        </div>
+	        <div>
+	          <p>Twitter Campaign</p>
+	          <div class="">
+	            <div class="progress progress_sm" style="width: 80%;">
+	              <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="60"></div>
+	            </div>
+	          </div>
+	        </div>
+	  
+
+	        <div>
+	          <p>Conventional Media</p>
+	          <div class="">
+	            <div class="progress progress_sm" style="width: 80%;">
+	              <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="40"></div>
+	            </div>
+	          </div>
+	        </div>
+	        <div>
+	          <p>Bill boards</p>
+	          <div class="">
+	            <div class="progress progress_sm" style="width: 80%;">
+	              <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="50"></div>
+	            </div>
+	          </div>
+	        </div> -->
+	      
+	    </div>
+    </div>
 </div>
