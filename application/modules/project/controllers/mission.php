@@ -622,7 +622,7 @@ Class Mission extends MY_Controller {
 					
 					$this->form_validation->set_rules('start_date', 'Ngày bắt đầu');
 					$this->form_validation->set_rules('end_date', 'Ngày kết thúc');
-					$this->form_validation->set_rules('project_user', 'Nhân viên');
+					$this->form_validation->set_rules('mission_user', 'Nhân viên');
 
 					if($this->form_validation->run()){ 
 
@@ -638,7 +638,7 @@ Class Mission extends MY_Controller {
 						$end_date = strtotime($end_date);
 						$newformat_end_date = date('Y-m-d',$end_date);
 
-						$code = $project_id . md5($mission_name);
+						$code = $project_id .rand(0,9999). md5($mission_name);
 						$code = strtolower($code);
 
 						//pre($code);
@@ -716,6 +716,179 @@ Class Mission extends MY_Controller {
 		$this->data_layout['temp'] = 'view_detail';
 	    $this->load->view('layout/main', $this->data_layout);
 
+
+	}
+
+	function edit_mission(){
+
+		$message = $this->session->flashdata('message');
+	    $this->data_layout['message'] = $message;
+
+	    $now_user_id = $this->data_layout['id'];
+	    $account_type = $this->data_layout['account_type'];
+
+	    if ($account_type > 3) {
+			$this->session->set_flashdata('message','Bạn không đủ quyền hạn');
+			redirect(base_url('project/mission/index/'.$project_id));
+		}
+		else {
+
+			//lay id du an can sua
+			$mission_edit_id = $this->uri->segment(5);
+			$mission_edit_id = intval($mission_edit_id);
+			$project_id = $this->uri->segment(4);
+			$project_id = intval($project_id);
+			$this->data_layout['mission_id'] = $mission_id;
+
+			//echo $mission_id;
+
+			$info_mission = $this->mission_model->get_info($mission_edit_id);
+			$this->data_layout['info_mission'] = $info_mission;
+
+			if(!$mission_edit_id) {
+				$this->session->set_flashdata('message','Không tồn tại thông tin nhiệm vụ');
+				redirect(base_url('project/mission/index/'.$project_id));
+			}
+			else {
+
+				
+				$info_mission_employee = $this->mission_user_model->get_columns('tb_mission_user',$where=array('mission_id'=>$mission_edit_id));
+				$mission_user_id = $info_mission_employee[0]->user_id;
+				$mission_user_info = $this->home_model->get_columns('tb_employee',$where=array('user_id'=>$mission_user_id));
+				$mission_user_name = $mission_user_info[0]->fullname;
+				$mission_user_id = $mission_user_info[0]->user_id;
+				$info_mission->mission_user_name = $mission_user_name;
+				$info_mission->mission_user_id = $mission_user_id;
+				//pre($info_mission);
+
+				$tab = 'tb_role'; $col = 'department_id';
+
+				$list_department_employee_all = $this->role_model->get_column_distinct($tab,$col);
+
+				$list_department_employee_by_id = $this->role_model->get_column('tb_role','department_id',$where=array('user_id'=>$now_user_id));
+
+				if ($account_type==3) {
+					$list_department_employee = $list_department_employee_by_id;
+				}
+
+				else if ($account_type<3) {
+					$list_department_employee = $list_department_employee_all;
+				}
+
+				//pre($list_department_employee);
+				$list_department_of_project = $this->proportion_department_model->get_column('tb_proportion_department','department_id',$where=array('project_id'=>$project_id));
+				//pre($list_department_of_project);
+
+				$list_department_id_of_project = array();
+				foreach ($list_department_of_project as $key => $value) {
+					$list_department_id_of_project[$key] = $value->department_id;
+				}
+
+				//pre($list_department_id_of_project);
+				
+
+				foreach ($list_department_employee as $key => $value) {
+					if(in_array($value->department_id, $list_department_id_of_project)==false) {
+						unset($list_department_employee[$key]);
+					}
+				}
+
+				//pre($list_department_employee);
+
+				foreach ($list_department_employee as $key => $value) {
+					$department_info = $this->department_model->get_info($value->department_id);
+					$value->department_name = $department_info->name;
+
+					$list_user_id_of_department = $this->role_model->get_column('tb_role','user_id',$where=array('department_id'=>$department_info->id));
+
+					foreach ($list_user_id_of_department as $k => $v) {
+						$info_user = $this->home_model->get_columns('tb_employee',$where=array('user_id'=>$v->user_id));
+						$value->list_employee[$k] = $info_user[0];
+					}
+				}
+
+				pre($list_department_employee);
+
+				$this->data_layout['list_department_employee'] = $list_department_employee;
+				if($this->input->post()){
+
+					$this->form_validation->set_rules('mission_name', 'Tên nhiệm vụ', 'trim');
+					$this->form_validation->set_rules('description', 'description', 'trim');
+					
+					$this->form_validation->set_rules('start_date', 'Ngày bắt đầu');
+					$this->form_validation->set_rules('end_date', 'Ngày kết thúc');
+					$this->form_validation->set_rules('mission_user', 'Nhân viên');
+
+					if($this->form_validation->run()){ 
+
+						$mission_name = $this->input->post('mission_name');
+						$description = $this->input->post('description');
+						$start_date = $this->input->post('start_date');
+						$end_date = $this->input->post('end_date');
+
+						$mission_user_id = $this->input->post('mission_user');
+
+						$start_date = strtotime($start_date);
+						$newformat_start_date = date('Y-m-d',$start_date);
+						$end_date = strtotime($end_date);
+						$newformat_end_date = date('Y-m-d',$end_date);
+
+						//pre($code);
+
+						$code = $info_mission->code;
+
+						$data_mission = array(
+							'name'          => $mission_name,
+							'description'   => $description,
+							'start_date'    => $newformat_start_date,
+							'end_date'      => $newformat_end_date,
+							'update_time'   => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s'),
+							'update_by'     => $now_user_id,
+							'status'        => '1',
+						);
+
+						//pre($data_mission);
+						if($this->mission_model->update($mission_edit_id,$data_mission)) {
+							$this->session->set_flashdata('message','Sửa dữ liệu thành công');
+
+							
+							$mid = $this->mission_user_model->get_info_rule($where=array('mission_id'=>$mission_edit_id,'user_id'=>$user_id));
+							pre($mid);
+
+							$mi = $mid->id;
+
+							pre($mi);
+
+							$data_mission_user = array(
+								'user_id'    => $mi,
+								'update_time'   => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s'),
+							);
+							if($this->mission_user_model->update($mi,$data_mission_user)) {
+								$this->session->set_flashdata('message','Sửa dữ liệu thành công');
+
+
+							}
+							else {
+								$this->session->set_flashdata('message','Sửa dữ liệu không thành công');
+							}
+						}
+						else {
+							$this->session->set_flashdata('message','Tạo dữ liệu không thành công');
+							redirect(base_url('project/mission/index/'.$project_id));
+						}
+					redirect(base_url('project/mission/index/'.$project_id));
+					}
+
+				}
+
+			}
+
+			$this->data_layout['temp'] = 'edit_mission';
+	    	$this->load->view('layout/main', $this->data_layout);
+
+
+		}
+		
 
 	}
 }

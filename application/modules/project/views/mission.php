@@ -227,11 +227,25 @@
 	    <div class="x_panel">
 	      <div class="x_title">
 	        <h2>Danh sách nhiệm vụ</h2>
-	        <?php if ($list_mission!=null) { ?>
-		        <?php if($account_type<4) {?>
-		        <a href="<?php echo base_url('project/mission/add_mission/'.$project_id) ?>" class="btn btn-primary btn-xs navbar-right"><i class="fa fa-folder"></i> Thêm </a>
-		        <?php }?>
-	        <?php } ?>
+	       	<ul class="nav navbar-right panel_toolbox">
+		       	<li>
+		       	<?php if ($list_mission!=null) { ?>
+			        <?php if($account_type<4) {?>
+			        <a href="<?php echo base_url('project/mission/add_mission/'.$project_id) ?>" class=""><i class="fa fa-plus-square"></i> Thêm </a>
+			        <?php }?>
+		        <?php } ?>
+		       	</li>
+		        <li class="dropdown">
+		          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+		          <ul class="dropdown-menu" role="menu">
+		            <li><a href="<?php echo base_url('project/mission/add_mission/'.$project_id.'/') ?>">Sửa</a></li>
+		            <li><a href="#">Settings 2</a></li>
+		          </ul>
+		        </li>
+		        <li><a class="close-link"><i class="fa fa-close"></i></a>
+		        </li>
+		    </ul>
+
 	        <div class="clearfix"></div>
 	      </div>
 	      <?php
@@ -255,6 +269,12 @@
 			            <div class="progress progress_sm" style="width: 80%;">
 			              <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="<?php echo $value->progress ?>"></div>
 			            </div>
+			            <?php if($account_type<4) {?>  
+			            <div class="">
+			            	<a href="<?php echo base_url('project/mission/edit_mission/'.$project_id.'/'.$value->id.'/') ?>">Sửa</a>
+			            </div>
+			            <?php }?>
+			            <div class="ln_solid"></div>
 			          </div>
 			        </div>
 	      			<?php
