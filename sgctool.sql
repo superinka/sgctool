@@ -3,9 +3,9 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 02, 2017 at 08:34 AM
--- Server version: 10.1.19-MariaDB
--- PHP Version: 5.6.28
+-- Generation Time: Jan 02, 2017 at 03:30 PM
+-- Server version: 10.1.13-MariaDB
+-- PHP Version: 5.6.23
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -115,8 +115,9 @@ CREATE TABLE `tb_mission` (
 --
 
 INSERT INTO `tb_mission` (`id`, `name`, `description`, `create_by`, `create_date`, `update_time`, `progress`, `project_id`, `status`, `start_date`, `end_date`, `code`, `update_by`) VALUES
-(12, 'Vẽ con gà', 'ahihi', 46, '2016-12-30', '2016-12-30 15:13:24.000000', 0, 20, 1, '2016-12-30', '2016-12-30', '20596f932feb74cd842311e6b26dd5d09f', 46),
-(13, 'Vẽ con chó', 'Dự án vườn treo', 46, '2016-12-30', '2016-12-31 11:22:20.000000', 0, 20, 1, '2016-12-30', '2016-12-30', '20bd2bc19194002ef15f767fa9f989ff9c', 46);
+(12, 'Vẽ con gà', 'ahihi', 46, '2016-12-30', '2017-01-02 17:56:11.000000', 70, 20, 1, '2016-12-30', '2016-12-30', '20596f932feb74cd842311e6b26dd5d09f', 1),
+(13, 'Vẽ con chó', 'Dự án vườn treo', 46, '2016-12-30', '2017-01-02 20:41:40.000000', 50, 20, 1, '2016-12-30', '2016-12-30', '20bd2bc19194002ef15f767fa9f989ff9c', 1),
+(14, 'Vẽ con trâu', '', 1, '2017-01-02', '2017-01-02 20:45:43.000000', 0, 20, 1, '2017-01-02', '2017-01-02', '201350fa0e60b5f469f67d6b47f38aa42ab1eb', 1);
 
 -- --------------------------------------------------------
 
@@ -136,8 +137,9 @@ CREATE TABLE `tb_mission_user` (
 --
 
 INSERT INTO `tb_mission_user` (`id`, `mission_id`, `user_id`, `update_time`) VALUES
-(2, 12, 46, '2016-12-30 15:13:24.000000'),
-(3, 13, 49, '2016-12-30 15:26:08.000000');
+(2, 12, 51, '2017-01-02 15:00:05.000000'),
+(3, 13, 47, '2017-01-02 20:41:40.000000'),
+(4, 14, 47, '2017-01-02 20:45:43.000000');
 
 -- --------------------------------------------------------
 
@@ -166,7 +168,7 @@ CREATE TABLE `tb_project` (
 --
 
 INSERT INTO `tb_project` (`id`, `project_name`, `description`, `create_date`, `create_by`, `start_date`, `end_date`, `status`, `department_id`, `progress`, `update_by`, `update_time`, `short_name`) VALUES
-(20, 'Babylon', 'Dự án vườn treo', '2016-12-30', 1, '2016-12-30', '2016-12-30', '1', NULL, 10, 1, '2016-12-30 09:27:30.000000', 'B');
+(20, 'Babylon', 'Dự án vườn treo', '2016-12-30', 1, '2016-12-30', '2016-12-30', '1', NULL, 10, 1, '2017-01-02 20:40:38.000000', 'B');
 
 -- --------------------------------------------------------
 
@@ -189,7 +191,8 @@ CREATE TABLE `tb_project_user` (
 INSERT INTO `tb_project_user` (`id`, `des`, `project_id`, `user_id`, `update_time`) VALUES
 (101, NULL, 20, 48, '2016-12-30 09:27:30.000000'),
 (102, NULL, 20, 49, '2016-12-30 09:27:30.000000'),
-(103, NULL, 20, 51, '2016-12-30 09:27:30.000000');
+(103, NULL, 20, 51, '2016-12-30 09:27:30.000000'),
+(104, NULL, 20, 47, '2017-01-02 20:40:38.000000');
 
 -- --------------------------------------------------------
 
@@ -210,8 +213,9 @@ CREATE TABLE `tb_proportion_department` (
 --
 
 INSERT INTO `tb_proportion_department` (`id`, `department_id`, `project_id`, `proportion`, `update_time`) VALUES
-(36, 12, 20, 30, '2016-12-30 09:27:30.000000'),
-(37, 8, 20, 70, '2016-12-30 09:27:30.000000');
+(36, 12, 20, 10, '2016-12-30 09:27:30.000000'),
+(37, 8, 20, 40, '2016-12-30 09:27:30.000000'),
+(38, 9, 20, 50, '2017-01-02 20:40:38.000000');
 
 -- --------------------------------------------------------
 
@@ -240,6 +244,44 @@ INSERT INTO `tb_role` (`id`, `user_id`, `department_id`, `desciption`) VALUES
 (69, 49, 8, ''),
 (70, 50, 10, ''),
 (71, 51, 8, '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tb_task`
+--
+
+CREATE TABLE `tb_task` (
+  `id` int(32) NOT NULL,
+  `name` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+  `description` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `create_by` int(8) NOT NULL,
+  `create_date` date NOT NULL,
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
+  `status` int(8) NOT NULL,
+  `mission_id` int(11) NOT NULL,
+  `code` text COLLATE utf8_unicode_ci NOT NULL,
+  `project_id` int(8) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `tb_task`
+--
+
+INSERT INTO `tb_task` (`id`, `name`, `description`, `create_by`, `create_date`, `start_date`, `end_date`, `status`, `mission_id`, `code`, `project_id`) VALUES
+(1, 'Móng con gà', 'Vẽ móng con gà', 51, '2017-01-02', '2017-01-02', '2017-01-02', 100, 12, '20120366e97d601bfae7442743f0880c2b55', 20),
+(2, 'Đầu con gà', 'Vẽ đầu con gà', 51, '2017-01-02', '2017-01-02', '2017-01-02', 100, 12, '201226dc3ca8b3f76c1aacc7aa64fd9d7ea0', 20),
+(3, 'Vẽ cánh con gà', 'Vẽ cánh con gà', 51, '2017-01-02', '2017-01-02', '2017-01-03', 0, 12, '2012aca3ed1458b1b0ad68b0f0ba69a545f5', 20),
+(4, 'Vẽ đùi con gà', 'Vẽ đùi gà', 51, '2017-01-02', '2017-01-02', '2017-01-02', 100, 12, '201270b5e1750de1e3ac8fea9428859e8ace', 20),
+(5, 'Vẽ đuôi con gà', 'Vẽ đuôi gà', 51, '2017-01-02', '2017-01-02', '2017-01-02', 0, 12, '2012a9ba291fdf14597b1b6a4e12136acfbe', 20),
+(6, 'Vẽ mỏ con gà', 'Vẽ mỏ gà', 51, '2017-01-02', '2017-01-02', '2017-01-02', 0, 12, '2012c855020442a6d26ae4f1e7a98c560c8f', 20),
+(7, 'Đầu con gà', 'Dự án babylon', 51, '2017-01-02', '2017-01-02', '2017-01-02', 100, 12, '2012d4e1111c77dabb8e17e05890b5b5e92d', 20),
+(8, 'Móng con gà', 'Dự án babylon', 51, '2017-01-02', '2017-01-02', '2017-01-02', 100, 12, '2012f246ef536f660d27172e7cb9834f9af3', 20),
+(9, 'Vẽ lại con gà', 'Vẽ móng con gà', 51, '2017-01-02', '2017-01-02', '2017-01-02', 100, 12, '2012e5c3e53011bb768c24eac4602096a063', 20),
+(10, 'Vẽ bụng con gà', 'vẽ bụng gà', 51, '2017-01-02', '2017-01-02', '2017-01-02', 100, 12, '20128fe13fef504c55842aaffb31088c4f47', 20),
+(11, 'Vẽ đầu con chó', 'Vẽ đầu chó', 47, '2017-01-02', '2017-01-02', '2017-01-02', 100, 13, '20135dd40edef059a5d93f4ad7c209267fda', 20),
+(12, 'Vẽ chân chó', 'Vẽ chân chó', 47, '2017-01-02', '2017-01-02', '2017-01-02', 0, 13, '2013d909a02739aca3a41965e9a5b828fb6a', 20);
 
 -- --------------------------------------------------------
 
@@ -326,6 +368,12 @@ ALTER TABLE `tb_role`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `tb_task`
+--
+ALTER TABLE `tb_task`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `tb_user`
 --
 ALTER TABLE `tb_user`
@@ -349,12 +397,12 @@ ALTER TABLE `tb_employee`
 -- AUTO_INCREMENT for table `tb_mission`
 --
 ALTER TABLE `tb_mission`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 --
 -- AUTO_INCREMENT for table `tb_mission_user`
 --
 ALTER TABLE `tb_mission_user`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT for table `tb_project`
 --
@@ -364,17 +412,22 @@ ALTER TABLE `tb_project`
 -- AUTO_INCREMENT for table `tb_project_user`
 --
 ALTER TABLE `tb_project_user`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=104;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
 --
 -- AUTO_INCREMENT for table `tb_proportion_department`
 --
 ALTER TABLE `tb_proportion_department`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 --
 -- AUTO_INCREMENT for table `tb_role`
 --
 ALTER TABLE `tb_role`
   MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
+--
+-- AUTO_INCREMENT for table `tb_task`
+--
+ALTER TABLE `tb_task`
+  MODIFY `id` int(32) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 --
 -- AUTO_INCREMENT for table `tb_user`
 --
