@@ -1,4 +1,5 @@
 <div style="color:red; font-weight:600"><?php echo validation_errors(); ?></div>
+<?php //pre($list_proportion_department); ?>
 <div class="row">
 	<div class="col-md-9">
 	<form method="post" action="">
@@ -9,7 +10,7 @@
 		    	<span class="required">*</span>
 		    </label>
 		    <div class="col-md-4 col-sm-4 col-xs-12">
-		      <input id="<?php echo $key ?>" name="room[<?php echo $key ?>]" value="<?php ?>" class="form-control col-md-7 col-xs-12" required="required" type="text">
+		      <input id="<?php echo $key ?>" name="room[<?php echo $key ?>]" value="<?php $value ?>" class="form-control col-md-7 col-xs-12" required="required" type="text">
 		    </div>
 		</div>
 		</div>		

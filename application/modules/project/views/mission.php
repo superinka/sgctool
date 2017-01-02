@@ -1,8 +1,9 @@
 <?php //pre($list_emp); ?>
+<?php //pre($list_mission); ?>
 <?php if ($message){$this->load->view('layout/message',$this->data_layout); }?>
 <div class="row">
   <div class="col-md-3 col-xs-12 widget widget_tally_box">
-    <div class="x_panel ui-ribbon-container fixed_height_390">
+    <div class="x_panel ui-ribbon-container fixed_height_690">
       <div class="ui-ribbon-wrapper">
         <div class="ui-ribbon">
           <?php echo check_status_project($info_project->status) ?>
@@ -33,7 +34,7 @@
     </div>
   </div>
   <div class="col-md-6 col-sm-6 col-xs-12">
-	  <div class="x_panel tile fixed_height_390 overflow_hidden">
+	  <div class="x_panel tile fixed_height_690 overflow_hidden">
 	    <div class="x_title">
 	      <h2>Cơ cấu dự án</h2>
 	      <ul class="nav navbar-right panel_toolbox">
@@ -48,6 +49,7 @@
 	      <div class="clearfix"></div>
 	    </div>
 	    <div class="x_content">
+	    <div class="row">
 	      <?php if($list_emp==null) { ?>
 	      	<p>Không có dữ liệu</p>
 	      	<a href="http://localhost/sgctool/home/acc/add">
@@ -156,12 +158,34 @@
 	      	</a>
 	      	<?php }?>
 	    </div>
+	    <div class="row">
+	    <?php if($list_emp!=null){ ?>
+	    	<h2>Tiến độ phòng ban</h2>
+	    	<?php 
+	    	foreach ($list_emp['room-member'] as $k=>$v) {
+	  			?>
+	  			<div>
+		          <p><?php echo $v ?></a> - <?php  ?> %</p>
+		          <div class="">
+		            <div class="progress progress_sm" style="width: 80%;">
+		              <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="<?php echo $value->progress ?>"></div>
+		            </div>
+		            <div class="ln_solid"></div>
+		          </div>
+		        </div>
+	  			<?php
+	      	}
+	    	?>
+
+	    <?php }?>
+	    </div>
+	    </div>
 	  </div>
 	</div>
 	    <!-- Doughnut Chart -->
 	    <!-- jQuery -->
 	 <div class="col-md-3 col-sm-12 col-xs-12">
-	  <div class="x_panel fixed_height_390">
+	  <div class="x_panel fixed_height_690">
 	    <div class="x_title">
 	      <h2>Thành viên dự án : <?php echo $total_member; ?></h2>
 	      <ul class="nav navbar-right panel_toolbox">
@@ -264,7 +288,51 @@
 	      			
 	      			?>
 	      			<div>
-			          <p><a href="<?php echo base_url('project/mission/view_detail/'.$value->id) ?>"><?php echo $value->name ?></a></p>
+			          <p><a href="<?php echo base_url('project/mission/view_detail/'.$project_id.'/'.$value->id) ?>"><?php echo $value->name ?></a> - <?php echo $value->progress ?> %</p>
+			          <div class="">
+			            <div class="progress progress_sm" style="width: 80%;">
+			              <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="<?php echo $value->progress ?>"></div>
+			            </div>
+			            <?php if($account_type<4) {?>  
+			            <div class="">
+			            	<a href="<?php echo base_url('project/mission/edit_mission/'.$project_id.'/'.$value->id.'/') ?>">Sửa</a>
+			            </div>
+			            <?php }?>
+			            <div class="ln_solid"></div>
+			          </div>
+			        </div>
+	      			<?php
+	      		}
+	      	}
+	      ?>
+	      
+	    </div>
+    </div>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+	    <div class="x_panel">
+	      <div class="x_title">
+	        <h2>Tiến độ phòng ban</h2>
+
+
+	        <div class="clearfix"></div>
+	      </div>
+	      <?php
+	      	if($list_mission==null) {
+	      		?>
+	      		<p>Không có dữ liệu</p>
+	      		<?php if($account_type<4) {?>  
+			      	<a href="<?php echo base_url('project/mission/add_mission/'.$project_id) ?>">
+			      	<button type="button" class="btn btn-primary"><i class="fa fa-plus"></i> ADD</button>
+			      	</a>
+		      	<?php }?>
+	      		<?php
+	      	}
+	      	else if ($list_mission!=null) {
+	      		foreach ($list_mission as $key => $value) {
+	      			
+	      			?>
+	      			<div>
+			          <p><a href="<?php echo base_url('project/mission/view_detail/'.$project_id.'/'.$value->id) ?>"><?php echo $value->name ?></a> - <?php echo $value->progress ?> %</p>
 			          <div class="">
 			            <div class="progress progress_sm" style="width: 80%;">
 			              <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="<?php echo $value->progress ?>"></div>

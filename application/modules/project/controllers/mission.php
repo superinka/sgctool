@@ -52,90 +52,163 @@ Class Mission extends MY_Controller {
 		$info_project = $this->project_model->get_info($project_id);
 		$this->data_layout['info_project'] = $info_project;
 
-		//$info_proportion_department = $this->proportion_department_model->get_info($project_id);
+		if(!$info_project) {
+			$this->session->set_flashdata('message','Không tồn tại dữ liệu');
+			redirect(base_url('project/index'));	
+		}
+		else {
+			//$info_proportion_department = $this->proportion_department_model->get_info($project_id);
 
-		//pre($info_project);
+			//pre($info_project);
 
-		$list_emp = $this->project_user_model->get_columns('tb_project_user',$where=array('project_id'=>$project_id));
-		$list_proportion_department = $this->proportion_department_model->get_columns('tb_proportion_department',$where=array('project_id'=>$project_id));
+			$list_emp = $this->project_user_model->get_columns('tb_project_user',$where=array('project_id'=>$project_id));
+			$list_proportion_department = $this->proportion_department_model->get_columns('tb_proportion_department',$where=array('project_id'=>$project_id));
 
-		//$department_id = $this->get_column('tb_department', 'id',$where=array('name'=>$department_name));
+			//$department_id = $this->get_column('tb_department', 'id',$where=array('name'=>$department_name));
 
-		//$users_id = $this->get_column('tb_role', 'user_id',$where=array('department_id'=>$department_id[0]->department_id));
-		$total_member = 0;
+			//$users_id = $this->get_column('tb_role', 'user_id',$where=array('department_id'=>$department_id[0]->department_id));
+			$total_member = 0;
 
-		if ($list_emp!=null) {
-				foreach ($list_emp as $k => $v) {
+			$check = true;
+			if ($list_emp!=null) {
+					foreach ($list_emp as $k => $v) {
 
-				$emp_name = $this->home_model->get_column('tb_employee', 'fullname',$where=array('user_id'=>$v->user_id));
-				$info_role = $this->role_model->get_column('tb_role', 'department_id',$where=array('user_id'=>$v->user_id));
-				$info_room = $this->department_model->get_info($info_role[0]->department_id);
+					$emp_name = $this->home_model->get_columns('tb_employee',$where=array('user_id'=>$v->user_id));
+					$info_role = $this->role_model->get_column('tb_role', 'department_id',$where=array('user_id'=>$v->user_id));
+					$info_room = $this->department_model->get_info($info_role[0]->department_id);
 
-				$list_emp['member'][] =  array($emp_name[0]->fullname,  $info_room->name);
+					
 
-				$list_emp['room-member'][] = $info_room->name;
-				$list_emp['room-member'] = array_unique($list_emp['room-member']);
-				$list_emp['room-member'] = array_values($list_emp['room-member']);
+					$list_emp['member'][] =  array($emp_name[0]->fullname,$emp_name[0]->user_id,$info_room->name);
 
+					$all_mission_by_id = $this->mission_user_model->get_columns('tb_mission_user',$where=array('user_id'=>$emp_name[0]->user_id));
+					foreach ($all_mission_by_id as $ke => $va) {
+						# code...
+						$mission_by_project = $this->mission_model->get_columns('tb_mission',$where=array('id'=>$va->mission_id));
 
-				$users_id = $this->role_model->get_column('tb_role', 'user_id',$where=array('department_id'=>$info_role[0]->department_id));
-					foreach ($users_id as $k => $v) {
-						$info_user = $this->acc_model->get_info($v->user_id);
-						if ($info_user->account_type==3) {
-							$name = $this->home_model->get_column('tb_employee', 'fullname',$where=array('user_id'=>$info_user->id));
-							$info_user->fullname = $name[0]->fullname;
-							$list_emp['leader'][] = $name[0]->fullname;
-							$list_emp['room-leader'][] = $info_room->name;
-							$list_emp['room-leader'] = array_unique($list_emp['room-leader']);
-							$list_emp['leader'] = array_unique($list_emp['leader']);
+						if($mission_by_project!=null) {
+							$list_emp['member'][$k]['mission'][$ke]['name'] = $mission_by_project[0]->name;
+							$list_emp['member'][$k]['mission'][$ke]['progress'] = $mission_by_project[0]->progress;
 						}
+
+						
 					}
 
-				}
 
-				$total_member =  count($list_emp['leader']) + count($list_emp['member']);
-				$total_room = count($list_emp['room-member']);
 
-				$proportion = $this->proportion_department_model->get_columns('tb_proportion_department',$where=array('project_id'=>$project_id));
-				//pre($proportion);
-				if ($proportion==null) {$check =true;}
-				if($proportion!=null) {$check=false;}
-				foreach ($list_emp['room-member'] as $k => $v) {
-					//echo $v['name'];
+					$list_emp['room-member'][] = $info_room->name;
+					$list_emp['room-member'] = array_unique($list_emp['room-member']);
+					$list_emp['room-member'] = array_values($list_emp['room-member']);
+
+
+					$users_id = $this->role_model->get_column('tb_role', 'user_id',$where=array('department_id'=>$info_role[0]->department_id));
+						foreach ($users_id as $k => $v) {
+							$info_user = $this->acc_model->get_info($v->user_id);
+							if ($info_user->account_type==3) {
+								$name = $this->home_model->get_column('tb_employee', 'fullname',$where=array('user_id'=>$info_user->id));
+								$info_user->fullname = $name[0]->fullname;
+								$list_emp['leader'][] = $name[0]->fullname;
+								$list_emp['room-leader'][] = $info_room->name;
+								$list_emp['room-leader'] = array_unique($list_emp['room-leader']);
+								$list_emp['leader'] = array_unique($list_emp['leader']);
+							}
+						}
+
+					}
+
+					
+					$list_room_by_project = array();
+					//
+					//pre($list_room_by_project);
+
+					$total_member =  count($list_emp['leader']) + count($list_emp['member']);
+					$total_room = count($list_emp['room-member']);
+
+					$proportion = $this->proportion_department_model->get_columns('tb_proportion_department',$where=array('project_id'=>$project_id));
 					//pre($proportion);
-					//echo 100/$total_room;
-					$list_emp['room-color'][$k] = color_room($v);
-					if ($proportion==null) {$list_emp['proportion-room'][$k] = (100/$total_room);}
-					else {
-						if($proportion[$k]){
-							$list_emp['proportion-room'][$k] = $proportion[$k]->proportion;
-						}
+					if ($proportion==null) {$check =true;}
+					if($proportion!=null) {$check=false;}
+					foreach ($list_emp['room-member'] as $k => $v) {
+						//echo $v['name'];
+						//pre($proportion);
+						//echo 100/$total_room;
+						$list_emp['room-color'][$k] = color_room($v);
+						if ($proportion==null) {$list_emp['proportion-room'][$k] = (100/$total_room);}
 						else {
-							$list_emp['proportion-room'][$k] = 0;
-							$proportion[$k] = array();
+							if($proportion[$k]){
+								$list_emp['proportion-room'][$k] = $proportion[$k]->proportion;
+								$list_room_by_project[$k]['proportion']  = $list_emp['proportion-room'][$k];
+
+							}
+							else {
+								$list_emp['proportion-room'][$k] = 0;
+								$list_room_by_project[$k]['proportion'] = 0;
+								$proportion[$k] = array();
+							}
 						}
+
+
 					}
-				}
-				//pre($proportion);
+
+					foreach ($list_emp['room-member'] as $key => $value) {
+						$list_room_by_project[$key]['name'] = $value;
+						$list_room_by_project[$key]['score'] =0;
+						$score = 0;
+
+						for ($i=0; $i < count($list_emp['member']) ; $i++) { 
+							if(($value == $list_emp['member'][$i][2]) && ((array_key_exists('mission',$list_emp['member'][$i]))) ) {
+								$list_room_by_project[$key]['mission'] = $list_emp['member'][$i]['mission'];
+								$count_mission = count($list_emp['member'][$i]['mission']);
+								//echo $count_mission;
+
+							}
+						}
+
+					}
+
+					$score =0;
+
+					foreach ($list_room_by_project as $key => $value) {
+						# code...
+						if(array_key_exists('mission',$value)) {
+							$count_mission = count($value['mission']);
+							foreach ($value['mission'] as $k => $v) {
+								# code...
+								$a = intval($v['progress']);
+								$score = $score + (1/$count_mission*100/$a);
+							}
+							$list_room_by_project[$key]['score'] =$score;
+						}
+
+					}
+					//pre($proportion);
+					//pre($list_emp);
+					pre($list_room_by_project);
+
+
+
+			}
+
+
+			$list_mission = $this->mission_model->get_columns('tb_mission',$where=array('project_id'=>$project_id,'status'=>'1'));
+
+			//pre($list_mission);
+
+			$this->data_layout['list_mission'] = $list_mission;
+
+
+			//pre($list_emp);
+
+			//echo $total_room;
+			$this->data_layout['check'] = $check;
+			$this->data_layout['total_member'] = $total_member;
+			//$this->data_layout['total_room'] = $total_room;
+
+			$this->data_layout['list_emp'] = $list_emp;
 
 		}
 
-
-		$list_mission = $this->mission_model->get_columns('tb_mission',$where=array('project_id'=>$project_id,'status'=>'1'));
-
-		//pre($list_mission);
-
-		$this->data_layout['list_mission'] = $list_mission;
-
-
-		//pre($list_emp);
-
-		//echo $total_room;
-		$this->data_layout['check'] = $check;
-		$this->data_layout['total_member'] = $total_member;
-		//$this->data_layout['total_room'] = $total_room;
-
-		$this->data_layout['list_emp'] = $list_emp;
+		
 
 		$this->data_layout['temp'] = 'mission';
 	    $this->load->view('layout/main', $this->data_layout);
@@ -700,18 +773,77 @@ Class Mission extends MY_Controller {
 
 		$message = $this->session->flashdata('message');
 	    $this->data_layout['message'] = $message;
-		
-		//lay id du an can sua
-		$mission_id = $this->uri->segment(4);
-		$mission_id = intval($mission_id);
-		$this->data_layout['mission_id'] = $mission_id;
 
-		$info_mission = $this->mission_model->get_info($mission_id);
+	    $now_user_id = $this->data_layout['id'];
+	    $account_type = $this->data_layout['account_type'];
+	    $this->data_layout['now_user_id'] = $now_user_id;
+		
+		//lay id du an và mission cần sửa
+		$mission_view_id = $this->uri->segment(5);
+		$mission_view_id = intval($mission_view_id);
+
+		$project_id = $this->uri->segment(4);
+		$project_id = intval($project_id);
+		$this->data_layout['project_id'] = $project_id;
+		$info_project = $this->project_model->get_info($project_id);
+		$this->data_layout['info_project'] = $info_project;
+
+		$this->data_layout['mission_view_id'] = $mission_view_id;
+
+		$info_mission = $this->mission_model->get_info($mission_view_id);
 		$this->data_layout['info_mission'] = $info_mission;
 
+		//pre($info_mission);
 
-		$list_task = null;
+		if(!$info_mission) {
+			$this->session->set_flashdata('message','Không tồn tại thông tin nhiệm vụ');
+			redirect(base_url('project/mission/index/'.$project_id));
+		}
+
+		else {
+			$info_mission_employee = $this->mission_user_model->get_columns('tb_mission_user',$where=array('mission_id'=>$mission_view_id));
+			$mission_user_id = $info_mission_employee[0]->user_id;
+			$mission_user_info = $this->home_model->get_columns('tb_employee',$where=array('user_id'=>$mission_user_id));
+			$mission_user_name = $mission_user_info[0]->fullname;
+			$mission_user_id = $mission_user_info[0]->user_id;
+			$info_mission->mission_user_name = $mission_user_name;
+			$info_mission->mission_user_id = $mission_user_id;
+			//pre($info_mission);
+		}
+
+
+		$list_task = $this->task_model->get_columns('tb_task',$where=array('mission_id'=>$mission_view_id));;
 		$this->data_layout['list_task'] = $list_task;
+
+		$input = array();
+		$input['where']['mission_id'] = $mission_view_id;
+		$input['where']['create_by'] = $info_mission->mission_user_id;
+		$count_task = $this->task_model->get_total($input);
+		if($count_task==0) {
+			$progress_task = 0;
+		}
+
+		$input_success = array();
+		$input_success['where']['mission_id'] = $mission_view_id;
+		$input_success['where']['create_by'] = $info_mission->mission_user_id;
+		$input_success['where']['status'] = 100;
+		$count_task_success = $this->task_model->get_total($input_success);
+
+		if($count_task_success==0) {
+			$progress_task = 0;
+		}
+
+		if($count_task>0 && $count_task_success>0) {
+			$progress_task = (round($count_task_success/$count_task,2)*100);
+		}
+
+		
+		
+
+		$this->data_layout['progress_task'] = $progress_task;
+
+
+		$this->data_layout['count_task'] = $count_task;
 
 		$this->data_layout['temp'] = 'view_detail';
 	    $this->load->view('layout/main', $this->data_layout);
@@ -726,6 +858,7 @@ Class Mission extends MY_Controller {
 
 	    $now_user_id = $this->data_layout['id'];
 	    $account_type = $this->data_layout['account_type'];
+	    $project_id = $this->uri->segment(4);
 
 	    if ($account_type > 3) {
 			$this->session->set_flashdata('message','Bạn không đủ quyền hạn');
@@ -736,9 +869,8 @@ Class Mission extends MY_Controller {
 			//lay id du an can sua
 			$mission_edit_id = $this->uri->segment(5);
 			$mission_edit_id = intval($mission_edit_id);
-			$project_id = $this->uri->segment(4);
 			$project_id = intval($project_id);
-			$this->data_layout['mission_id'] = $mission_id;
+			$this->data_layout['mission_id'] = $mission_edit_id;
 
 			//echo $mission_id;
 
@@ -807,7 +939,10 @@ Class Mission extends MY_Controller {
 					}
 				}
 
-				pre($list_department_employee);
+				//pre($list_department_employee);
+				$mid = $this->mission_user_model->get_info_rule($where=array('mission_id'=>$mission_edit_id));
+				//pre($mid);
+				$old_user_id = $mid->user_id;
 
 				$this->data_layout['list_department_employee'] = $list_department_employee;
 				if($this->input->post()){
@@ -826,7 +961,7 @@ Class Mission extends MY_Controller {
 						$start_date = $this->input->post('start_date');
 						$end_date = $this->input->post('end_date');
 
-						$mission_user_id = $this->input->post('mission_user');
+						$new_user_id = $this->input->post('mission_user');
 
 						$start_date = strtotime($start_date);
 						$newformat_start_date = date('Y-m-d',$start_date);
@@ -834,6 +969,7 @@ Class Mission extends MY_Controller {
 						$newformat_end_date = date('Y-m-d',$end_date);
 
 						//pre($code);
+
 
 						$code = $info_mission->code;
 
@@ -851,26 +987,32 @@ Class Mission extends MY_Controller {
 						if($this->mission_model->update($mission_edit_id,$data_mission)) {
 							$this->session->set_flashdata('message','Sửa dữ liệu thành công');
 
-							
-							$mid = $this->mission_user_model->get_info_rule($where=array('mission_id'=>$mission_edit_id,'user_id'=>$user_id));
-							pre($mid);
 
-							$mi = $mid->id;
+							//pre($mi);
 
-							pre($mi);
-
-							$data_mission_user = array(
-								'user_id'    => $mi,
-								'update_time'   => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s'),
-							);
-							if($this->mission_user_model->update($mi,$data_mission_user)) {
+							if ($old_user_id == $new_user_id) {
 								$this->session->set_flashdata('message','Sửa dữ liệu thành công');
-
+								redirect(base_url('project/mission/index/'.$project_id));
 
 							}
+
 							else {
-								$this->session->set_flashdata('message','Sửa dữ liệu không thành công');
+								$data_mission_user = array(
+									'user_id'    => $new_user_id,
+									'update_time'   => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s'),
+								);
+								if($this->mission_user_model->update_rule($where=array('mission_id'=>$mission_edit_id),$data_mission_user)) {
+									$this->session->set_flashdata('message','Sửa dữ liệu thành công');
+
+
+								}
+								else {
+									$this->session->set_flashdata('message','Sửa dữ liệu không thành công');
+								}								
+
 							}
+
+							
 						}
 						else {
 							$this->session->set_flashdata('message','Tạo dữ liệu không thành công');
@@ -889,6 +1031,153 @@ Class Mission extends MY_Controller {
 
 		}
 		
+
+	}
+
+	function add_task(){
+
+		$now_user_id = $this->data_layout['id'];
+	    $account_type = $this->data_layout['account_type'];
+	    $project_id = $this->uri->segment(4);
+	    $project_id = intval($project_id);
+	    $mission_id = $this->uri->segment(5);
+	    $mission_id = intval($mission_id);
+
+	    $info_project = $this->project_model->get_info($project_id);
+		$this->data_layout['info_project'] = $info_project;
+
+		if(!$info_project) {
+			$this->session->set_flashdata('message','Không tồn tại dữ liệu');
+			redirect(base_url('project/mission/view_detail/'.$project_id.'/'.$mission_id));
+		}
+
+		else {
+			if ($account_type < 4 ) {
+				$this->session->set_flashdata('message','Bạn không đủ quyền hạn');
+				redirect(base_url('project/mission/view_detail/'.$project_id.'/'.$mission_id));
+			}
+
+			else if($account_type == 4) {
+
+				$info_mission = $this->mission_model->get_info($mission_id);
+				$this->data_layout['info_mission'] = $info_mission;
+
+				if(!$info_mission) {
+					$this->session->set_flashdata('message','Không tồn tại thông tin nhiệm vụ');
+					redirect(base_url('project/mission/index/'.$project_id));
+				}
+				else {
+					$info_mission_employee = $this->mission_user_model->get_columns('tb_mission_user',$where=array('mission_id'=>$mission_id));
+					//pre($info_mission_employee);
+					$mission_user_id = $info_mission_employee[0]->user_id;
+					$mission_user_info = $this->home_model->get_columns('tb_employee',$where=array('user_id'=>$mission_user_id));
+					$mission_user_name = $mission_user_info[0]->fullname;
+					$mission_user_id = $mission_user_info[0]->user_id;
+					$info_mission->mission_user_name = $mission_user_name;
+					$info_mission->mission_user_id = $mission_user_id;
+
+					//pre($info_mission);
+
+					if ($now_user_id != $info_mission->mission_user_id ) {
+						$this->session->set_flashdata('message','Bạn không đủ quyền hạn');
+						redirect(base_url('project/mission/view_detail/'.$project_id.'/'.$mission_id));
+					}
+
+					else {
+						if($this->input->post()){
+							$this->form_validation->set_rules('task_name', 'Tên nhiệm vụ', 'trim');
+							$this->form_validation->set_rules('description', 'description', 'trim');
+							
+							$this->form_validation->set_rules('start_date', 'Ngày bắt đầu');
+							$this->form_validation->set_rules('end_date', 'Ngày kết thúc');
+							$this->form_validation->set_rules('status','Tiến độ');
+
+							if($this->form_validation->run()){
+								$task_name = $this->input->post('task_name');
+								$description = $this->input->post('description');
+								$start_date = $this->input->post('start_date');
+								$end_date = $this->input->post('end_date');
+								$status = $this->input->post('status');
+								$code = $this->input->post('code_task');
+
+
+								$start_date = strtotime($start_date);
+								$newformat_start_date = date('Y-m-d',$start_date);
+								$end_date = strtotime($end_date);
+								$newformat_end_date = date('Y-m-d',$end_date);
+
+								$data_task = array(
+									'name'          => $task_name,
+									'description'   => $description,
+									'start_date'    => $newformat_start_date,
+									'end_date'      => $newformat_end_date,
+									'create_by'     => $now_user_id,
+									'create_date'   => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d'),
+									'status'        => $status,
+									'mission_id'    => $mission_id,
+									'project_id'    => $project_id,
+									'code'          => $code
+								);
+
+								//pre($data_task);
+
+								if($this->task_model->create($data_task)) {
+									
+										$input = array();
+										$input['where']['mission_id'] = $mission_id;
+										$input['where']['create_by'] = $info_mission->mission_user_id;
+										$count_task = $this->task_model->get_total($input);
+										if($count_task==0) {
+											$progress_task = 0;
+										}
+
+										$input_success = array();
+										$input_success['where']['mission_id'] = $mission_id;
+										$input_success['where']['create_by'] = $info_mission->mission_user_id;
+										$input_success['where']['status'] = 100;
+										$count_task_success = $this->task_model->get_total($input_success);
+
+										if($count_task_success==0) {
+											$progress_task = 0;
+										}
+
+										if($count_task>0 && $count_task_success>0) {
+											$progress_task = (round($count_task_success/$count_task,2)*100);
+										}
+
+										$data_mission_new = array('progress' => $progress_task);
+										//pre($data_mission_new);
+										if($this->mission_model->update($mission_id,$data_mission_new)){
+											$this->session->set_flashdata('message','Tạo dữ liệu thành công');
+
+										}
+										else {
+											$this->session->set_flashdata('message','Tạo dữ liệu không thành công');
+											redirect(base_url('project/mission/view_detail/'.$project_id.'/'.$mission_id));
+										}
+
+
+								}
+
+								else {
+									$this->session->set_flashdata('message','Tạo dữ liệu không thành công');
+								}
+							redirect(base_url('project/mission/view_detail/'.$project_id.'/'.$mission_id));
+
+							} 
+						}
+					}				
+				}
+
+			}
+
+		}
+
+
+
+
+		$this->data_layout['temp'] = 'add_task';
+	    $this->load->view('layout/main', $this->data_layout);
 
 	}
 }
