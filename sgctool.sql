@@ -3,9 +3,9 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 02, 2017 at 03:30 PM
--- Server version: 10.1.13-MariaDB
--- PHP Version: 5.6.23
+-- Generation Time: Jan 03, 2017 at 11:38 AM
+-- Server version: 10.1.19-MariaDB
+-- PHP Version: 5.6.28
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -19,6 +19,36 @@ SET time_zone = "+00:00";
 --
 -- Database: `sgctool`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tb_daily_report`
+--
+
+CREATE TABLE `tb_daily_report` (
+  `id` int(32) NOT NULL,
+  `create_by` int(8) NOT NULL,
+  `create_time` datetime(6) NOT NULL,
+  `status` int(8) NOT NULL DEFAULT '1',
+  `task_id` int(8) NOT NULL,
+  `update_time` datetime(6) NOT NULL,
+  `description` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
+  `code` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
+  `time_spend` int(8) NOT NULL,
+  `progress` int(8) NOT NULL,
+  `review_by` int(8) DEFAULT NULL,
+  `review_status` int(8) DEFAULT NULL,
+  `create_date` date NOT NULL,
+  `note` text COLLATE utf8_unicode_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `tb_daily_report`
+--
+
+INSERT INTO `tb_daily_report` (`id`, `create_by`, `create_time`, `status`, `task_id`, `update_time`, `description`, `code`, `time_spend`, `progress`, `review_by`, `review_status`, `create_date`, `note`) VALUES
+(1, 47, '2017-01-03 00:00:00.000000', 1, 1, '2017-01-03 00:00:00.000000', 'report hôm nay', '1', 8, 1, 1, 0, '2017-01-03', NULL);
 
 -- --------------------------------------------------------
 
@@ -168,7 +198,8 @@ CREATE TABLE `tb_project` (
 --
 
 INSERT INTO `tb_project` (`id`, `project_name`, `description`, `create_date`, `create_by`, `start_date`, `end_date`, `status`, `department_id`, `progress`, `update_by`, `update_time`, `short_name`) VALUES
-(20, 'Babylon', 'Dự án vườn treo', '2016-12-30', 1, '2016-12-30', '2016-12-30', '1', NULL, 10, 1, '2017-01-02 20:40:38.000000', 'B');
+(20, 'Babylon', 'Dự án vườn treo', '2016-12-30', 1, '2016-12-30', '2016-12-30', '1', NULL, 10, 1, '2017-01-03 11:00:44.000000', 'B'),
+(21, 'Babylon 2', 'version 2', '2017-01-03', 1, '2017-01-03', '2017-01-03', '1', NULL, 10, 1, '2017-01-03 12:37:15.000000', 'BB2');
 
 -- --------------------------------------------------------
 
@@ -192,7 +223,8 @@ INSERT INTO `tb_project_user` (`id`, `des`, `project_id`, `user_id`, `update_tim
 (101, NULL, 20, 48, '2016-12-30 09:27:30.000000'),
 (102, NULL, 20, 49, '2016-12-30 09:27:30.000000'),
 (103, NULL, 20, 51, '2016-12-30 09:27:30.000000'),
-(104, NULL, 20, 47, '2017-01-02 20:40:38.000000');
+(104, NULL, 20, 47, '2017-01-02 20:40:38.000000'),
+(105, NULL, 21, 47, '2017-01-03 12:37:15.000000');
 
 -- --------------------------------------------------------
 
@@ -215,7 +247,8 @@ CREATE TABLE `tb_proportion_department` (
 INSERT INTO `tb_proportion_department` (`id`, `department_id`, `project_id`, `proportion`, `update_time`) VALUES
 (36, 12, 20, 10, '2016-12-30 09:27:30.000000'),
 (37, 8, 20, 40, '2016-12-30 09:27:30.000000'),
-(38, 9, 20, 50, '2017-01-02 20:40:38.000000');
+(38, 9, 20, 50, '2017-01-02 20:40:38.000000'),
+(39, 9, 21, 100, '2017-01-03 14:17:22.000000');
 
 -- --------------------------------------------------------
 
@@ -320,6 +353,12 @@ INSERT INTO `tb_user` (`id`, `username`, `password`, `create_date`, `status`, `a
 --
 
 --
+-- Indexes for table `tb_daily_report`
+--
+ALTER TABLE `tb_daily_report`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `tb_department`
 --
 ALTER TABLE `tb_department`
@@ -384,6 +423,11 @@ ALTER TABLE `tb_user`
 --
 
 --
+-- AUTO_INCREMENT for table `tb_daily_report`
+--
+ALTER TABLE `tb_daily_report`
+  MODIFY `id` int(32) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+--
 -- AUTO_INCREMENT for table `tb_department`
 --
 ALTER TABLE `tb_department`
@@ -407,17 +451,17 @@ ALTER TABLE `tb_mission_user`
 -- AUTO_INCREMENT for table `tb_project`
 --
 ALTER TABLE `tb_project`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 --
 -- AUTO_INCREMENT for table `tb_project_user`
 --
 ALTER TABLE `tb_project_user`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=106;
 --
 -- AUTO_INCREMENT for table `tb_proportion_department`
 --
 ALTER TABLE `tb_proportion_department`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 --
 -- AUTO_INCREMENT for table `tb_role`
 --
