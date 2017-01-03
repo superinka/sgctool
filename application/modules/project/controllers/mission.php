@@ -82,9 +82,10 @@ Class Mission extends MY_Controller {
 					$list_emp['member'][] =  array($emp_name[0]->fullname,$emp_name[0]->user_id,$info_room->name);
 
 					$all_mission_by_id = $this->mission_user_model->get_columns('tb_mission_user',$where=array('user_id'=>$emp_name[0]->user_id));
+					//pre($all_mission_by_id);
 					foreach ($all_mission_by_id as $ke => $va) {
 						# code...
-						$mission_by_project = $this->mission_model->get_columns('tb_mission',$where=array('id'=>$va->mission_id));
+						$mission_by_project = $this->mission_model->get_columns('tb_mission',$where=array('id'=>$va->mission_id, 'project_id'=>$project_id));
 
 						if($mission_by_project!=null) {
 							$list_emp['member'][$k]['mission'][$ke]['name'] = $mission_by_project[0]->name;
@@ -102,17 +103,27 @@ Class Mission extends MY_Controller {
 
 
 					$users_id = $this->role_model->get_column('tb_role', 'user_id',$where=array('department_id'=>$info_role[0]->department_id));
-						foreach ($users_id as $k => $v) {
-							$info_user = $this->acc_model->get_info($v->user_id);
-							if ($info_user->account_type==3) {
-								$name = $this->home_model->get_column('tb_employee', 'fullname',$where=array('user_id'=>$info_user->id));
-								$info_user->fullname = $name[0]->fullname;
-								$list_emp['leader'][] = $name[0]->fullname;
-								$list_emp['room-leader'][] = $info_room->name;
-								$list_emp['room-leader'] = array_unique($list_emp['room-leader']);
-								$list_emp['leader'] = array_unique($list_emp['leader']);
+
+						if($users_id!=null) {
+							foreach ($users_id as $k => $v) {
+								$info_user = $this->acc_model->get_info($v->user_id);
+								if ($info_user->account_type==3) {
+									$name = $this->home_model->get_column('tb_employee', 'fullname',$where=array('user_id'=>$info_user->id));
+									$info_user->fullname = $name[0]->fullname;
+									$list_emp['leader'][] = $name[0]->fullname;
+									$list_emp['room-leader'][] = $info_room->name;
+									$list_emp['room-leader'] = array_unique($list_emp['room-leader']);
+									$list_emp['leader'] = array_unique($list_emp['leader']);
+								}
+							}
+							if(array_key_exists('leader', $list_emp)) {
+								$total_member =  count($list_emp['leader']) + count($list_emp['member']);
+							}
+							if(array_key_exists('leader', $list_emp)==false) {
+								$total_member = count($list_emp['member']);
 							}
 						}
+
 
 					}
 
@@ -121,7 +132,7 @@ Class Mission extends MY_Controller {
 					//
 					//pre($list_room_by_project);
 
-					$total_member =  count($list_emp['leader']) + count($list_emp['member']);
+					//$total_member =  count($list_emp['leader']) + count($list_emp['member']);
 					$total_room = count($list_emp['room-member']);
 
 					$proportion = $this->proportion_department_model->get_columns('tb_proportion_department',$where=array('project_id'=>$project_id));
@@ -149,6 +160,7 @@ Class Mission extends MY_Controller {
 
 
 					}
+					//pre($list_room_by_project);
 
 					foreach ($list_emp['room-member'] as $key => $value) {
 						$list_room_by_project[$key]['name'] = $value;
@@ -165,17 +177,20 @@ Class Mission extends MY_Controller {
 						}
 
 					}
+					//pre($list_room_by_project);
 
-					$score =0;
+					//$score =0;
 
 					foreach ($list_room_by_project as $key => $value) {
+						$score =0;
 						# code...
 						if(array_key_exists('mission',$value)) {
 							$count_mission = count($value['mission']);
 							foreach ($value['mission'] as $k => $v) {
 								# code...
 								$a = intval($v['progress']);
-								$score = $score + (1/$count_mission*100/$a);
+								$score = $score + (1/$count_mission)*($a/100);
+								
 							}
 							$list_room_by_project[$key]['score'] =$score;
 						}
@@ -183,7 +198,8 @@ Class Mission extends MY_Controller {
 					}
 					//pre($proportion);
 					//pre($list_emp);
-					pre($list_room_by_project);
+					//pre($list_room_by_project);
+					$this->data_layout['list_room_by_project'] = $list_room_by_project;
 
 
 
@@ -191,6 +207,17 @@ Class Mission extends MY_Controller {
 
 
 			$list_mission = $this->mission_model->get_columns('tb_mission',$where=array('project_id'=>$project_id,'status'=>'1'));
+
+			foreach ($list_mission as $key => $value) {
+				$uid = $this->mission_user_model->get_column('tb_mission_user','user_id',$where=array('mission_id'=>$value->id));
+				$uid = $uid[0]->user_id;
+				$depart = $this->role_model->get_column('tb_role','department_id',$where=array('user_id'=>$uid));
+				$department_id = $depart[0]->department_id;
+				$department_name = $this->department_model->get_info($department_id, 'name');
+
+				$value->department_name = $department_name->name;
+
+			}
 
 			//pre($list_mission);
 
@@ -264,8 +291,15 @@ Class Mission extends MY_Controller {
 							}
 						}
 
+						if(array_key_exists('leader', $list_emp)) {
+							$total_member =  count($list_emp['leader']) + count($list_emp['member']);
+						}
+						if(array_key_exists('leader', $list_emp)==false) {
+							$total_member = count($list_emp['member']);
+						}
+
 					}
-					$total_member =  count($list_emp['leader']) + count($list_emp['member']);
+					
 					$total_room = count($list_emp['room-member']);
 
 					$proportion = $this->proportion_department_model->get_columns('tb_proportion_department',$where=array('project_id'=>$project_id));

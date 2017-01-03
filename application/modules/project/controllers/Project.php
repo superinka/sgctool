@@ -106,7 +106,11 @@ Class Project extends MY_Controller {
 			$project_id = intval($project_id);
 			$this->data_layout['project_id'] = $project_id;
 
-			$list_proportion_department = $this->proportion_department_model->get_column_distinct('tb_proportion_department', array('department_id'));
+			$input = array();
+			$input['where']['project_id'] = $project_id;
+
+			$list_proportion_department = $this->proportion_department_model->get_list($input);
+			
 			//pre($list_proportion_department);
 
 			if ($list_proportion_department==null) {

@@ -18,14 +18,21 @@
       </li>
       <li><a><i class="fa fa-edit"></i> Báo cáo<span class="fa fa-chevron-down"></span></a>
         <ul class="nav child_menu">
-          <li><a href="form.html">Viết báo cáo</a></li>
-          <li><a href="<?php echo base_url('report/index') ?>">List báo cáo</a></li>
+          <li><a href="<?php echo base_url('my_report/add_report') ?>">Viết báo cáo</a></li>
+          <li><a href="<?php echo base_url('my_report/index') ?>">Báo cáo của tôi</a></li>
+          <?php if ($account_type == 3) { ?>
+          <li><a href="<?php echo base_url('my_report/check_report') ?>">Duyệt báo cáo</a></li>
+          <?php } ?>
         </ul>
       </li>
       <li><a><i class="fa fa-edit"></i> Nhiệm vụ<span class="fa fa-chevron-down"></span></a>
         <ul class="nav child_menu">
+          <?php if ($account_type < 4) { ?>
           <li><a href="form.html">Tạo nhiệm vụ</a></li>
-          <li><a href="<?php echo base_url('mission/index') ?>">List nhiệm vụ</a></li>
+          <?php }?>
+          <?php if ($account_type ==4) {?>
+          <li><a href="<?php echo base_url('my_mission/index') ?>">Nhiệm vụ của tôi</a></li>
+          <?php }?>
         </ul>
       </li>
       <li><a><i class="fa fa-edit"></i> Dự án<span class="fa fa-chevron-down"></span></a>

@@ -41,6 +41,7 @@
       <div class="col-md-12 col-xs-12 widget widget_tally_box">
         <div class="x_panel fixed_height_390">
           <div class="x_content">
+          <p>Nhiệm vụ của :</p>
 
             <div class="flex">
               <ul class="list-inline widget_profile_box">
@@ -60,13 +61,13 @@
               </ul>
             </div>
 
-            <h3 class="name">Musimbi</h3>
+            <h3 class="name"><?php echo $info_mission->mission_user_name ?></h3>
 
             <div class="flex">
               <ul class="list-inline count2">
                 <li>
-                  <h3>123</h3>
-                  <span>Articles</span>
+                  <h3><?php echo $info_mission->mission_user_id ?></h3>
+                  <span>ID</span>
                 </li>
                 <li>
                   <h3>1234</h3>
@@ -78,9 +79,9 @@
                 </li>
               </ul>
             </div>
-            <p>
+<!--             <p>
               If you've decided to go in development mode and tweak all of this a bit, there are few things you should do.
-            </p>
+            </p> -->
           </div>
         </div>
       </div>
@@ -112,7 +113,7 @@
 	      	else if ($list_task!=null) {
             if(($account_type==4)&&($now_user_id!=$info_mission->mission_user_id)) {
               ?>
-              <p>Đây ko phải là nhiệm vụ của bạn, bạn không thể xem mục này !</p>
+              <p><strong style="color:red">Đây không phải là nhiệm vụ của bạn, bạn không thể xem mục này !</strong></p>
 
               <?php
             }
