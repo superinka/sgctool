@@ -3,9 +3,9 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 03, 2017 at 11:38 AM
--- Server version: 10.1.19-MariaDB
--- PHP Version: 5.6.28
+-- Generation Time: Jan 03, 2017 at 04:56 PM
+-- Server version: 10.1.13-MariaDB
+-- PHP Version: 5.6.23
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -116,7 +116,8 @@ INSERT INTO `tb_employee` (`id`, `user_id`, `fullname`, `email`, `phone`, `skype
 (42, 48, 'Nguyễn Huy Hoàng', 'inkavn03@gmail.com', '0979030879', '', '', '1991-12-28', 2, 'Hà Nội'),
 (43, 49, 'Hoàng yến', 'inkavn03@gmail.com', '0979030879', '', '', '1990-12-29', 1, ''),
 (44, 50, 'Hoàng Phương', 'inkavn03@gmail.com', '0979030879', '', '', '1991-12-29', 1, ''),
-(45, 51, 'Minh Hòa', 'inkavn03@gmail.com', '0979030879', '', '', '2016-12-29', 2, '');
+(45, 51, 'Minh Hòa', 'inkavn03@gmail.com', '0979030879', '', '', '2016-12-29', 2, ''),
+(46, 52, 'Hiền Đệ', 'inka@gmail.com', '1', '', '', '2017-01-03', 2, 'số 18 xóm mới thôn cương ngô xã tứ hiệp huyện thanh trì hà nội');
 
 -- --------------------------------------------------------
 
@@ -199,7 +200,7 @@ CREATE TABLE `tb_project` (
 
 INSERT INTO `tb_project` (`id`, `project_name`, `description`, `create_date`, `create_by`, `start_date`, `end_date`, `status`, `department_id`, `progress`, `update_by`, `update_time`, `short_name`) VALUES
 (20, 'Babylon', 'Dự án vườn treo', '2016-12-30', 1, '2016-12-30', '2016-12-30', '1', NULL, 10, 1, '2017-01-03 11:00:44.000000', 'B'),
-(21, 'Babylon 2', 'version 2', '2017-01-03', 1, '2017-01-03', '2017-01-03', '1', NULL, 10, 1, '2017-01-03 12:37:15.000000', 'BB2');
+(21, 'Babylon 2', 'version 2', '2017-01-03', 1, '2017-01-03', '2017-01-03', '1', NULL, 10, 1, '2017-01-03 21:07:02.000000', 'BB2');
 
 -- --------------------------------------------------------
 
@@ -224,7 +225,8 @@ INSERT INTO `tb_project_user` (`id`, `des`, `project_id`, `user_id`, `update_tim
 (102, NULL, 20, 49, '2016-12-30 09:27:30.000000'),
 (103, NULL, 20, 51, '2016-12-30 09:27:30.000000'),
 (104, NULL, 20, 47, '2017-01-02 20:40:38.000000'),
-(105, NULL, 21, 47, '2017-01-03 12:37:15.000000');
+(105, NULL, 21, 47, '2017-01-03 12:37:15.000000'),
+(106, NULL, 21, 50, '2017-01-03 21:07:02.000000');
 
 -- --------------------------------------------------------
 
@@ -247,8 +249,9 @@ CREATE TABLE `tb_proportion_department` (
 INSERT INTO `tb_proportion_department` (`id`, `department_id`, `project_id`, `proportion`, `update_time`) VALUES
 (36, 12, 20, 10, '2016-12-30 09:27:30.000000'),
 (37, 8, 20, 40, '2016-12-30 09:27:30.000000'),
-(38, 9, 20, 50, '2017-01-02 20:40:38.000000'),
-(39, 9, 21, 100, '2017-01-03 14:17:22.000000');
+(38, 9, 20, 70, '2017-01-02 20:40:38.000000'),
+(39, 9, 21, 70, '2017-01-03 14:17:22.000000'),
+(40, 10, 21, 30, '2017-01-03 21:07:02.000000');
 
 -- --------------------------------------------------------
 
@@ -276,7 +279,9 @@ INSERT INTO `tb_role` (`id`, `user_id`, `department_id`, `desciption`) VALUES
 (68, 46, 8, ''),
 (69, 49, 8, ''),
 (70, 50, 10, ''),
-(71, 51, 8, '');
+(71, 51, 8, ''),
+(72, 52, 9, ''),
+(73, 52, 10, '');
 
 -- --------------------------------------------------------
 
@@ -346,7 +351,8 @@ INSERT INTO `tb_user` (`id`, `username`, `password`, `create_date`, `status`, `a
 (48, 'hoangnguyen', '25d55ad283aa400af464c76d713c07ad', '2016-12-28', 1, 4, NULL, NULL),
 (49, 'yenhoang', '25d55ad283aa400af464c76d713c07ad', '2016-12-29', 1, 4, NULL, NULL),
 (50, 'phuonghoang', '25d55ad283aa400af464c76d713c07ad', '2016-12-29', 1, 4, NULL, NULL),
-(51, 'minhhoa', '25d55ad283aa400af464c76d713c07ad', '2016-12-29', 1, 4, NULL, NULL);
+(51, 'minhhoa', '25d55ad283aa400af464c76d713c07ad', '2016-12-29', 1, 4, NULL, NULL),
+(52, 'hiende', '25d55ad283aa400af464c76d713c07ad', '2017-01-03', 1, 3, NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -436,7 +442,7 @@ ALTER TABLE `tb_department`
 -- AUTO_INCREMENT for table `tb_employee`
 --
 ALTER TABLE `tb_employee`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 --
 -- AUTO_INCREMENT for table `tb_mission`
 --
@@ -456,17 +462,17 @@ ALTER TABLE `tb_project`
 -- AUTO_INCREMENT for table `tb_project_user`
 --
 ALTER TABLE `tb_project_user`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=106;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=107;
 --
 -- AUTO_INCREMENT for table `tb_proportion_department`
 --
 ALTER TABLE `tb_proportion_department`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 --
 -- AUTO_INCREMENT for table `tb_role`
 --
 ALTER TABLE `tb_role`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
 --
 -- AUTO_INCREMENT for table `tb_task`
 --
@@ -476,7 +482,7 @@ ALTER TABLE `tb_task`
 -- AUTO_INCREMENT for table `tb_user`
 --
 ALTER TABLE `tb_user`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
