@@ -1,8 +1,16 @@
+<?php //pre($list_room_manager);?>
+<?php foreach ($list_room_manager as $key => $value) { ?>
 <div class="row">
   <div class="col-md-12 col-sm-12 col-xs-12">
     <div class="x_panel">
       <div class="x_title">
-        <h2>Báo cáo cần check <small>hôm nay</small></h2>
+        <h2 style="overflow: initial!important"><?php echo $value['department_name'];  ?> 
+          <small>
+          <?php if(array_key_exists('project',$value)==false) { ?>
+            <strong>Không có dữ liệu</strong>
+          <?php }?>
+          </small>
+        </h2>
         <ul class="nav navbar-right panel_toolbox">
           <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
           </li>
@@ -21,37 +29,38 @@
         <div class="clearfix"></div>
       </div>
       <div class="x_content">
-
+      <?php if(array_key_exists('project',$value)==true) { ?>
         <table class="table table-bordered">
           <thead>
             <tr>
               <th>#</th>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Username</th>
+              <th>Desciption</th>
+              <th>Nhân viên</th>
+              <th>Dự án</th>
+              <th>Nhiệm vụ</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <th scope="row">1</th>
-              <td>Mark</td>
-              <td>Otto</td>
-              <td>@mdo</td>
-            </tr>
-            <tr>
-              <th scope="row">2</th>
-              <td>Jacob</td>
-              <td>Thornton</td>
-              <td>@fat</td>
-            </tr>
-            <tr>
-              <th scope="row">3</th>
-              <td>Larry</td>
-              <td>the Bird</td>
-              <td>@twitter</td>
-            </tr>
+          <?php foreach ($value['project'] as $k => $v) { ?>
+            <?php if(array_key_exists('list_miss',$v)==true) { ?>
+              <?php foreach ($v->list_miss as $a => $b) { ?>
+                <?php if(array_key_exists('task',$b)==true) { ?>
+                <?php foreach ($b->task as $c => $d) { ?>
+                  <tr>
+                    <th scope="row"></th>
+                    <td><?php echo $d->name ?></td>
+                    <td><?php echo $b->mission_for ?></td>
+                    <td><?php echo $v->project_name ?></td>
+                    <td><?php echo $d->name?></td>
+                  </tr>
+                <?php } ?>
+                <?php } ?>
+              <?php }?>
+            <?php }?>
+          <?php } ?>
           </tbody>
         </table>
+      <?php } ?>
 
       </div>
     </div>
@@ -59,3 +68,4 @@
 
   <div class="clearfix"></div>
 </div>
+<?php } ?>

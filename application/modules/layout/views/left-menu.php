@@ -20,7 +20,7 @@
         <ul class="nav child_menu">
           <li><a href="<?php echo base_url('my_report/add_report') ?>">Viết báo cáo</a></li>
           <li><a href="<?php echo base_url('my_report/index') ?>">Báo cáo của tôi</a></li>
-          <?php if ($account_type == 3) { ?>
+          <?php if ($account_type < 4) { ?>
           <li><a href="<?php echo base_url('my_report/check_report') ?>">Duyệt báo cáo</a></li>
           <?php } ?>
         </ul>

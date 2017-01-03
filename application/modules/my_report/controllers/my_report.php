@@ -97,7 +97,7 @@ Class My_Report extends MY_Controller {
 	    $today = date("Y-m-d"); 
 	    $this->data_layout['today'] = $today;
 
-	    if ($this->data_layout['account_type']!=3) {
+	    if ($this->data_layout['account_type'] > 3) {
 			$this->session->set_flashdata('message','Bạn không đủ quyền hạn');
 			redirect(base_url('my_report/index'));
 		}
@@ -107,6 +107,63 @@ Class My_Report extends MY_Controller {
 		    $input['where']['review_status'] = 0;
 		    $input['where']['create_date'] = $today;
 			$list_report_nid_check_today = $this->my_report_model->get_list($input);
+
+			$list_room_manager = array();
+
+			if($this->data_layout['account_type'] = 3) {
+				$list_room = $this->role_model->get_columns('tb_role',$where = array('user_id'=>$my_id));
+				if ($list_room==null) {
+					$this->session->set_flashdata('message','Bạn không quản lí phòng ban nào !');
+					redirect(base_url('my_report/index'));
+				}
+				//pre($list_room);
+
+				if ($list_room!=null) {
+					foreach ($list_room as $key => $value) {
+						$department_id = $value->department_id;
+						$department_name = $this->department_model->get_info($department_id,'name');
+						$department_name = $department_name->name;
+						$list_room_manager[$key]['department_name'] = $department_name;
+						$list_room_manager[$key]['department_id'] = $department_id;
+
+						$list_pro = $this->proportion_department_model->get_columns('tb_proportion_department',$where = array('department_id'=>$department_id));
+						if($list_pro!=null) {
+							foreach ($list_pro as $k => $v) {
+								$project_id = $v->project_id;
+								$project_name = $this->project_model->get_info($project_id,'project_name');
+								$project_name = $project_name->project_name;
+								$v->project_name = $project_name;
+								$list_room_manager[$key]['project'][] = $v;
+
+
+								$list_miss = $this->mission_model->get_columns('tb_mission',$where = array('project_id'=>$project_id, 'status'=>'1'));
+								//$v->mission = $list_miss;
+								//$list_room_manager[$key]['mission'][] = $v;
+								//pre($list_miss);
+								if($list_miss!=null) {
+									for ($i=0;  $i < count($list_miss)  ; $i++)  { 
+										$mission_id = $list_miss[$i]->id;
+										$uid = $this->mission_user_model->get_columns('tb_mission_user',$where=array('mission_id'=>$mission_id));
+										//pre($uid);
+										$uid = $uid[0]->user_id;
+
+										if($this->role_model->check_exists($where=array('user_id'=>$uid, 'department_id'=>$department_id))==true){
+											$mission_for_id = $uid;
+											$mission_for_name = $this->home_model->get_column('tb_employee','fullname',$where=array('user_id'=>$mission_for_id));
+											$list_miss[$i]->mission_for = $mission_for_name[0]->fullname;
+											$list_miss[$i]->task = $this->task_model->get_columns('tb_task',$where=array('mission_id'=>$mission_id, 'status'=>'0'));
+											$v->list_miss[] = $list_miss[$i];
+										}
+									}
+								}
+
+							}
+						}
+					}
+				}
+			//pre($list_room_manager);
+			$this->data_layout['list_room_manager'] = $list_room_manager;
+			}
 			
 		}
 
