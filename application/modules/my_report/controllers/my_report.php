@@ -151,7 +151,17 @@ Class My_Report extends MY_Controller {
 											$mission_for_id = $uid;
 											$mission_for_name = $this->home_model->get_column('tb_employee','fullname',$where=array('user_id'=>$mission_for_id));
 											$list_miss[$i]->mission_for = $mission_for_name[0]->fullname;
-											$list_miss[$i]->task = $this->task_model->get_columns('tb_task',$where=array('mission_id'=>$mission_id, 'status'=>'0'));
+											$list_task = $this->task_model->get_columns('tb_task',$where=array('mission_id'=>$mission_id, 'status'=>'0'));
+											
+											foreach ($list_task as $x => $z) {
+												$list_report = $this->my_report_model->get_columns('tb_daily_report',$where=array('task_id'=>$z->id, 'review_status'=>'0'));
+												if($list_report!=null) {
+													$z->list_report = $list_report;
+												}
+												
+											}
+											//$list_report = 
+											$list_miss[$i]->task = $list_task;
 											$v->list_miss[] = $list_miss[$i];
 										}
 									}
@@ -161,7 +171,7 @@ Class My_Report extends MY_Controller {
 						}
 					}
 				}
-			//pre($list_room_manager);
+			pre($list_room_manager);
 			$this->data_layout['list_room_manager'] = $list_room_manager;
 			}
 			
