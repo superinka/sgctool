@@ -61,9 +61,9 @@
                 	  <?php foreach ($d->list_report as $e => $f) {?>
                 	  <?php 
                 	    $create_time = strtotime($f->create_time);
-						$newformat_create_time = date('Y-m-d H:i:s',$create_time);
-						$pm = ($this->my_report_model->get_fullname_employee($f->review_by));
-					  ?>
+          						$newformat_create_time = date('Y-m-d H:i:s',$create_time);
+          						$pm = ($this->my_report_model->get_fullname_employee($f->review_by));
+          					  ?>
 	                  <tr>
 	                    <th scope="row"></th>
 	                    <td><?php echo $f->description ?></td>

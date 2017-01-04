@@ -46,6 +46,39 @@ Class My_Report extends MY_Controller {
 	    $input = array();
 	    $input['where']['user_id'] = $my_id;
 
+	    if($this->data_layout['account_type']==4){
+	    	$department = $this->role_model->get_column('tb_role', 'department_id', $where=array('user_id'=>$my_id));
+	    	$department_id = $department[0]->department_id;
+	    	$department_name_info = $this->department_model->get_info($department_id);
+
+	    	$list_room_by_me['department']['name'] = $department_name_info->name;
+	    	$list_room_by_me['department']['id'] = $department_id;
+	    } 
+
+	    else if($this->data_layout['account_type']==3){
+	    	$department = $this->role_model->get_column('tb_role', 'department_id', $where=array('user_id'=>$my_id));
+	    	foreach ($department as $key => $value) {
+	    		$department_id = $value->department_id;
+	    		$department_name_info = $this->department_model->get_info($department_id);
+	    		$list_room_by_me['department'][$key]['name'] = $department_name_info->name;
+	    		$list_room_by_me['department'][$key]['id'] = $department_id;
+
+	    		$list_miss = $this->mission_model->get_columns('tb_mission',$where=array('department_id'=>$department_id, 'level'=>3));
+	    		if($list_miss!=null){
+	    			foreach ($list_miss as $k => $v) {
+	    				$mission_id = $v->id;
+	    				$list_task = $this->mission_model->get_columns('tb_task',$where=array('mission_id'=>$mission_id, 'status'=>0));
+	    				$v->list_task = $list_task;
+	    			}
+
+	    			$list_room_by_me['department'][$key]['list_miss'] = $list_miss;
+	    		}
+	    	}
+
+	 	} 
+
+	 	//pre($list_room_by_me);
+
 
 
 		$this->data_layout['temp'] = 'index';
@@ -80,6 +113,62 @@ Class My_Report extends MY_Controller {
 
 	    $list_task_active  = $this->task_model->get_list($input_task);
 	    $this->data_layout['list_task_active'] = $list_task_active;
+
+	    if($this->input->post()){
+			$this->form_validation->set_rules('description', 'description', 'trim');
+			$this->form_validation->set_rules('message', 'Mô tả', 'trim');
+			$this->form_validation->set_rules('progress', 'Tình Trạng');
+
+			$this->form_validation->set_rules('time_spend', 'Thời gian làm');
+
+			if($this->form_validation->run()){
+				$description = $this->input->post('description');
+				$message = $this->input->post('message');
+				$progress = $this->input->post('progress');
+				$time_spend = $this->input->post('time_spend');
+				$task = $this->input->post('task');
+
+				$mission_id = $this->task_model->get_info($task,'mission_id');
+
+				//pre($mission_id);
+
+				$mission_id = $mission_id->mission_id;
+
+				$project_id = $this->mission_model->get_info($mission_id,'project_id');
+
+				$project_id = $project_id->project_id;
+
+				$code = $project_id. $mission_id .rand(0,9999). md5($task);
+				$code = strtolower($code);
+
+				$data_report = array(
+					'description'   => $description,
+					'note'          => $message,
+					'status'        => '1',
+					'time_spend'    => $time_spend,
+					'task_id'       => $task,
+					'create_by'     => $my_id,
+					'create_date'   => date_create('now')->format('Y-m-d'),
+					'update_time'   => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s'),
+					'create_time'   => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s'),
+					'progress'      => $progress,
+					'review_by'     => $my_id,
+					'review_status' => '0',
+					'code'          => $code
+
+				);
+
+				if($this->my_report_model->create($data_report)) {
+					$this->session->set_flashdata('message','Tạo dữ liệu thành công');
+
+				}
+				else {
+					$this->session->set_flashdata('message','Tạo dữ liệu không thành công');
+				}
+				redirect(base_url('my_report/index'));
+
+			}
+	    }
 
 	    //pre($list_task_active);
 
@@ -151,7 +240,7 @@ Class My_Report extends MY_Controller {
 								$list_room_manager[$key]['project'][] = $v;
 
 
-								$list_miss = $this->mission_model->get_columns('tb_mission',$where = array('project_id'=>$project_id, 'status'=>'1'));
+								$list_miss = $this->mission_model->get_columns('tb_mission',$where = array('project_id'=>$project_id, 'status'=>'1', 'department_id'=>$department_id));
 								//$v->mission = $list_miss;
 								//$list_room_manager[$key]['mission'][] = $v;
 								//pre($list_miss);
@@ -288,7 +377,7 @@ Class My_Report extends MY_Controller {
 				redirect(base_url('my_report/check_report'));
 			}
 			else {
-				$data_report = array ('review_status'=>'1');
+				$data_report = array ('review_status'=>'1','review_by'=>$my_id);
 
 				if($this->my_report_model->update($report_id,$data_report)){
 					$this->session->set_flashdata('message','Update thành công');
@@ -329,7 +418,7 @@ Class My_Report extends MY_Controller {
 				redirect(base_url('my_report/check_report'));
 			}
 			else {
-				$data_report = array ('review_status'=>'0');
+				$data_report = array ('review_status'=>'0','review_by'=>$my_id);
 
 				if($this->my_report_model->update($report_id,$data_report)){
 					$this->session->set_flashdata('message','Update thành công');

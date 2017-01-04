@@ -148,7 +148,7 @@ Class Home extends MY_Controller {
 	function edit(){
 		if ($this->data_layout['account_type'] > 2) {
 			$this->session->set_flashdata('message','Bạn không đủ quyền hạn');
-			redirect(base_url('home/acc'));
+			redirect(base_url('home/index'));
 		}
 
 		else {
@@ -161,7 +161,7 @@ Class Home extends MY_Controller {
 
 			if(!$info_user) {
 				$this->session->set_flashdata('message','Không tồn tại thông tin tài khoản');
-				redirect(base_url('home/acc'));
+				redirect(base_url('home/index'));
 			}
 			else {
 				$this->data_layout['info_user'] = $info_user;

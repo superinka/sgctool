@@ -7,7 +7,7 @@
 	<div class="col-md-5 col-sm-5 col-xs-12">
 	  <div class="x_panel tile fixed_height_290 overflow_hidden">
 	    <div class="x_title">
-	      <h2>Thống kê báo cáo : <small>Có <strong><?php echo count($list_report_today) ?></strong> báo cáo</small></h2>
+	      <h2>Thống kê báo cáo : <small>Có <strong><?php echo $total_report_today ?></strong> báo cáo</small></h2>
 	      <ul class="nav navbar-right panel_toolbox">
 	        <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
 	        </li>
@@ -107,7 +107,7 @@
 	<div class="col-md-6 col-sm-6 col-xs-12">
 		<div class="x_panel">
           <div class="x_title">
-            <h2>Báo cáo chưa hoàn thành <small>Có <strong><?php echo count($list_report_uncheck_today) ?></strong> báo cáo</small></h2>
+            <h2>Báo cáo chưa hoàn thành <small>Có <strong><?php echo $total_report_uncheck ?></strong> báo cáo</small></h2>
             <ul class="nav navbar-right panel_toolbox">
               <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
               </li>
@@ -125,8 +125,8 @@
             </ul>
             <div class="clearfix"></div>
           </div>
-          <?php if($list_report_uncheck_today==null){echo'<p>Không có dữ liệu !</p>';} ?>
-          <?php if($list_report_uncheck_today!=null){?>
+          <?php if($total_report_uncheck==0){echo'<p>Không có dữ liệu !</p>';} ?>
+          <?php if($total_report_uncheck!=0){?>
           <div class="x_content">
 
             <table class="table table-bordered">
@@ -162,7 +162,7 @@
 	<div class="col-md-6 col-sm-6 col-xs-12">
 		<div class="x_panel">
           <div class="x_title">
-            <h2>Báo cáo hoàn thành <small>Có <strong><?php echo count($list_report_checked_today) ?></strong> báo cáo</small></h2>
+            <h2>Báo cáo hoàn thành <small>Có <strong><?php echo $total_report_checked ?></strong> báo cáo</small></h2>
             <ul class="nav navbar-right panel_toolbox">
               <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
               </li>

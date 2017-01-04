@@ -71,17 +71,7 @@ Class View_Report extends MY_Controller {
 			//pre($list_report_uncheck_today);
 
 			if($list_report_today!=null){
-				$total_report_today = count($list_report_today);
-				if($list_report_checked_today == null) {
-					$total_report_checked = 0;
-					
-				}
 
-				if($list_report_checked_today != null) {
-					$total_report_checked = count($list_report_checked_today);
-				} 
-
-				$total_report_uncheck = $total_report_today - $total_report_checked;
 
 				//pre($list_report_today);
 
@@ -95,23 +85,29 @@ Class View_Report extends MY_Controller {
 					$reporter_fullname = $reporter_fullname->fullname;
 
 					$task_info = $this->task_model->get_columns('tb_task',$where=array('id'=>$task_id));
-					$mission_id = $task_info[0]->mission_id;
-					$mission_info = $this->mission_model->get_columns('tb_mission',$where=array('id'=>$mission_id));
-					$mission_name = $mission_info[0]->name;
-					$department_id = $mission_info[0]->department_id;
+					if($task_info==null) {
+						unset($list_report_today[$key]);
+					}
+					else if($task_info !=null) {
+						$mission_id = $task_info[0]->mission_id;
+						$mission_info = $this->mission_model->get_columns('tb_mission',$where=array('id'=>$mission_id));
+						$mission_name = $mission_info[0]->name;
+						$department_id = $mission_info[0]->department_id;
 
-					$project_id = $task_info[0]->project_id;
+						$project_id = $task_info[0]->project_id;
 
-					// add reporter name
-					$value->reporter = $reporter_fullname;
-					// add reporter level
-					$value->reporter_level = $reporter_level;
-					// add department_id and room
-					$value->department_id = $department_id;
-					// add mission name
-					$value->mission_name = $mission_name;
+						// add reporter name
+						$value->reporter = $reporter_fullname;
+						// add reporter level
+						$value->reporter_level = $reporter_level;
+						// add department_id and room
+						$value->department_id = $department_id;
+						// add mission name
+						$value->mission_name = $mission_name;
 
-					$list_room = $this->proportion_department_model->get_columns('tb_proportion_department',$where = array('project_id'=>$project_id));
+						$list_room = $this->proportion_department_model->get_columns('tb_proportion_department',$where = array('project_id'=>$project_id));
+					}
+
 				}
 				//pre($list_report_today);
 				foreach ($list_report_uncheck_today as $key => $value) {
@@ -124,23 +120,28 @@ Class View_Report extends MY_Controller {
 					$reporter_fullname = $reporter_fullname->fullname;
 
 					$task_info = $this->task_model->get_columns('tb_task',$where=array('id'=>$task_id));
-					$mission_id = $task_info[0]->mission_id;
-					$mission_info = $this->mission_model->get_columns('tb_mission',$where=array('id'=>$mission_id));
-					$mission_name = $mission_info[0]->name;
-					$department_id = $mission_info[0]->department_id;
+					if($task_info==null) {
+						unset($list_report_uncheck_today[$key]);
+					}
+					else if($task_info !=null) {
+						$mission_id = $task_info[0]->mission_id;
+						$mission_info = $this->mission_model->get_columns('tb_mission',$where=array('id'=>$mission_id));
+						$mission_name = $mission_info[0]->name;
+						$department_id = $mission_info[0]->department_id;
 
-					$project_id = $task_info[0]->project_id;
+						$project_id = $task_info[0]->project_id;
 
-					// add reporter name
-					$value->reporter = $reporter_fullname;
-					// add reporter level
-					$value->reporter_level = $reporter_level;
-					// add department_id and room
-					$value->department_id = $department_id;
-					// add mission name
-					$value->mission_name = $mission_name;
+						// add reporter name
+						$value->reporter = $reporter_fullname;
+						// add reporter level
+						$value->reporter_level = $reporter_level;
+						// add department_id and room
+						$value->department_id = $department_id;
+						// add mission name
+						$value->mission_name = $mission_name;
 
-					$list_room = $this->proportion_department_model->get_columns('tb_proportion_department',$where = array('project_id'=>$project_id));
+						$list_room = $this->proportion_department_model->get_columns('tb_proportion_department',$where = array('project_id'=>$project_id));
+					}
 				}
 				//pre($list_report_uncheck_today);
 				foreach ($list_report_checked_today as $key => $value) {
@@ -153,24 +154,43 @@ Class View_Report extends MY_Controller {
 					$reporter_fullname = $reporter_fullname->fullname;
 
 					$task_info = $this->task_model->get_columns('tb_task',$where=array('id'=>$task_id));
-					$mission_id = $task_info[0]->mission_id;
-					$mission_info = $this->mission_model->get_columns('tb_mission',$where=array('id'=>$mission_id));
-					$mission_name = $mission_info[0]->name;
-					$department_id = $mission_info[0]->department_id;
+					if($task_info==null) {
+						unset($list_report_checked_today[$key]);
+					}
+					else if($task_info !=null) {
+						$mission_id = $task_info[0]->mission_id;
+						$mission_info = $this->mission_model->get_columns('tb_mission',$where=array('id'=>$mission_id));
+						$mission_name = $mission_info[0]->name;
+						$department_id = $mission_info[0]->department_id;
 
-					$project_id = $task_info[0]->project_id;
+						$project_id = $task_info[0]->project_id;
 
-					// add reporter name
-					$value->reporter = $reporter_fullname;
-					// add reporter level
-					$value->reporter_level = $reporter_level;
-					// add department_id and room
-					$value->department_id = $department_id;
-					// add mission name
-					$value->mission_name = $mission_name;
+						// add reporter name
+						$value->reporter = $reporter_fullname;
+						// add reporter level
+						$value->reporter_level = $reporter_level;
+						// add department_id and room
+						$value->department_id = $department_id;
+						// add mission name
+						$value->mission_name = $mission_name;
 
-					$list_room = $this->proportion_department_model->get_columns('tb_proportion_department',$where = array('project_id'=>$project_id));
+						$list_room = $this->proportion_department_model->get_columns('tb_proportion_department',$where = array('project_id'=>$project_id));
+					}
 				}
+
+				$total_report_today = count($list_report_today);
+
+				if($list_report_checked_today == null) {
+					$total_report_checked = 0;
+					
+				}
+
+				if($list_report_checked_today != null) {
+					$total_report_checked = count($list_report_checked_today);
+				} 
+
+				$total_report_uncheck = $total_report_today - $total_report_checked;
+				//echo $total_report_today;
 				//pre($list_report_checked_today);
 			}
 

@@ -38,6 +38,9 @@ Class Project extends MY_Controller {
 		//$this->load->view('home/index');
 		$id = $this->data_layout['id'];
 
+
+
+
 		$message = $this->session->flashdata('message');
 	    $this->data_layout['message'] = $message;
 		
@@ -406,81 +409,48 @@ Class Project extends MY_Controller {
 									redirect(base_url('project/index'));
 								}
 								else if ($list_emp!=null){
-									//pre($project_users);
-									if(count($project_users) < count($old_data)){
-										$check_data = array_diff($old_data, $project_users);
-										$check_data = array_values($check_data);
-										//pre($check_data);
-										for ($i=0; $i < count($check_data) ; $i++) {
-											$department_id = $this->role_model->get_column('tb_role','department_id',$where=array('user_id'=>$check_data[$i]));
-											//pre($department_id);
-											$this->project_user_model->del_rule($where=array('user_id'=>$check_data[$i]));
-											$list_user_by_project = $this->project_user_model->get_column('tb_project_user','user_id',$where=array('project_id'=>$project_id));
-											foreach ($list_user_by_project as $m => $n) {
-												$list_ip[] = $n->user_id;
-												$de_id = $this->role_model->get_column('tb_role','department_id',$where=array('user_id'=>$user_id));
-												$list_ro[] = $de_id[0]->department_id;
-											}
 
-
-											$x = $this->proportion_department_model->get_row($input['where'] = array('department_id'=>$department_id[0]->department_id));
-											//pre($x);
-											if(in_array($x->department_id, $list_ro)){
-												$xid = $x->id;
-												$this->proportion_department_model->delete($xid);
-											}
-
-										}
-										//pre($check_data);
+									if(identical_values( $old_data , $project_users )==true){
+										redirect(base_url('project/index'));
 									}
+
 									else {
-										$check_data = array_diff($project_users, $old_data);
-										$check_data = array_values($check_data);
-										for ($i=0; $i < count($check_data) ; $i++) {
-
-										$arr_depart = array();
-
-										$data_project_user = array(
-											'project_id'     => $project_id,
-											'user_id'     => $check_data[$i],
-											'update_time'  => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s')
-										);
-										if($this->project_user_model->create($data_project_user)) {
-
-											$this->session->set_flashdata('message','Sửa dữ liệu thành công');
-											//redirect(base_url('project/index'));
-											$department_id = $this->role_model->get_column('tb_role','department_id',$where=array('user_id'=>$check_data[$i]));
-
-											//pre($department_id);
-
-											$d_id = $department_id[0]->department_id;
-
-
-											$dat =  $this->proportion_department_model->get_column('tb_proportion_department','id',$where=array('project_id'=>$project_id,'department_id'=>$d_id));
-
-
-											//pre($dat);
-
-											if ($dat ==null) {
-												$data = array(
-													'department_id' => $department_id[0]->department_id,
-													'proportion'    => '0',
-													'project_id'    => $project_id,
-													'update_time'   => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s'),
-												);
-												$this->proportion_department_model->create($data);
-											}
+										foreach ($old_data as $key => $value) {
+										$this->project_user_model->del_rule($where = array('user_id' => $value , 'project_id'=>$project_id ));
 
 										}
+										for ($i=0; $i < count($project_users) ; $i++) { 
+											$data_project_user = array(
+												'project_id'     => $project_id,
+												'user_id'     => $project_users[$i],
+												'update_time'  => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s')
+											);
 
-										else {
-												
+											$this->project_user_model->create($data_project_user);
 
-											$this->session->set_flashdata('message','Sửa dữ liệu không thành công');
+											$department = $this->role_model->get_column('tb_role', 'department_id',$where=array('user_id'=>$project_users[$i]));
 
-										}											
+											$depart_id[] = $department[0]->department_id;										
+										}
+
+										$this->proportion_department_model->del_rule($where = array('project_id'=>$project_id ));
+
+										$depart_new = array_unique($depart_id);
+
+										for ($i=0; $i < count($depart_new) ; $i++) { 
+											$data = array(
+												'department_id' => $depart_new[$i],
+												'proportion'    => '0',
+												'project_id'    => $project_id,
+												'update_time'   => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s'),
+											);
+											$this->proportion_department_model->create($data);
 										}
 									}
+
+
+
+
 								
 								}
 									redirect(base_url('project/index'));

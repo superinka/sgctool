@@ -179,6 +179,14 @@
 		}
 	}
 
+	function identical_values( $arrayA , $arrayB ) { 
+
+    sort( $arrayA ); 
+    sort( $arrayB ); 
+
+    return $arrayA == $arrayB; 
+	}
+
 
 
 ?>

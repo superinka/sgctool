@@ -53,22 +53,12 @@
                         </div>
                       </div>
                       <div class="form-group">
-                        <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12">Tình trạng</label>
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                          <input id="middle-name" class="form-control col-md-7 col-xs-12" type="text" name="middle-name">
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Gender</label>
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                          <div id="gender" class="btn-group" data-toggle="buttons">
-                            <label class="btn btn-default" data-toggle-class="btn-primary" data-toggle-passive-class="btn-default">
-                              <input type="radio" name="gender" value="male"> &nbsp; Male &nbsp;
-                            </label>
-                            <label class="btn btn-primary" data-toggle-class="btn-primary" data-toggle-passive-class="btn-default">
-                              <input type="radio" name="gender" value="female"> Female
-                            </label>
-                          </div>
+                        <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12">Tiến độ</label>
+                        <div class="col-md-6 col-sm-6 col-xs-12" style="padding-top: 8px;">
+                          Hoàn thành:
+                          <input type="radio" class="flat" name="progress" id="status1" value="100" checked="" required /> 
+                          Chưa Hoàn thành:
+                          <input type="radio" class="flat" name="progress" id="status2" value="0" />
                         </div>
                       </div>
                       <div class="form-group">
@@ -77,7 +67,7 @@
                       <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-12">Thời gian làm</label>
                         <div class="col-md-3 col-sm-3 col-xs-12">
-                          <select class="select2_single form-control" required="required" name="" tabindex="-1">
+                          <select class="select2_single form-control" required="required" name="time_spend" tabindex="-1">
                             <option></option>
                             <option value="1">1 giờ</option>
                             <option value="2">2 giờ</option>
