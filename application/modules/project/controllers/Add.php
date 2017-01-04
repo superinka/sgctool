@@ -118,9 +118,19 @@ Class Add extends MY_Controller {
 					'progress'      => $progress
 				);
 
-				$project_users = $this->input->post('project_users');
+				$project_users_and_room = $this->input->post('project_users');
+
+				$project_users = $project_leader_rooms = array();
+
+				for ($i=0; $i < count($project_users_and_room); $i++) { 
+					$x = $project_users_and_room[$i];
+					$y = explode('/', $x);
+					$project_users[$i] = $y[0];
+					$project_leader_rooms[$i] =$y[1];
+				}
 
 				//pre($project_users);
+				//pre($project_leader_rooms);
 
 				$holidays = array();
 
@@ -152,10 +162,10 @@ Class Add extends MY_Controller {
 								//redirect(base_url('project/index'));
 								$department_id = $this->role_model->get_column('tb_role','department_id',$where=array('user_id'=>$project_users[$i]));
 
-								$project =  $this->project_user_model->get_column('tb_project_user','project_id',$where=array('user_id'=>$project_users[$i]));
+								$project =  $this->project_model->get_column('tb_project','id',$where=array('short_name'=>$short_name));
 
 								//pre($department_id);
-								$project_id = $project[0]->project_id;
+								$project_id = $project[0]->id;
 
 								$d_id = $department_id[0]->department_id;
 

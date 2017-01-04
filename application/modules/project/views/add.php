@@ -1,3 +1,4 @@
+<?php //pre($list_department_employee); ?>
 <h1>Trạng tạo mới dự án</h1>
 <div class="row">
 	<div class="col-md-9">
@@ -62,7 +63,7 @@
 			          <optgroup label="<?php echo $r->department_name; ?>">
 			            <?php foreach ($r->emp as $x) { ?>
 
-			            <option value="<?php echo $x->user_id?>" ><?php echo $x->fullname?></option>
+			            <option value="<?php echo $x->user_id.'/'.$r->department_id ?>" ><?php echo $x->fullname?></option>
 			            <?php } ?>
 			          </optgroup>
 

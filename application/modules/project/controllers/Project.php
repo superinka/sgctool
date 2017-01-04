@@ -413,11 +413,23 @@ Class Project extends MY_Controller {
 										//pre($check_data);
 										for ($i=0; $i < count($check_data) ; $i++) {
 											$department_id = $this->role_model->get_column('tb_role','department_id',$where=array('user_id'=>$check_data[$i]));
+											//pre($department_id);
 											$this->project_user_model->del_rule($where=array('user_id'=>$check_data[$i]));
+											$list_user_by_project = $this->project_user_model->get_column('tb_project_user','user_id',$where=array('project_id'=>$project_id));
+											foreach ($list_user_by_project as $m => $n) {
+												$list_ip[] = $n->user_id;
+												$de_id = $this->role_model->get_column('tb_role','department_id',$where=array('user_id'=>$user_id));
+												$list_ro[] = $de_id[0]->department_id;
+											}
+
+
 											$x = $this->proportion_department_model->get_row($input['where'] = array('department_id'=>$department_id[0]->department_id));
 											//pre($x);
-											$xid = $x->id;
-											$this->proportion_department_model->delete($xid);
+											if(in_array($x->department_id, $list_ro)){
+												$xid = $x->id;
+												$this->proportion_department_model->delete($xid);
+											}
+
 										}
 										//pre($check_data);
 									}
