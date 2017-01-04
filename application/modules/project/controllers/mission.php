@@ -49,6 +49,36 @@ Class Mission extends MY_Controller {
 		$project_id = intval($project_id);
 		$this->data_layout['project_id'] = $project_id;
 
+		if($this->data_layout['account_type']==3){
+			$list_emp = $this->project_user_model->get_columns('tb_project_user',$where=array('project_id'=>$project_id));
+			foreach ($list_emp as $key => $value) {
+				$user_can_access[] = $value->user_id;
+
+				$depart = $this->role_model->get_columns('tb_role',$where=array('user_id'=>$value->user_id));
+				$department_id = $depart[0]->department_id;
+				$room_can_access[] = $department_id;
+			}
+
+			//pre($room_can_access);
+			$my_room_access = $this->role_model->get_columns('tb_role',$where=array('user_id'=>$id));
+			$k = false;
+			foreach ($my_room_access as $x => $y) {
+				$my_room = $y->department_id;
+				if(in_array($my_room, $room_can_access)){
+					$k = true;
+				}
+			}
+
+			if($k==false){
+				$this->session->set_flashdata('message','Bạn không được vào dự án này');
+				redirect(base_url('project/index'));	
+			}
+		}
+
+
+
+
+
 		$info_project = $this->project_model->get_info($project_id);
 		$this->data_layout['info_project'] = $info_project;
 
@@ -63,6 +93,8 @@ Class Mission extends MY_Controller {
 
 			$list_emp = $this->project_user_model->get_columns('tb_project_user',$where=array('project_id'=>$project_id));
 			$list_proportion_department = $this->proportion_department_model->get_columns('tb_proportion_department',$where=array('project_id'=>$project_id));
+
+
 
 			//$department_id = $this->get_column('tb_department', 'id',$where=array('name'=>$department_name));
 
@@ -139,22 +171,29 @@ Class Mission extends MY_Controller {
 					//pre($proportion);
 					if ($proportion==null) {$check =true;}
 					if($proportion!=null) {$check=false;}
+
+					//pre($proportion);
 					foreach ($list_emp['room-member'] as $k => $v) {
+						//pre($proportion[$k]);
 						//echo $v['name'];
 						//pre($proportion);
 						//echo 100/$total_room;
 						$list_emp['room-color'][$k] = color_room($v);
-						if ($proportion==null) {$list_emp['proportion-room'][$k] = (100/$total_room);}
-						else {
-							if($proportion[$k]){
+						if (!$proportion) {$list_emp['proportion-room'][$k] = (100/$total_room);}
+						else if($proportion){
+							//pre($proportion);
+							//pre($proportion[$k]);
+							if($proportion[$k]!=null){
+								//echo '0';
 								$list_emp['proportion-room'][$k] = $proportion[$k]->proportion;
+								//pre($list_emp['proportion-room']);
 								$list_room_by_project[$k]['proportion']  = $list_emp['proportion-room'][$k];
 
 							}
-							else {
+							else if ($proportion[$k]==null){
+								//echo '1';
 								$list_emp['proportion-room'][$k] = 0;
 								$list_room_by_project[$k]['proportion'] = 0;
-								$proportion[$k] = array();
 							}
 						}
 
@@ -164,7 +203,10 @@ Class Mission extends MY_Controller {
 
 					foreach ($list_emp['room-member'] as $key => $value) {
 						$list_room_by_project[$key]['name'] = $value;
+						$department = $this->department_model->get_columns('tb_department',$where=array('name'=>$value));
+						$department_id = $department[0]->id;
 						$list_room_by_project[$key]['score'] =0;
+						$list_room_by_project[$key]['department_id'] = $department_id;
 						$score = 0;
 
 						for ($i=0; $i < count($list_emp['member']) ; $i++) { 
@@ -177,9 +219,32 @@ Class Mission extends MY_Controller {
 						}
 
 					}
+
 					//pre($list_room_by_project);
 
 					//$score =0;
+
+					foreach ($list_room_by_project as $key => $value) {
+						$department_id = $value['department_id'];
+						$mission_leaders = $this->mission_model->get_columns('tb_mission',$where=array('department_id'=>$department_id, 'project_id'=>$project_id, 'level'=>3));
+						if($mission_leaders!=null) {
+							foreach ($mission_leaders as $k => $v) {
+								//$x = array($v->name, $v->progress);
+								//$list_room_by_project[$key]['mission'] = $x;
+								if(array_key_exists('mission',$value)==false) {
+									$list_room_by_project[$key]['mission'][] = array('name'=>$v->name, 'progress'=>$v->progress);
+								}
+
+								if(array_key_exists('mission',$value)) {
+									array_push($list_room_by_project[$key]['mission'], array('name'=>$v->name, 'progress'=>$v->progress));
+								}
+
+							}
+							$list_room_by_project[$key]['mission-leader'] = $mission_leaders;
+						}
+					}
+
+					//pre($list_room_by_project);
 
 					foreach ($list_room_by_project as $key => $value) {
 						$score =0;
@@ -208,10 +273,13 @@ Class Mission extends MY_Controller {
 
 			$list_mission = $this->mission_model->get_columns('tb_mission',$where=array('project_id'=>$project_id,'status'=>'1'));
 
+			//pre($list_mission);
+
+
 			foreach ($list_mission as $key => $value) {
 				$uid = $this->mission_user_model->get_column('tb_mission_user','user_id',$where=array('mission_id'=>$value->id));
 				$uid = $uid[0]->user_id;
-				$depart = $this->role_model->get_column('tb_role','department_id',$where=array('user_id'=>$uid));
+				$depart = $this->mission_model->get_column('tb_mission','department_id',$where=array('id'=>$value->id));
 				$department_id = $depart[0]->department_id;
 				$department_name = $this->department_model->get_info($department_id, 'name');
 
@@ -395,6 +463,33 @@ Class Mission extends MY_Controller {
 			$project_id = intval($project_id);
 
 			$now_user_id = $this->data_layout['id'];
+
+			if($this->data_layout['account_type']==3){
+
+				$list_emp = $this->project_user_model->get_columns('tb_project_user',$where=array('project_id'=>$project_id));
+				foreach ($list_emp as $key => $value) {
+					$user_can_access[] = $value->user_id;
+
+					$depart = $this->role_model->get_columns('tb_role',$where=array('user_id'=>$value->user_id));
+					$department_id = $depart[0]->department_id;
+					$room_can_access[] = $department_id;
+				}
+
+				//pre($room_can_access);
+				$my_room_access = $this->role_model->get_columns('tb_role',$where=array('user_id'=>$now_user_id));
+				$k = false;
+				foreach ($my_room_access as $x => $y) {
+					$my_room = $y->department_id;
+					if(in_array($my_room, $room_can_access)){
+						$k = true;
+					}
+				}
+
+				if($k==false){
+					$this->session->set_flashdata('message','Bạn không được vào dự án này');
+					redirect(base_url('project/index'));	
+				}
+			}
 
 
 			//lay thong tin project
@@ -597,6 +692,32 @@ Class Mission extends MY_Controller {
 
 			$now_user_id = $this->data_layout['id'];
 
+			if($this->data_layout['account_type']==3){ 
+
+				$list_emp = $this->project_user_model->get_columns('tb_project_user',$where=array('project_id'=>$project_id));
+				foreach ($list_emp as $key => $value) {
+					$user_can_access[] = $value->user_id;
+
+					$depart = $this->role_model->get_columns('tb_role',$where=array('user_id'=>$value->user_id));
+					$department_id = $depart[0]->department_id;
+					$room_can_access[] = $department_id;
+				}
+
+				//pre($room_can_access);
+				$my_room_access = $this->role_model->get_columns('tb_role',$where=array('user_id'=>$now_user_id));
+				$k = false;
+				foreach ($my_room_access as $x => $y) {
+					$my_room = $y->department_id;
+					if(in_array($my_room, $room_can_access)){
+						$k = true;
+					}
+				}
+
+				if($k==false){
+					$this->session->set_flashdata('message','Bạn không được vào dự án này');
+					redirect(base_url('project/index'));	
+				}
+			}
 
 			//lay thong tin project
 
@@ -660,6 +781,34 @@ Class Mission extends MY_Controller {
 			$this->data_layout['project_id'] = $project_id;
 			$now_user_id = $this->data_layout['id'];
 
+			if($this->data_layout['account_type']==3){
+
+				$list_emp = $this->project_user_model->get_columns('tb_project_user',$where=array('project_id'=>$project_id));
+				foreach ($list_emp as $key => $value) {
+					$user_can_access[] = $value->user_id;
+
+					$depart = $this->role_model->get_columns('tb_role',$where=array('user_id'=>$value->user_id));
+					$department_id = $depart[0]->department_id;
+					$room_can_access[] = $department_id;
+				}
+
+				//pre($room_can_access);
+				$my_room_access = $this->role_model->get_columns('tb_role',$where=array('user_id'=>$now_user_id));
+				$k = false;
+				foreach ($my_room_access as $x => $y) {
+					$my_room = $y->department_id;
+					if(in_array($my_room, $room_can_access)){
+						$k = true;
+					}
+				}
+
+				if($k==false){
+					$this->session->set_flashdata('message','Bạn không được vào dự án này');
+					redirect(base_url('project/index'));	
+				}
+
+			}
+
 			$info_project = $this->project_model->get_info($project_id);
 			if(!$info_project) {
 				$this->session->set_flashdata('message','Không tồn tại thông tin dự án');
@@ -713,6 +862,9 @@ Class Mission extends MY_Controller {
 
 					foreach ($list_user_id_of_department as $k => $v) {
 						$info_user = $this->home_model->get_columns('tb_employee',$where=array('user_id'=>$v->user_id));
+						$level = $this->acc_model->get_columns('tb_user',$where=array('id'=>$v->user_id));
+						$level = $level[0]->account_type;
+						$info_user[0]->level = $level;
 						$value->list_employee[$k] = $info_user[0];
 					}
 				}
@@ -738,7 +890,14 @@ Class Mission extends MY_Controller {
 						$start_date = $this->input->post('start_date');
 						$end_date = $this->input->post('end_date');
 
-						$mission_user_id = $this->input->post('mission_user');
+						$mission_user_id_and_room = $this->input->post('mission_user');
+
+						$m = explode('/', $mission_user_id_and_room);
+						//pre($m);
+
+						$mission_user_id = $m[0];
+						$mission_department_id = $m[1];
+						$ulevel = $m[2];
 
 						$start_date = strtotime($start_date);
 						$newformat_start_date = date('Y-m-d',$start_date);
@@ -762,7 +921,9 @@ Class Mission extends MY_Controller {
 							'progress'      => '0',
 							'status'        => '1',
 							'project_id'    => $project_id,
-							'code'          => $code
+							'code'          => $code,
+							'department_id' => $mission_department_id,
+							'level'         => $ulevel
 						);
 
 						//pre($data_mission);
@@ -1086,12 +1247,12 @@ Class Mission extends MY_Controller {
 		}
 
 		else {
-			if ($account_type < 4 ) {
+			if ($account_type < 3 ) {
 				$this->session->set_flashdata('message','Bạn không đủ quyền hạn');
 				redirect(base_url('project/mission/view_detail/'.$project_id.'/'.$mission_id));
 			}
 
-			else if($account_type == 4) {
+			else if($account_type == 4 || $account_type == 3) {
 
 				$info_mission = $this->mission_model->get_info($mission_id);
 				$this->data_layout['info_mission'] = $info_mission;

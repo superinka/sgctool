@@ -380,6 +380,12 @@ class MY_Model extends CI_Model {
 		else return null;		
 
 	}
+	function get_fullname_employee($userid){
+		$i =  $this->get_column('tb_employee', 'fullname',$where=array('user_id'=>$userid));
+		if($i) return $i;
+		else return null;		
+
+	}
 
 	function get_employees($id){
         $sql = 'SELECT tb_employee.*, tb_user.id

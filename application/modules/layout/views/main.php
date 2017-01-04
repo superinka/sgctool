@@ -77,6 +77,9 @@
       if ($this->uri->segment(1)=='my_report') {
         $this->load->view('js-report');
       }
+      if ($this->uri->segment(1)=='view_report') {
+        $this->load->view('js-report');
+      }
       if ($this->uri->segment(1)=='report') {
         $this->load->view('js-report');
       }

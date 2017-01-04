@@ -18,10 +18,20 @@
       </li>
       <li><a><i class="fa fa-edit"></i> Báo cáo<span class="fa fa-chevron-down"></span></a>
         <ul class="nav child_menu">
+          <?php if ($account_type > 2) { ?>
           <li><a href="<?php echo base_url('my_report/add_report') ?>">Viết báo cáo</a></li>
           <li><a href="<?php echo base_url('my_report/index') ?>">Báo cáo của tôi</a></li>
-          <?php if ($account_type < 4) { ?>
+          <?php }?>
+          <?php if ($account_type == 3) { ?>
           <li><a href="<?php echo base_url('my_report/check_report') ?>">Duyệt báo cáo</a></li>
+          <?php } ?>
+          <?php if ($account_type < 3) { ?>
+          <li><a>Xem báo cáo<span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li class="sub_menu"><a href="<?php echo base_url('view_report/index') ?>">Báo cáo hôm nay</a></li>
+              <li><a href="#level2_1">Toàn bộ báo cáo</a></li>
+            </ul>
+          </li>
           <?php } ?>
         </ul>
       </li>

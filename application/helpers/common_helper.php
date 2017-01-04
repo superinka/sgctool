@@ -91,6 +91,29 @@
 
 	}
 
+	function check_status_report($i) {
+		if ($i == 0) {
+			$rs = '<span style="color:#d9534f;font-weight:600">Đang chờ</span>';
+		}
+
+		else if ($i == 1) {
+			$rs = '<span style="color:#26B99A;font-weight:600">Đã duyệt</span>';
+		}
+		return $rs;
+
+	}
+
+	function check_progress_report($i) {
+		if ($i == 0) {
+			$rs = '<span style="color:#d9534f;font-weight:600">Chưa hoàn thành</span>';
+		}
+
+		else if ($i == 100) {
+			$rs = '<span style="color:#26B99A;font-weight:600">Hoàn Thành</span>';
+		}
+		return $rs;
+
+	}
 
 	function networkdays($s, $e, $holidays = array()) {
 	    // If the start and end dates are given in the wrong order, flip them.    

@@ -57,7 +57,7 @@
 			          <optgroup label="<?php echo $r->department_name; ?>">
 			            <?php foreach ($r->list_employee as $x) { ?>
 
-			            <option value="<?php echo $x->user_id ?>" ><?php echo $x->fullname ?></option>
+			            <option value="<?php echo $x->user_id.'/'.$r->department_id.'/'.$x->level ?>" ><?php echo $x->fullname ?></option>
 			            <?php } ?>
 			          </optgroup>
 

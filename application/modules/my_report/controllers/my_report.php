@@ -110,6 +110,21 @@ Class My_Report extends MY_Controller {
 
 			$list_room_manager = array();
 
+			$list_report_checked_today = array();
+
+			$input_checked = array();
+		    $input_checked['where']['review_status'] = 1;
+		    $input_checked['where']['create_date'] = $today;
+		    //$list_report_checked_today = $this->my_report_model->get_list($input_checked);
+
+		    $input_checked_all = array();
+		    $input_checked_all['where']['review_status'] = 1;
+		    $list_report_checked_all = $this->my_report_model->get_list($input_checked_all);
+
+		    $input_unchecked_all = array();
+		    $input_unchecked_all['where']['review_status'] = 0;
+		    $list_report_checked_all = $this->my_report_model->get_list($input_unchecked_all);
+
 			if($this->data_layout['account_type'] = 3) {
 				$list_room = $this->role_model->get_columns('tb_role',$where = array('user_id'=>$my_id));
 				if ($list_room==null) {
@@ -154,7 +169,69 @@ Class My_Report extends MY_Controller {
 											$list_task = $this->task_model->get_columns('tb_task',$where=array('mission_id'=>$mission_id, 'status'=>'0'));
 											
 											foreach ($list_task as $x => $z) {
-												$list_report = $this->my_report_model->get_columns('tb_daily_report',$where=array('task_id'=>$z->id, 'review_status'=>'0'));
+												$list_report = $this->my_report_model->get_columns('tb_daily_report',$where=array(
+														'task_id'=>$z->id, 
+														'review_status'=>'0', 
+														'create_date'=>$today
+													));
+
+												if($list_report!=null) {
+													$z->list_report = $list_report;
+												}
+												
+											}
+											//$list_report = 
+											$list_miss[$i]->task = $list_task;
+											$v->list_miss[] = $list_miss[$i];
+										}
+									}
+								}
+
+							}
+						}
+					}
+
+					foreach ($list_room as $key => $value) {
+						$department_id = $value->department_id;
+						$department_name = $this->department_model->get_info($department_id,'name');
+						$department_name = $department_name->name;
+						$list_report_checked_today[$key]['department_name'] = $department_name;
+						$list_report_checked_today[$key]['department_id'] = $department_id;
+
+						$list_pro = $this->proportion_department_model->get_columns('tb_proportion_department',$where = array('department_id'=>$department_id));
+						if($list_pro!=null) {
+							foreach ($list_pro as $k => $v) {
+								$project_id = $v->project_id;
+								$project_name = $this->project_model->get_info($project_id,'project_name');
+								$project_name = $project_name->project_name;
+								$v->project_name = $project_name;
+								$list_report_checked_today[$key]['project'][] = $v;
+
+
+								$list_miss = $this->mission_model->get_columns('tb_mission',$where = array('project_id'=>$project_id, 'status'=>'1'));
+								//$v->mission = $list_miss;
+								//$list_room_manager[$key]['mission'][] = $v;
+								//pre($list_miss);
+								if($list_miss!=null) {
+									for ($i=0;  $i < count($list_miss)  ; $i++)  { 
+										$mission_id = $list_miss[$i]->id;
+										$uid = $this->mission_user_model->get_columns('tb_mission_user',$where=array('mission_id'=>$mission_id));
+										//pre($uid);
+										$uid = $uid[0]->user_id;
+
+										if($this->role_model->check_exists($where=array('user_id'=>$uid, 'department_id'=>$department_id))==true){
+											$mission_for_id = $uid;
+											$mission_for_name = $this->home_model->get_column('tb_employee','fullname',$where=array('user_id'=>$mission_for_id));
+											$list_miss[$i]->mission_for = $mission_for_name[0]->fullname;
+											$list_task = $this->task_model->get_columns('tb_task',$where=array('mission_id'=>$mission_id, 'status'=>'0'));
+											
+											foreach ($list_task as $x => $z) {
+												$list_report = $this->my_report_model->get_columns('tb_daily_report',$where=array(
+														'task_id'=>$z->id, 
+														'review_status'=>'1', 
+														'create_date'=>$today
+													));
+
 												if($list_report!=null) {
 													$z->list_report = $list_report;
 												}
@@ -171,13 +248,98 @@ Class My_Report extends MY_Controller {
 						}
 					}
 				}
-			pre($list_room_manager);
+			//pre($list_room_manager);
 			$this->data_layout['list_room_manager'] = $list_room_manager;
+			$this->data_layout['list_report_checked_today'] = $list_report_checked_today;
+
+			//pre($list_report_checked_today);
 			}
 			
 		}
 
 		$this->data_layout['temp'] = 'check_report';
 	    $this->load->view('layout/main', $this->data_layout);
+	}
+
+	function check(){
+		$message = $this->session->flashdata('message');
+	    $this->data_layout['message'] = $message;
+
+	    $my_id = $this->data_layout['id'];
+	    $this->data_layout['my_id'] = $my_id;
+
+	    $today = date("Y-m-d"); 
+	    $this->data_layout['today'] = $today;
+
+	    if ($this->data_layout['account_type'] > 3) {
+			$this->session->set_flashdata('message','Bạn không đủ quyền hạn');
+			redirect(base_url('my_report/index'));
+		}
+		else {
+			$report_id = $this->uri->segment(3);
+			$report_id = intval($report_id);
+
+			//lay thong tin report
+
+			$info_report = $this->my_report_model->get_info($report_id);
+
+			if(!$info_report) {
+				$this->session->set_flashdata('message','Không tồn tại thông tin report');
+				redirect(base_url('my_report/check_report'));
+			}
+			else {
+				$data_report = array ('review_status'=>'1');
+
+				if($this->my_report_model->update($report_id,$data_report)){
+					$this->session->set_flashdata('message','Update thành công');
+					redirect(base_url('my_report/check_report'), 'refresh');
+				}
+				else {
+					$this->session->set_flashdata('message','Update không thành công');
+					redirect(base_url('my_report/check_report'), 'refresh');
+				}
+			}
+		}
+	}
+
+	function uncheck(){
+		$message = $this->session->flashdata('message');
+	    $this->data_layout['message'] = $message;
+
+	    $my_id = $this->data_layout['id'];
+	    $this->data_layout['my_id'] = $my_id;
+
+	    $today = date("Y-m-d"); 
+	    $this->data_layout['today'] = $today;
+
+	    if ($this->data_layout['account_type'] > 3) {
+			$this->session->set_flashdata('message','Bạn không đủ quyền hạn');
+			redirect(base_url('my_report/index'));
+		}
+		else {
+			$report_id = $this->uri->segment(3);
+			$report_id = intval($report_id);
+
+			//lay thong tin report
+
+			$info_report = $this->my_report_model->get_info($report_id);
+
+			if(!$info_report) {
+				$this->session->set_flashdata('message','Không tồn tại thông tin report');
+				redirect(base_url('my_report/check_report'));
+			}
+			else {
+				$data_report = array ('review_status'=>'0');
+
+				if($this->my_report_model->update($report_id,$data_report)){
+					$this->session->set_flashdata('message','Update thành công');
+					redirect(base_url('my_report/check_report'), 'refresh');
+				}
+				else {
+					$this->session->set_flashdata('message','Update không thành công');
+					redirect(base_url('my_report/check_report'), 'refresh');
+				}
+			}
+		}
 	}
 }
