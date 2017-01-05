@@ -4,10 +4,10 @@
   <span class="count_top"><i class="fa fa-user"></i> Tổng số dự án</span>
   <div class="count"><?php echo $total; ?></div>
 </div>
-<div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+<!-- <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
   <span class="count_top"><i class="fa fa-user"></i> dự án của bạn : </span>
   <div class="count green"><?php echo $numberproject;   ?></div>
-</div>
+</div> -->
 </div>
 <!-- /top tiles -->
 <div class="row">
@@ -138,14 +138,13 @@
               </td>
               <td>
 
-                <a href="#" class="btn btn-primary btn-xs"><i class="fa fa-folder"></i> View </a>
                 <?php if($account_type < 3) { ?>
                 <a href="<?php echo base_url('project/edit/'.$row->id) ?>" class="btn btn-info btn-xs"><i class="fa fa-pencil"></i> Edit </a>
                 <a onclick="return confirm('Are you sure you want to delete this item?');" href="<?php echo base_url('project/delete/'.$row->id)?>" class="btn btn-danger btn-xs">
                 	<i class="fa fa-trash-o"></i> Delete 
                 </a>
                 <?php }?>
-                <a href="<?php echo base_url('project/mission/index/'.$row->id) ?>" class="btn btn-primary btn-xs">Nhiệm vụ</a>
+                <a href="<?php echo base_url('project/mission/index/'.$row->id) ?>" class="btn btn-primary btn-xs"><i class="fa fa-folder"></i> Xem</a>
               </td>
             </tr>
             <?php }?>

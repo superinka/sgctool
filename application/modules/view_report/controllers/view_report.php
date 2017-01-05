@@ -54,6 +54,8 @@ Class View_Report extends MY_Controller {
 			$input = array();
 		    $input['where']['create_date'] = $today;
 			$list_report_today = $this->my_report_model->get_list($input);
+
+			//pre($list_report_today);
 			$this->data_layout['list_report_today'] = $list_report_today;
 
 			$input_checked_today = array();
@@ -69,6 +71,7 @@ Class View_Report extends MY_Controller {
 			$this->data_layout['list_report_uncheck_today'] = $list_report_uncheck_today;
 
 			//pre($list_report_uncheck_today);
+			$total_report_today = 0; $total_report_checked =0; $total_report_uncheck =0;
 
 			if($list_report_today!=null){
 
@@ -180,20 +183,31 @@ Class View_Report extends MY_Controller {
 
 				$total_report_today = count($list_report_today);
 
-				if($list_report_checked_today == null) {
-					$total_report_checked = 0;
-					
-				}
+				//pre($list_report_today);
+
+
+
 
 				if($list_report_checked_today != null) {
 					$total_report_checked = count($list_report_checked_today);
 				} 
 
 				$total_report_uncheck = $total_report_today - $total_report_checked;
-				//echo $total_report_today;
+				echo $total_report_today;
 				//pre($list_report_checked_today);
 			}
 
+			if($list_report_today==null){
+				$total_report_today = 0;
+			}
+			if($list_report_uncheck_today== null) {
+				$total_report_uncheck = 0;
+			}
+
+			if($list_report_checked_today == null) {
+				$total_report_checked = 0;
+				
+			}
 		}
 
 		$this->data_layout['list_report_checked_today'] = $list_report_checked_today;

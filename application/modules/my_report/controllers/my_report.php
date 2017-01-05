@@ -374,18 +374,20 @@ Class My_Report extends MY_Controller {
 
 			if(!$info_report) {
 				$this->session->set_flashdata('message','Không tồn tại thông tin report');
-				redirect(base_url('my_report/check_report'));
+				redirect(base_url('my_report/check_report_leader'));
 			}
 			else {
-				$data_report = array ('review_status'=>'1','review_by'=>$my_id);
+				if($my_id==1) {$i = '53';}
+				else {$i = $my_id;}
+				$data_report = array ('review_status'=>'1','review_by'=>$i);
 
 				if($this->my_report_model->update($report_id,$data_report)){
 					$this->session->set_flashdata('message','Update thành công');
-					redirect(base_url('my_report/check_report'), 'refresh');
+					redirect(base_url('my_report/check_report_leader'), 'refresh');
 				}
 				else {
 					$this->session->set_flashdata('message','Update không thành công');
-					redirect(base_url('my_report/check_report'), 'refresh');
+					redirect(base_url('my_report/check_report_leader'), 'refresh');
 				}
 			}
 		}
@@ -415,20 +417,154 @@ Class My_Report extends MY_Controller {
 
 			if(!$info_report) {
 				$this->session->set_flashdata('message','Không tồn tại thông tin report');
-				redirect(base_url('my_report/check_report'));
+				redirect(base_url('my_report/check_report_leader'));
 			}
 			else {
-				$data_report = array ('review_status'=>'0','review_by'=>$my_id);
+				if($my_id==1) {$i = '53';}
+				else {$i = $my_id;}
+				$data_report = array ('review_status'=>'0','review_by'=>$i);
 
 				if($this->my_report_model->update($report_id,$data_report)){
 					$this->session->set_flashdata('message','Update thành công');
-					redirect(base_url('my_report/check_report'), 'refresh');
+					redirect(base_url('my_report/check_report_leader'), 'refresh');
 				}
 				else {
 					$this->session->set_flashdata('message','Update không thành công');
-					redirect(base_url('my_report/check_report'), 'refresh');
+					redirect(base_url('my_report/check_report_leader'), 'refresh');
 				}
 			}
 		}
+	}
+
+	function check_report_leader(){
+		$message = $this->session->flashdata('message');
+	    $this->data_layout['message'] = $message;
+
+	    $my_id = $this->data_layout['id'];
+	    $this->data_layout['my_id'] = $my_id;
+
+	    $today = date("Y-m-d"); 
+	    $this->data_layout['today'] = $today;
+
+	    if ($this->data_layout['account_type'] > 2) {
+			$this->session->set_flashdata('message','Bạn không đủ quyền hạn');
+			redirect(base_url('my_report/index'));
+		}
+		else {
+			$list_mission_leader = $this->mission_model->get_columns('tb_mission', $where=array('level'=>3,'status'=>1));
+			foreach ($list_mission_leader as $key => $value) {
+				if($value->end_date >= $today) {
+					$list_mission_leader_today[] = $value;
+				}
+			}
+
+			//pre($list_mission_leader_today);
+
+			foreach ($list_mission_leader_today as $key => $value) {
+				$list_task = $this->task_model->get_columns('tb_task', $where = array('mission_id'=>$value->id,'status'=>0));
+				$department_id = $value->department_id;
+				$department_name = $this->department_model->get_info($department_id,'name');
+				$department_name = $department_name->name;
+				$value->department_name = $department_name;
+
+				$project_id = $value->project_id;
+				$project_name = $this->project_model->get_info($project_id,'project_name');
+				$project_name = $project_name->project_name;
+				$value->project_name = $project_name;
+
+				foreach ($list_task as $k => $v) {
+					if($v->end_date >= $today){
+						$list_task_today[] = $v;
+						$value->list_task_today[] = $v;
+					}
+				}
+
+				//$list_mission_leader_today[$key]->list_task_today = $list_task_today;
+
+			}
+
+			foreach ($list_mission_leader_today as $key => $value) {
+				if(array_key_exists('list_task_today',$value)){
+
+					foreach ($value->list_task_today as $k => $v) {
+						$list_report = $this->my_report_model->get_columns('tb_daily_report',$where=array('task_id'=>$v->id, 'review_status'=>0));
+						//pre($list_report);
+						foreach ($list_report as $m => $n) {
+							if($n->create_date == $today){
+								$list_report_today[] = $n;
+								$v->list_report_today[] = $n;
+							}
+						}
+						//$value->list_task_today[$k]->list_report_today = $list_report_today;						
+					}
+					
+				}
+
+				
+			}
+
+			//pre($list_mission_leader_today);
+
+			// list report uncheck
+			$list_mission_leader_checked = $this->mission_model->get_columns('tb_mission', $where=array('level'=>3,'status'=>1));
+			//pre($list_mission_leader_uncheck);
+			foreach ($list_mission_leader_checked as $key => $value) {
+				if($value->end_date >= $today) {
+					$list_mission_leader_checked_today[] = $value;
+				}
+			}
+
+			//pre($list_mission_leader_uncheck_today);
+
+			foreach ($list_mission_leader_checked_today as $key => $value) {
+				$list_task = $this->task_model->get_columns('tb_task', $where = array('mission_id'=>$value->id,'status'=>0));
+				$department_id = $value->department_id;
+				$department_name = $this->department_model->get_info($department_id,'name');
+				$department_name = $department_name->name;
+				$value->department_name = $department_name;
+
+				$project_id = $value->project_id;
+				$project_name = $this->project_model->get_info($project_id,'project_name');
+				$project_name = $project_name->project_name;
+				$value->project_name = $project_name;
+
+				foreach ($list_task as $k => $v) {
+					if($v->end_date >= $today){
+						$list_task_checked_today[] = $v;
+						$value->list_task_checked_today[] = $v;
+					}
+				}
+
+				//$list_mission_leader_today[$key]->list_task_today = $list_task_today;
+
+			}
+			//pre($list_mission_leader_uncheck_today);
+
+			foreach ($list_mission_leader_checked_today as $key => $value) {
+				if(array_key_exists('list_task_checked_today',$value)){
+
+					foreach ($value->list_task_checked_today as $k => $v) {
+						$list_report = $this->my_report_model->get_columns('tb_daily_report',$where=array('task_id'=>$v->id, 'review_status'=>'1'));
+						//pre($list_report);
+						foreach ($list_report as $m => $n) {
+							if($n->create_date == $today){
+								$list_report_checked_today[] = $n;
+								$v->list_report_checked_today[] = $n;
+							}
+						}
+						//$value->list_task_today[$k]->list_report_today = $list_report_today;						
+					}
+					
+				}
+
+				
+			}
+
+			//pre($list_mission_leader_checked_today);
+			$this->data_layout['list_mission_leader_today'] = $list_mission_leader_today;
+			$this->data_layout['list_mission_leader_checked_today'] = $list_mission_leader_checked_today;
+		}
+		$this->data_layout['temp'] = 'check_report_leader';
+	    $this->load->view('layout/main', $this->data_layout);
 	}
 }

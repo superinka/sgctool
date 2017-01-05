@@ -29,6 +29,9 @@
           <li><a>Xem báo cáo<span class="fa fa-chevron-down"></span></a>
             <ul class="nav child_menu">
               <li class="sub_menu"><a href="<?php echo base_url('view_report/index') ?>">Báo cáo hôm nay</a></li>
+              <li>
+                <a href="<?php echo base_url('my_report/check_report_leader') ?>">Duyệt báo cáo trưởng phòng</a>
+              </li>
               <li><a href="#level2_1">Toàn bộ báo cáo</a></li>
             </ul>
           </li>
@@ -53,12 +56,12 @@
       </li>
       <li><a><i class="fa fa-edit"></i> Danh sách nhân viên<span class="fa fa-chevron-down"></span></a>
         <ul class="nav child_menu">
-          <li><a href="form.html">Xem danh sách dự án</a></li>
+          <li><a href="<?php echo base_url('home/index'); ?>">Toàn bộ nhân viên</a></li>
         </ul>
       </li>
       <li><a><i class="fa fa-edit"></i> Đánh giá<span class="fa fa-chevron-down"></span></a>
         <ul class="nav child_menu">
-          <li><a href="form.html">Xem đánh giá</a></li>
+          <li><a href="">Xem đánh giá</a></li>
         </ul>
       </li>
     </ul>

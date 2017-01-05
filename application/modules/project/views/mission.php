@@ -1,14 +1,18 @@
 <?php //pre($list_emp); ?>
 <?php //pre($list_mission); ?>
+<?php  //echo $project_id;?>
 <?php 
 $total = 0;
 foreach ($list_room_by_project as $k=>$v) {
 	if (array_key_exists('mission',$v)) {
 		$b = round(($v['score']*$v['proportion']),2); 
 		$total = $b + $total;
+		
 	}
 
 }
+$data = array('progress'=>$total);
+$this->project_model->update($project_id,$data);
 ?>
 <?php if ($message){$this->load->view('layout/message',$this->data_layout); }?>
 <div class="row">

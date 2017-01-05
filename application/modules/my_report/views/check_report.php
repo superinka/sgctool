@@ -107,6 +107,10 @@
 
 <div class="row">
 <h3>Báo cáo đã duyệt hôm nay</h3>
+<?php if ($list_report_checked_today==null) {?>
+<strong>Không có dữ liệu</strong>
+<?php }?>
+<?php if ($list_report_checked_today!=null) {?>
 <?php foreach ($list_report_checked_today as $key => $value) { ?>
 <div class="row">
   <div class="col-md-12 col-sm-12 col-xs-12">
@@ -204,6 +208,7 @@
 
   <div class="clearfix"></div>
 </div>
+<?php } ?>
 <?php } ?>
 </div>
 
