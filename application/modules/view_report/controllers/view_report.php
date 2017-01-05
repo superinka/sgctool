@@ -193,7 +193,7 @@ Class View_Report extends MY_Controller {
 				} 
 
 				$total_report_uncheck = $total_report_today - $total_report_checked;
-				echo $total_report_today;
+				//echo $total_report_today;
 				//pre($list_report_checked_today);
 			}
 

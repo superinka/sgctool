@@ -1,5 +1,6 @@
 <?php //pre($list_report_today); ?>
 <div class="row">
+<div class="col-md-12 col-sm-12 col-xs-12">
 <?php if($list_report_today==null){echo'<p>Hôm nay chưa có báo cáo !</p>';} ?>
 <?php if($list_report_today!=null) {?>
 <?php $b = round(($total_report_checked/$total_report_today*100),2); ?>
@@ -216,4 +217,5 @@
 </div>
 
 <?php }?>
+</div>
 </div>

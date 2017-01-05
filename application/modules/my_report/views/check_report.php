@@ -34,7 +34,7 @@
         <div class="clearfix"></div>
       </div>
       <div class="x_content">
-      <?php if(array_key_exists('project',$value)==true) { ?>
+      <?php if(array_key_exists('list_miss',$value)==true) { ?>
         <table class="table table-bordered">
           <thead>
             <tr>
@@ -52,40 +52,40 @@
             </tr>
           </thead>
           <tbody>
-          <?php foreach ($value['project'] as $k => $v) { ?>
-            <?php if(array_key_exists('list_miss',$v)==true) { ?>
-              <?php foreach ($v->list_miss as $a => $b) { ?>
-                <?php if(array_key_exists('task',$b)==true) { ?>
-                <?php foreach ($b->task as $c => $d) { ?>
-                	<?php if(array_key_exists('list_report',$d)==true) {?>
-                	  <?php foreach ($d->list_report as $e => $f) {?>
+          <?php foreach ($value['list_miss'] as $k => $v) { ?>
+            <?php if(array_key_exists('task',$v)==true) { ?>
+              <?php foreach ($v->task as $a => $b) { ?>
+                <?php if(array_key_exists('list_report',$b)==true) { ?>
+                <?php foreach ($b->list_report as $c => $d) { ?>
+
+                	  
                 	  <?php 
-                	    $create_time = strtotime($f->create_time);
+                	    $create_time = strtotime($d->create_time);
           						$newformat_create_time = date('Y-m-d H:i:s',$create_time);
-          						$pm = ($this->my_report_model->get_fullname_employee($f->review_by));
+          						$pm = ($this->my_report_model->get_fullname_employee($d->review_by));
           					  ?>
 	                  <tr>
 	                    <th scope="row"></th>
-	                    <td><?php echo $f->description ?></td>
-	                    <td><?php echo $b->mission_for ?></td>
-	                    <td><?php echo $v->project_name ?></td>
-	                    <td><?php echo $d->name?></td>
+	                    <td><?php echo $d->description ?></td>
+	                    <td><?php echo $v->mission_for ?></td>
+	                    <td><?php echo $v->project_id ?></td>
+	                    <td><?php echo $b->name?></td>
 	                    <td><?php echo $newformat_create_time ?></td>
-	                    <td><?php echo $f->time_spend ?></td>
-	                    <td><?php echo check_progress_report($f->progress)?></td>
+	                    <td><?php echo $d->time_spend ?></td>
+	                    <td><?php echo check_progress_report($d->progress)?></td>
 	                    <td><?php echo $pm[0]->fullname ?></td>
-	                    <td><?php echo check_status_report($f->review_status); ?></td>
+	                    <td><?php echo check_status_report($d->review_status); ?></td>
 	                    <td>
-	                    	<?php if($f->review_status==0) { ?>
-	                    	<a href="<?php echo base_url('my_report/check/'.$f->id) ?>" class="btn btn-success btn-xs"><i class="fa fa-check"></i> Duyệt </a>
+	                    	<?php if($d->review_status==0) { ?>
+	                    	<a href="<?php echo base_url('my_report/check/'.$d->id) ?>" class="btn btn-success btn-xs"><i class="fa fa-check"></i> Duyệt </a>
 	                    	<?php }?>
-	                    	<?php if($f->review_status==1) { ?>
-	                    	<a onclick="return confirm('Are you sure you want to uncheck this report?');" href="<?php echo base_url('my_report/uncheck/'.$f->id) ?>" class="btn btn-danger btn-xs"><i class="fa fa-close"></i> Bỏ </a>
+	                    	<?php if($d->review_status==1) { ?>
+	                    	<a onclick="return confirm('Are you sure you want to uncheck this report?');" href="<?php echo base_url('my_report/uncheck/'.$d->id) ?>" class="btn btn-danger btn-xs"><i class="fa fa-close"></i> Bỏ </a>
 	                    	<?php }?>
 	                    </td>
 	                  </tr>
-	                  <?php }?>
-	                <?php }?>
+	                 
+	             
                 <?php } ?>
                 <?php } ?>
               <?php }?>
@@ -141,7 +141,7 @@
         <div class="clearfix"></div>
       </div>
       <div class="x_content">
-      <?php if(array_key_exists('project',$value)==true) { ?>
+      <?php if(array_key_exists('list_miss',$value)==true) { ?>
         <table class="table table-bordered">
           <thead>
             <tr>
@@ -159,40 +159,40 @@
             </tr>
           </thead>
           <tbody>
-          <?php foreach ($value['project'] as $k => $v) { ?>
-            <?php if(array_key_exists('list_miss',$v)==true) { ?>
-              <?php foreach ($v->list_miss as $a => $b) { ?>
-                <?php if(array_key_exists('task',$b)==true) { ?>
-                <?php foreach ($b->task as $c => $d) { ?>
-                	<?php if(array_key_exists('list_report',$d)==true) {?>
-                	  <?php foreach ($d->list_report as $e => $f) {?>
-                	  <?php 
-                	    $create_time = strtotime($f->create_time);
-						$newformat_create_time = date('Y-m-d H:i:s',$create_time);
-						$pm = ($this->my_report_model->get_fullname_employee($f->review_by));
-					  ?>
-	                  <tr>
-	                    <th scope="row"></th>
-	                    <td><?php echo $f->description ?></td>
-	                    <td><?php echo $b->mission_for ?></td>
-	                    <td><?php echo $v->project_name ?></td>
-	                    <td><?php echo $d->name?></td>
-	                    <td><?php echo $newformat_create_time ?></td>
-	                    <td><?php echo $f->time_spend ?></td>
-	                    <td><?php echo check_progress_report($f->progress)?></td>
-	                    <td><?php echo $pm[0]->fullname ?></td>
-	                    <td><?php echo check_status_report($f->review_status); ?></td>
-	                    <td>
-	                    	<?php if($f->review_status==0) { ?>
-	                    	<a href="<?php echo base_url('my_report/check/'.$f->id) ?>" class="btn btn-success btn-xs"><i class="fa fa-check"></i> Duyệt </a>
-	                    	<?php }?>
-	                    	<?php if($f->review_status==1) { ?>
-	                    	<a onclick="return confirm('Are you sure you want to uncheck this report?');" href="<?php echo base_url('my_report/uncheck/'.$f->id) ?>" class="btn btn-danger btn-xs"><i class="fa fa-close"></i> Bỏ </a>
-	                    	<?php }?>
-	                    </td>
-	                  </tr>
-	                  <?php }?>
-	                <?php }?>
+          <?php foreach ($value['list_miss'] as $k => $v) { ?>
+            <?php if(array_key_exists('task',$v)==true) { ?>
+              <?php foreach ($v->task as $a => $b) { ?>
+                <?php if(array_key_exists('list_report',$b)==true) { ?>
+                <?php foreach ($b->list_report as $c => $d) { ?>
+
+                    
+                    <?php 
+                      $create_time = strtotime($d->create_time);
+                      $newformat_create_time = date('Y-m-d H:i:s',$create_time);
+                      $pm = ($this->my_report_model->get_fullname_employee($d->review_by));
+                      ?>
+                    <tr>
+                      <th scope="row"></th>
+                      <td><?php echo $d->description ?></td>
+                      <td><?php echo $v->mission_for ?></td>
+                      <td><?php echo $v->project_id ?></td>
+                      <td><?php echo $b->name?></td>
+                      <td><?php echo $newformat_create_time ?></td>
+                      <td><?php echo $d->time_spend ?></td>
+                      <td><?php echo check_progress_report($d->progress)?></td>
+                      <td><?php echo $pm[0]->fullname ?></td>
+                      <td><?php echo check_status_report($d->review_status); ?></td>
+                      <td>
+                        <?php if($d->review_status==0) { ?>
+                        <a href="<?php echo base_url('my_report/check/'.$d->id) ?>" class="btn btn-success btn-xs"><i class="fa fa-check"></i> Duyệt </a>
+                        <?php }?>
+                        <?php if($d->review_status==1) { ?>
+                        <a onclick="return confirm('Are you sure you want to uncheck this report?');" href="<?php echo base_url('my_report/uncheck/'.$d->id) ?>" class="btn btn-danger btn-xs"><i class="fa fa-close"></i> Bỏ </a>
+                        <?php }?>
+                      </td>
+                    </tr>
+                   
+               
                 <?php } ?>
                 <?php } ?>
               <?php }?>
