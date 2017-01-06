@@ -3,9 +3,9 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 06, 2017 at 11:46 AM
--- Server version: 10.1.19-MariaDB
--- PHP Version: 5.6.28
+-- Generation Time: Jan 06, 2017 at 05:00 PM
+-- Server version: 10.1.13-MariaDB
+-- PHP Version: 5.6.23
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -200,13 +200,20 @@ CREATE TABLE `tb_notification` (
   `department_id` int(8) DEFAULT NULL,
   `review_status` int(8) DEFAULT NULL,
   `level_creater` int(8) DEFAULT NULL,
-  `type` int(8) DEFAULT NULL,
+  `type` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
   `create_time` datetime DEFAULT NULL,
   `review_time` datetime DEFAULT NULL,
   `content_old` text COLLATE utf8_unicode_ci,
   `content_new` text COLLATE utf8_unicode_ci,
   `status` int(8) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `tb_notification`
+--
+
+INSERT INTO `tb_notification` (`id`, `code`, `create_by`, `review_by`, `note`, `department_id`, `review_status`, `level_creater`, `type`, `create_time`, `review_time`, `content_old`, `content_new`, `status`) VALUES
+(1, '3318f2fe69ef0dbbf4fc2498e26c5fc1d369', 47, 53, 'Bị ốm nên xin thêm thời gian làm', 9, 0, 4, 'c101', '2017-01-06 22:56:36', '2017-01-06 22:56:36', '2017-01-04^2017-01-11^eof', '2017-01-04^2017-01-15^Bị ốm nên xin thêm thời gian làm', 0);
 
 -- --------------------------------------------------------
 
@@ -235,7 +242,7 @@ CREATE TABLE `tb_project` (
 --
 
 INSERT INTO `tb_project` (`id`, `project_name`, `description`, `create_date`, `create_by`, `start_date`, `end_date`, `status`, `department_id`, `progress`, `update_by`, `update_time`, `short_name`) VALUES
-(33, 'Babylon', 'Dự án babylon', '2017-01-04', 1, '2017-01-04', '2017-01-04', '1', NULL, 5, 1, '2017-01-04 20:33:03.000000', 'BBL');
+(33, 'Babylon', 'Dự án babylon', '2017-01-04', 1, '2017-01-04', '2017-01-04', '1', NULL, 8, 1, '2017-01-04 20:33:03.000000', 'BBL');
 
 -- --------------------------------------------------------
 
@@ -492,7 +499,7 @@ ALTER TABLE `tb_mission_user`
 -- AUTO_INCREMENT for table `tb_notification`
 --
 ALTER TABLE `tb_notification`
-  MODIFY `id` int(64) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(64) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT for table `tb_project`
 --
