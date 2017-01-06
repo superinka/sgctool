@@ -1,4 +1,5 @@
 <!-- top navigation -->
+<?php //echo $my_id; ?>
 <div class="top_nav">
   <div class="nav_menu">
     <nav>
@@ -14,14 +15,7 @@
             <span class=" fa fa-angle-down"></span>
           </a>
           <ul class="dropdown-menu dropdown-usermenu pull-right">
-            <li><a href="javascript:;"> Profile</a></li>
-            <li>
-              <a href="javascript:;">
-                <span class="badge bg-red pull-right">50%</span>
-                <span>Settings</span>
-              </a>
-            </li>
-            <li><a href="javascript:;">Giúp đỡ</a></li>
+            <li><a href="<?php echo base_url('home/home/edit_profile/'.$id)?>"> Profile</a></li>
             <li><a href="<?php echo base_url('home/home/logout') ?>"><i class="fa fa-sign-out pull-right"></i> Thoát ra</a></li>
           </ul>
         </li>

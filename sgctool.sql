@@ -3,9 +3,9 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 05, 2017 at 05:42 PM
--- Server version: 10.1.13-MariaDB
--- PHP Version: 5.6.23
+-- Generation Time: Jan 06, 2017 at 11:46 AM
+-- Server version: 10.1.19-MariaDB
+-- PHP Version: 5.6.28
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -56,7 +56,7 @@ INSERT INTO `tb_daily_report` (`id`, `create_by`, `create_time`, `status`, `task
 (6, 47, '2017-01-04 21:15:04.000000', 2, 15, '2017-01-04 21:15:04.000000', 'Vẽ mỏ gà', '331894169bf31c7ff062936a96d3c8bd1f8f2ff3', 8, 0, 52, 1, '2017-01-04', 'Hoàn thành 50%'),
 (7, 52, '2017-01-04 23:02:25.000000', 1, 17, '2017-01-04 23:02:25.000000', 'giám sát vẽ chân gà', '3319467670efdf2ec9b086079795c442636b55fb', 3, 0, 52, 0, '2017-01-04', 'giám sát vẽ chân gà'),
 (8, 52, '2017-01-05 08:32:35.000000', 1, 16, '2017-01-05 08:32:35.000000', 'giám sát vẽ gà 2', '33199834c74d97b01eae257e44aa9d5bade97baf', 8, 100, 53, 0, '2017-01-05', 'giám sát vẽ đầu gà'),
-(10, 52, '2017-01-05 22:35:47.000000', 1, 18, '2017-01-05 22:35:47.000000', 'Giám sát Hưng vẽ', '332091846f4922f45568161a8cdf4ad2299f6d23', 6, 100, 53, 1, '2017-01-05', 'Giám sát');
+(9, 47, '2017-01-06 08:11:33.000000', 1, 15, '2017-01-06 08:11:33.000000', 'Báo cáo ngày 6/1', '331815319bf31c7ff062936a96d3c8bd1f8f2ff3', 4, 100, 47, 0, '2017-01-06', 'báo cáo');
 
 -- --------------------------------------------------------
 
@@ -120,7 +120,7 @@ CREATE TABLE `tb_employee` (
 INSERT INTO `tb_employee` (`id`, `user_id`, `fullname`, `email`, `phone`, `skype`, `facebook`, `birthday`, `sex`, `address`) VALUES
 (38, 44, 'Hoàng', 'inkavn03@gmail.com', '0979030879', 'hoangskype', 'hoang@gmail.com', '1992-12-27', 1, 'Hà Nội'),
 (40, 46, 'Hoa', 'inkavn03@gmail.com', '0979030879', '', '', '2016-12-27', 2, 'Hà Nội'),
-(41, 47, 'Bùi Ngọc Mai', 'inkavn03@gmail.com', '0979030879', '', '', '1993-03-31', 1, 'Hà Nội'),
+(41, 47, 'Bùi Ngọc Mai', 'inkavn03@gmail.com', '0979030879', 'skyever', '', '1970-01-01', 1, 'Hà Nội 2'),
 (42, 48, 'Nguyễn Huy Hoàng', 'inkavn03@gmail.com', '0979030879', '', '', '1991-12-28', 2, 'Hà Nội'),
 (43, 49, 'Hoàng yến', 'inkavn03@gmail.com', '0979030879', '', '', '1990-12-29', 1, ''),
 (44, 50, 'Hoàng Phương', 'inkavn03@gmail.com', '0979030879', '', '', '1991-12-29', 1, ''),
@@ -157,9 +157,10 @@ CREATE TABLE `tb_mission` (
 --
 
 INSERT INTO `tb_mission` (`id`, `name`, `description`, `create_by`, `create_date`, `update_time`, `progress`, `project_id`, `status`, `start_date`, `end_date`, `code`, `update_by`, `department_id`, `level`) VALUES
-(18, 'Vẽ con gà', 'Vẽ con gà dự án babylon', 1, '2017-01-04', '2017-01-04 20:34:57.000000', 50, 33, 1, '2017-01-04', '2017-01-04', '331060596f932feb74cd842311e6b26dd5d09f', 1, 9, 4),
-(19, 'Giám sát vẽ gà', 'Giám sát vẽ gà', 52, '2017-01-04', '2017-01-04 22:57:22.000000', 50, 33, 1, '2017-01-04', '2017-01-24', '336070ef335472c8353c861aa4d3b555d253f9', 52, 9, 3),
-(20, 'Giám sát vẽ chó', 'Giám sát vẽ chó', 52, '2017-01-05', '2017-01-05 09:35:48.000000', 0, 33, 1, '2017-01-05', '2017-01-07', '3324545ce1f1193382c749f25b1742b6298857', 52, 9, 3);
+(18, 'Vẽ con gà', 'Vẽ con gà dự án babylon', 1, '2017-01-04', '2017-01-04 20:34:57.000000', 50, 33, 1, '2017-01-04', '2017-01-14', '331060596f932feb74cd842311e6b26dd5d09f', 1, 9, 4),
+(19, 'Giám sát vẽ gà', 'Giám sát vẽ gà', 52, '2017-01-04', '2017-01-04 22:57:22.000000', 50, 33, 1, '2017-01-04', '2017-01-25', '336070ef335472c8353c861aa4d3b555d253f9', 52, 9, 3),
+(20, 'Giám sát vẽ chó', 'Giám sát vẽ chó', 52, '2017-01-05', '2017-01-05 09:35:48.000000', 0, 33, 1, '2017-01-05', '2017-01-07', '3324545ce1f1193382c749f25b1742b6298857', 52, 9, 3),
+(21, 'Vẽ bông hoa', 'vẽ hoa', 52, '2017-01-06', '2017-01-06 08:52:01.000000', 50, 33, 1, '2017-01-06', '2017-01-13', '33299742db62aeebe9cb1566a637ccc8a3b1a9', 52, 9, 4);
 
 -- --------------------------------------------------------
 
@@ -181,7 +182,31 @@ CREATE TABLE `tb_mission_user` (
 INSERT INTO `tb_mission_user` (`id`, `mission_id`, `user_id`, `update_time`) VALUES
 (8, 18, 47, '2017-01-04 20:34:57.000000'),
 (9, 19, 52, '2017-01-04 22:57:22.000000'),
-(10, 20, 52, '2017-01-05 09:35:48.000000');
+(10, 20, 52, '2017-01-05 09:35:48.000000'),
+(11, 21, 47, '2017-01-06 08:52:01.000000');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tb_notification`
+--
+
+CREATE TABLE `tb_notification` (
+  `id` int(64) NOT NULL,
+  `code` text COLLATE utf8_unicode_ci,
+  `create_by` int(8) DEFAULT NULL,
+  `review_by` int(8) DEFAULT NULL,
+  `note` text COLLATE utf8_unicode_ci,
+  `department_id` int(8) DEFAULT NULL,
+  `review_status` int(8) DEFAULT NULL,
+  `level_creater` int(8) DEFAULT NULL,
+  `type` int(8) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `review_time` datetime DEFAULT NULL,
+  `content_old` text COLLATE utf8_unicode_ci,
+  `content_new` text COLLATE utf8_unicode_ci,
+  `status` int(8) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -210,7 +235,7 @@ CREATE TABLE `tb_project` (
 --
 
 INSERT INTO `tb_project` (`id`, `project_name`, `description`, `create_date`, `create_by`, `start_date`, `end_date`, `status`, `department_id`, `progress`, `update_by`, `update_time`, `short_name`) VALUES
-(33, 'Babylon', 'Dự án babylon', '2017-01-04', 1, '2017-01-04', '2017-01-04', '1', NULL, 7, 1, '2017-01-04 20:33:03.000000', 'BBL');
+(33, 'Babylon', 'Dự án babylon', '2017-01-04', 1, '2017-01-04', '2017-01-04', '1', NULL, 5, 1, '2017-01-04 20:33:03.000000', 'BBL');
 
 -- --------------------------------------------------------
 
@@ -317,8 +342,12 @@ INSERT INTO `tb_task` (`id`, `name`, `description`, `create_by`, `create_date`, 
 (14, 'Vẽ cánh con gà', 'Vẽ cánh con gà', 47, '2017-01-04', '2017-01-04', '2017-01-04', 100, 18, '3318cc6f4b1aa59effce18bfa11b26cb5e1d', 33),
 (15, 'Vẽ đầu con gà', 'Dự án babylon', 47, '2017-01-04', '2017-01-04', '2017-01-11', 0, 18, '3318f2fe69ef0dbbf4fc2498e26c5fc1d369', 33),
 (16, 'Giám sát vẽ đầu gà', 'Giám sát vẽ đầu gà', 52, '2017-01-04', '2017-01-04', '2017-01-07', 0, 19, '33195103f5160e4746f8192f8951ca548403', 33),
-(17, 'Giám sát vẽ chân gà', 'Giám sát vẽ chân gà', 52, '2017-01-04', '2017-01-04', '2017-01-07', 0, 19, '3319befbf305c3428396db22ba947c87d981', 33),
-(18, 'Giám sát vẽ chân chó', 'Giám sát vẽ chân chó', 52, '2017-01-05', '2017-01-05', '2017-01-06', 0, 20, '33206921b933d14b7ed37e006c7bb9c5b1f7', 33);
+(17, 'Giám sát vẽ chân gà', 'Giám sát vẽ chân gà', 52, '2017-01-04', '2017-01-04', '2017-01-06', 0, 19, '3319befbf305c3428396db22ba947c87d981', 33),
+(18, 'Giám sát vẽ chân chó', 'Giám sát vẽ chân chó', 52, '2017-01-05', '2017-01-05', '2017-01-06', 0, 20, '33206921b933d14b7ed37e006c7bb9c5b1f7', 33),
+(19, 'a', 'a', 47, '2017-01-06', '2017-01-06', '2017-01-06', 100, 18, '3318469ba4987a21b85ffefe70c9b38da0f2', 33),
+(20, 'Vẽ cánh hoa', 'Vẽ cánh hoa', 47, '2017-01-06', '2017-01-06', '2017-01-06', 100, 21, '3321f5ececdbb112c5d9ad2ed6ed64fcd276', 33),
+(21, 'Vẽ nhụy hoa', 'Hoa nhụy vẽ', 47, '2017-01-06', '2017-01-06', '2017-01-07', 0, 21, '3321008f98cd5fa73ed1495226e1a8e638ec', 33),
+(22, 'Vẽ mỏ gà', 'vẽ', 47, '2017-01-06', '2017-01-06', '2017-01-07', 0, 18, '3318a2354ef9bebb47d2a3951f17b403ebf1', 33);
 
 -- --------------------------------------------------------
 
@@ -346,7 +375,7 @@ INSERT INTO `tb_user` (`id`, `username`, `password`, `create_date`, `status`, `a
 (2, 'admin', 'c20ad4d76fe97759aa27a0c99bff6710', '2016-12-23', 1, 2, NULL, NULL),
 (44, 'Hoang', '25d55ad283aa400af464c76d713c07ad', '2016-12-27', 1, 3, '2016-12-27 09:38:55.000000', 1),
 (46, 'hoa', '25d55ad283aa400af464c76d713c07ad', '2016-12-27', 1, 3, '2016-12-28 16:29:05.000000', 1),
-(47, 'ngocmai', '25d55ad283aa400af464c76d713c07ad', '2016-12-28', 1, 4, NULL, NULL),
+(47, 'ngocmai', '25d55ad283aa400af464c76d713c07ad', '2016-12-28', 1, 4, '2017-01-06 16:08:35.000000', 47),
 (48, 'hoangnguyen', '25d55ad283aa400af464c76d713c07ad', '2016-12-28', 1, 4, NULL, NULL),
 (49, 'yenhoang', '25d55ad283aa400af464c76d713c07ad', '2016-12-29', 1, 4, NULL, NULL),
 (50, 'phuonghoang', '25d55ad283aa400af464c76d713c07ad', '2016-12-29', 1, 4, NULL, NULL),
@@ -386,6 +415,12 @@ ALTER TABLE `tb_mission`
 -- Indexes for table `tb_mission_user`
 --
 ALTER TABLE `tb_mission_user`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `tb_notification`
+--
+ALTER TABLE `tb_notification`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -432,7 +467,7 @@ ALTER TABLE `tb_user`
 -- AUTO_INCREMENT for table `tb_daily_report`
 --
 ALTER TABLE `tb_daily_report`
-  MODIFY `id` int(32) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(32) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 --
 -- AUTO_INCREMENT for table `tb_department`
 --
@@ -447,12 +482,17 @@ ALTER TABLE `tb_employee`
 -- AUTO_INCREMENT for table `tb_mission`
 --
 ALTER TABLE `tb_mission`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 --
 -- AUTO_INCREMENT for table `tb_mission_user`
 --
 ALTER TABLE `tb_mission_user`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+--
+-- AUTO_INCREMENT for table `tb_notification`
+--
+ALTER TABLE `tb_notification`
+  MODIFY `id` int(64) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `tb_project`
 --
@@ -477,7 +517,7 @@ ALTER TABLE `tb_role`
 -- AUTO_INCREMENT for table `tb_task`
 --
 ALTER TABLE `tb_task`
-  MODIFY `id` int(32) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(32) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 --
 -- AUTO_INCREMENT for table `tb_user`
 --

@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Verify_Login extends MY_Controller {
+class verify_login extends MY_Controller {
 
  function __construct()
  {
@@ -15,6 +15,7 @@ class Verify_Login extends MY_Controller {
 
    $this->form_validation->set_rules('username', 'Username', 'trim');
    $this->form_validation->set_rules('password', 'Password', 'trim|callback_check_database');
+
 
    if($this->form_validation->run() == FALSE)
    {

@@ -16,7 +16,11 @@ Class Home extends MY_Controller {
 	      $this->data_layout['username'] = $session_data['username'];
 	      $this->data_layout['account_type'] = $session_data['account_type'];
 	      $this->data_layout['id'] = $session_data['id'];
-	      //echo $session_data['account_type'];
+	      $id = $this->data_layout['id'];
+	      $my_id = $this->data_layout['id'];
+
+	      $this->data_layout['my_id'] = $my_id;
+	      //echo $this->data_layout['id'];
 	      //echo '0';
 	    }
 	    else
@@ -474,6 +478,223 @@ Class Home extends MY_Controller {
 
 		$this->data_layout['temp'] = 'profile';
 	    $this->load->view('layout/main', $this->data_layout);
+	}
+
+	function edit_profile(){
+		if ($this->data_layout['account_type'] > 4) {
+			$this->session->set_flashdata('message','Bạn không đủ quyền hạn');
+			redirect(base_url('home/index'));
+		}
+
+		else {
+			// lay id can xoa
+			$user_id = $this->uri->segment(3);
+			$user_id = intval($user_id);
+			//echo $user_id;
+			// lay thong tin user can xoa
+
+			$message = $this->session->flashdata('message');
+		    $this->data_layout['message'] = $message;
+
+		    //echo $this->data_layout['id'];
+		    
+		    $my_id = $this->data_layout['id'];
+
+		    //echo $my_id;
+		    $this->data_layout['my_id'] = $my_id;
+
+			$info_user = $this->acc_model->get_info($my_id);
+
+			if(!$info_user) {
+				$this->session->set_flashdata('message','Không tồn tại thông tin tài khoản');
+				redirect(base_url('home/index'));
+			}
+			else {
+				$this->data_layout['info_user'] = $info_user;
+
+				$eid = $this->home_model->get_column('tb_employee', 'id',$where=array('user_id'=>$my_id));
+
+				$info_employee = $this->home_model->get_info($eid[0]->id);
+
+				if(!$info_employee) {
+					$this->session->set_flashdata('message','Không tồn tại thông tin tài khoản');
+					//redirect(base_url('home/index'), 'refresh');
+				}
+
+				else {
+					//pre($info_employee);
+					$this->data_layout['info_employee'] = $info_employee;
+
+					$rid = $this->role_model->get_column('tb_role', 'id',$where=array('user_id'=>$my_id));
+
+					$list_room = $this->role_model->get_columns('tb_role',$where=array('user_id'=>$my_id));
+					//pre($list_room);
+
+					if ($list_room!=null) {
+						foreach ($list_room as $k => $v) {
+
+						$room_name = $this->department_model->get_column('tb_department', 'name',$where=array('id'=>$v->department_id));
+						//pre($room_name[0]->name);
+						$v->department_name = $room_name[0]->name;
+						//$this->data_layout['room_name'] = $room_name;
+						//pre($room_name);
+						}
+
+					}
+					//pre($list_room);
+					$this->data_layout['list_room'] = $list_room;
+
+
+				}
+			}
+
+			$list_center = $this->home_model->get_columns('tb_department',$where=array('parent_id'=>'1'));
+
+			foreach ($list_center as $key => $value) {
+				# code...
+				$list_center[$key] = (array) $value;
+				$room_id = $value->id;
+				$list_room = $this->home_model->get_columns('tb_department',$where=array('parent_id'=>$room_id));
+				//pre($list_room);
+				foreach ($list_room as $k => $v) {
+					$list_center[$key]['child_room'][] =(array)$v;
+					//pre($v);
+				}
+				//$pm_name = $this->home_model->get_pm_name($pm_id);
+				
+			}
+
+			$this->data_layout['list_center'] = $list_center;
+
+			if($this->input->post()){
+
+				$this->form_validation->set_rules('username', 'Tên', 'trim|callback_check_username');
+				$this->form_validation->set_rules('fullname', 'Tên đầy đủ', 'trim');
+				
+				$this->form_validation->set_rules('email', 'Email', 'trim|valid_email');
+				$this->form_validation->set_rules('phone', 'Số điện thoại', 'trim|is_numeric');
+				$this->form_validation->set_rules('skype', 'Skype', 'trim');
+				$this->form_validation->set_rules('facebook', 'Link facebook', 'trim');
+				$this->form_validation->set_rules('birthday', 'Ngày sinh');
+				$this->form_validation->set_rules('account_type', 'Cấp nhân viên');
+
+				$password = $this->input->post('password');
+
+				if($password) {
+					$this->form_validation->set_rules('password', 'Mật khẩu', 'trim|min_length[8]');
+				}
+
+
+				if($this->form_validation->run()){
+					$username = $this->input->post('username');
+					$fullname = $this->input->post('fullname');
+					$password = $this->input->post('password');
+					$email = $this->input->post('email');
+					$phone = $this->input->post('phone');
+					$skype = $this->input->post('skype');
+					$facebook = $this->input->post('facebook');
+					$birthday = $this->input->post('birthday');
+					$account_type_now = $this->input->post('account_type');
+					$sex = $this->input->post('sex');
+					$address = $this->input->post('address');
+
+
+					
+
+					$time = strtotime($birthday);
+					$newformat_birthday = date('Y-m-d',$time);
+
+					$data_user = array(
+						'update_time'  => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s'),
+						'update_by'    => $this->data_layout['id']
+					);
+
+					//pre($data_user);
+
+					if($password) {
+						$password = md5($password);
+						$data_user['password'] = $password;
+					}
+
+					$rooms = $this->input->post('rooms');
+
+					$f2 = $this->input->post('rooms');
+
+					$f1 = $this->input->post('room');
+
+					$f3 = $this->input->post('lead');
+
+					//pre($f3);
+
+					if ($account_type_now==4) {
+						$fn = array('0' => $f1);
+					}
+
+					if ($account_type_now==3) {
+						$fn = $f2;
+					}
+					if ($account_type_now==2) {
+						$fn = array('0'=>'1');
+					}
+
+					if($this->acc_model->update($my_id, $data_user)) {
+
+						$uid = $this->acc_model->get_column('tb_user', 'id',$where=array('username'=>$username));
+
+						$empid = $this->home_model->get_column('tb_employee', 'id', $where=array('user_id'=>$my_id));
+
+
+
+						//echo $uid[0]->id;
+
+						$data_employee = array(
+								'fullname' => $fullname,
+								'email'    => $email,
+								'phone'    => $phone,
+								'skype'    => $skype,
+								'facebook' => $facebook,
+								'birthday' => $newformat_birthday,
+								'sex'      => $sex,
+								'address'  => $address
+							);
+						//pre($data_employee);
+
+						//pre($fn);
+
+						if($this->home_model->update($empid[0]->id,$data_employee)){
+							$this->session->set_flashdata('message','Sửa dữ liệu thành công');
+
+							redirect(base_url('home/acc'));
+							//pre($data_role);
+
+
+						}
+						else {
+							$this->session->set_flashdata('message','Sửa dữ liệu không thành công');
+							redirect(base_url('home/acc'));
+						}
+					}
+
+					else {
+						$this->session->set_flashdata('message','Sửa dữ liệu không thành công');
+						redirect(base_url('home/acc'));
+					}
+
+					
+
+					
+				}
+
+			}
+
+			$this->data_layout['temp'] = 'edit_profile';
+	    	$this->load->view('layout/main', $this->data_layout);
+		}
+
+		//pre($info);
+
+		//redirect(base_url('home/index'), 'refresh');
+
 	}
 
 	function logout()

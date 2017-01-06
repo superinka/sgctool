@@ -1,6 +1,9 @@
 <?php //pre($info_mission); ?>
 <?php //pre($info_project); ?>
 <?php if ($message){$this->load->view('layout/message',$this->data_layout); }?>
+<style type="text/css">
+  ul.task-request li a i {padding-right: 15px;}
+</style>
 <div class="row">
   <div class="col-md-12 col-xs-12 widget widget_tally_box">
     <div class="row">
@@ -88,6 +91,7 @@
     </div>
   </div>
 	<div class="col-md-8 col-sm-8 col-xs-12">
+  <div class="row">
 	    <div class="x_panel">
 	      <div class="x_title">
 	        <h2>Danh sách công việc: <small>Có <?php echo $count_task; ?> công việc</small></h2>
@@ -118,15 +122,35 @@
               <?php
             }
             if(($account_type < 4) || ($now_user_id==$info_mission->mission_user_id)) {
+              ?>
+              
+
+              <?php
               foreach ($list_task as $key => $value) {
                 if ($value->status==0) {$c = 'danger'; $t = 'Chưa Hoàn Thành';} else {$c = 'success'; $t = 'Hoàn Thành';}
                 ?>
+                <div class="row">
+                <div class="col-md-10">
                 <div>
                   <p><i class="fa fa-angle-double-right"></i> <a href="<?php echo base_url('project/mission/view_detail/'.$value->id) ?>"><?php echo $value->name ?></a>  <span class="label label-<?php echo $c; ?> pull-right"><?php  echo $t?></span></p>
 
                 </div>
-                <?php
+                </div>
+
+              <div class="col-md-2">
+              <ul style="list-style: none; display: inline-flex; padding-left: 0px;" class="task_request">
+                <li style="padding-right: 15px;"><a title="Xin sửa thời gian" href="<?php echo base_url('my_request/edit_time_task/'.$value->code) ?>"><i class="fa fa-clock-o" aria-hidden="true"></i></a></li>
+                <li style="padding-right: 15px;"><a title="Xin sửa tên" href="#"><i class="fa fa-info-circle" aria-hidden="true"></i></a></li>
+                <li><a title="Xin sửa tiến độ" href="#"><i class="fa fa-battery-full" aria-hidden="true"></i></a></li>
+              </ul>
+              </div>
+              </div>
+              <?php
               }
+
+              ?>
+              </div>
+              <?php
             }
 
 	      	}
@@ -134,7 +158,7 @@
 	      
 	    </div>
 	</div>
-
+</div>
 </div>
 
 <div class="row">

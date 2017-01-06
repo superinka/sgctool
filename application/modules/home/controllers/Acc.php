@@ -16,6 +16,9 @@ Class Acc extends MY_Controller {
 	      $this->data_layout['id'] = $session_data['id'];
 	      $id = $this->data_layout['id'];
 	      $this->data_layout['account_type'] = $session_data['account_type'];
+	      $my_id = $this->data_layout['id'];
+
+	      $this->data_layout['my_id'] = $my_id;
 	      //echo '0';
 	    }
 	    else
@@ -70,13 +73,22 @@ Class Acc extends MY_Controller {
 		
 		//pre($list_project['0']->pm);
 
-		foreach ($list_employee as $key => $value) {
-			# code...
-			$list_employee[$key] = (array) $value;
-			$pm_id = $value->pm;
-			$pm_name = $this->home_model->get_pm_name($pm_id);
-			$list_employee[$key]['pm_name'] = (array) $pm_name[0];
+		//
+
+		if($this->data_layout['account_type']==2) {
+			$list_employee = null;
 		}
+
+		// foreach ($list_employee as $key => $value) {
+		// 	# code...
+		// 	$list_employee[$key] = (array) $value;
+		// 	$pm_id = $value->pm;
+		// 	$pm_name = $this->home_model->get_pm_name($pm_id);
+		// 	$list_employee[$key]['pm_name'] = (array) $pm_name[0];
+		// }
+
+		//pre($list_employee);
+
 
 		//pre($list_project);
 

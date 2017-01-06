@@ -56,11 +56,60 @@ Class My_Report extends MY_Controller {
 
 	    if($this->data_layout['account_type']==4){
 	    	$department = $this->role_model->get_column('tb_role', 'department_id', $where=array('user_id'=>$my_id));
+	    	foreach ($department as $key => $value) {
 	    	$department_id = $department[0]->department_id;
 	    	$department_name_info = $this->department_model->get_info($department_id);
 
-	    	$list_room_by_me['department']['name'] = $department_name_info->name;
-	    	$list_room_by_me['department']['id'] = $department_id;
+	    	$list_room_by_me['department'][$key]['name'] = $department_name_info->name;
+	    	$list_room_by_me['department'][$key]['id'] = $department_id;
+
+			$list_miss = $this->mission_model->get_columns('tb_mission',$where=array('department_id'=>$department_id, 'level'=>4));
+	    		if($list_miss!=null){
+	    			foreach ($list_miss as $k => $v) {
+	    				$mission_id = $v->id;
+	    				$project_id = $v->project_id;
+	    				$project = $this->project_model->get_info($project_id);
+	    				$project_name = $project->project_name;
+	    				$v->project_name = $project_name;
+
+	    				if($v->end_date >= $today) {
+		    				$list_task = $this->mission_model->get_columns('tb_task',$where=array('mission_id'=>$mission_id, 'status'=>0));
+		    				foreach ($list_task as $x => $y) {
+		    					if($y->end_date < $today){
+		    						unset($list_task[$x]);
+		    					}
+		    				}
+		    				$list_task = array_values($list_task);
+
+		    				foreach ($list_task as $x => $y) {
+
+		    					$list_reported_today =  $this->my_report_model->get_columns('tb_daily_report',$where=array('task_id'=>$y->id, 'create_date'=>$today,'create_by'=>$my_id, 'review_status'=>1));
+
+		    					if($list_reported_today!=null){
+		    						$list_task[$x]->list_reported_today = $list_reported_today;
+		    					}
+
+		    					$list_un_report_today = $this->my_report_model->get_columns('tb_daily_report',$where=array('task_id'=>$y->id, 'create_date'=>$today,'create_by'=>$my_id, 'review_status'=>0));
+
+		    					if($list_un_report_today!=null){
+		    						$list_task[$x]->list_un_report_today = $list_un_report_today;
+		    					}
+
+		    					$list_report_today = $this->my_report_model->get_columns('tb_daily_report',$where=array('task_id'=>$y->id, 'create_date'=>$today,'create_by'=>$my_id));
+
+		    					if($list_report_today!=null){
+		    						$list_task[$x]->list_report_today = $list_report_today;
+		    					}
+		    					
+		    				}
+		    				$v->list_task = $list_task;	    					
+	    				}
+
+	    			}
+
+	    			$list_room_by_me['department'][$key]['list_miss'] = $list_miss;
+	    		}
+	    		}
 
 
 	    } 
@@ -124,7 +173,7 @@ Class My_Report extends MY_Controller {
 	 	} 
 
 	 	//pre($list_room_by_me);
-	 	 $this->data_layout['list_room_by_me'] = $list_room_by_me;
+	 	$this->data_layout['list_room_by_me'] = $list_room_by_me;
 
 
 
@@ -159,6 +208,31 @@ Class My_Report extends MY_Controller {
 	    $input_task['where']['status'] = 0;
 
 	    $list_task_active  = $this->task_model->get_list($input_task);
+
+		//pre($list_task_active);
+
+	    foreach ($list_task_active as $key => $value) {
+	    	if($value->end_date < $today) {
+	    		unset($list_task_active[$key]);
+	    	}
+	    }
+
+	    foreach ($list_task_active as $key => $value) {
+	    	$mission_id = $value->mission_id;
+	    	$mission = $this->mission_model->get_info($mission_id);
+	    	if($mission){
+	    		if($mission->end_date < $today) {
+	    			unset($list_task_active[$key]);
+	    		}
+	    	}
+	    }
+
+	    //pre($list_task_active);
+
+	    //$list_task_active = array_unique($list_task_active);
+
+	    //pre($list_task_active);
+
 	    $this->data_layout['list_task_active'] = $list_task_active;
 
 	    if($this->input->post()){

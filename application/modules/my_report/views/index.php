@@ -1,3 +1,4 @@
+<?php //pre($list_room_by_me) ?>
 <?php if ($message){$this->load->view('layout/message',$this->data_layout); }?>
 <div class="row">
 	<div class="col-md-3">
@@ -99,7 +100,7 @@
 		                          <th scope="row"></th>
 		                          <td><?php echo $y->name  ?></td>
 		                          <td><?php echo $v->name  ?></td>
-		                          <td><?php echo $y->name  ?></td>
+		                          <td><?php echo $v->project_name  ?></td>
 		                          <td><?php echo $st  ?></td>
 		                        </tr>
 		                        <?php } ?>

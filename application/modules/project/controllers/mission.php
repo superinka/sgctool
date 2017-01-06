@@ -1032,6 +1032,8 @@ Class Mission extends MY_Controller {
 			$progress_task = (round($count_task_success/$count_task,2)*100);
 		}
 
+		//pre($list_task);
+
 		
 		
 

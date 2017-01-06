@@ -1,6 +1,7 @@
 <div class="row">
 <?php
 //pre($list_report_today);
+//pre($list_task_active);
 
 ?>
 	<?php if ($list_report_today==null) { ?>

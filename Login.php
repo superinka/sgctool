@@ -1,5 +1,5 @@
 <?php
-Class login extends MY_Controller {
+Class Login extends MY_Controller {
 	function __construct() {
 		parent::__construct();
 		$this->load->helper('form');
@@ -12,7 +12,6 @@ Class login extends MY_Controller {
 	}
 	
 	function index() {
-		//echo base_url();
 		$this->load->view('index');
 	}
 }
