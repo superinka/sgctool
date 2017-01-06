@@ -486,6 +486,11 @@ Class Home extends MY_Controller {
 			redirect(base_url('home/index'));
 		}
 
+		if ($this->data_layout['account_type'] == 1) {
+			$this->session->set_flashdata('message','Không thể sửa tài khoản này');
+			redirect(base_url('home/index'));
+		}
+
 		else {
 			// lay id can xoa
 			$user_id = $this->uri->segment(3);
@@ -502,6 +507,8 @@ Class Home extends MY_Controller {
 
 		    //echo $my_id;
 		    $this->data_layout['my_id'] = $my_id;
+
+
 
 			$info_user = $this->acc_model->get_info($my_id);
 
@@ -525,46 +532,11 @@ Class Home extends MY_Controller {
 					//pre($info_employee);
 					$this->data_layout['info_employee'] = $info_employee;
 
-					$rid = $this->role_model->get_column('tb_role', 'id',$where=array('user_id'=>$my_id));
-
-					$list_room = $this->role_model->get_columns('tb_role',$where=array('user_id'=>$my_id));
-					//pre($list_room);
-
-					if ($list_room!=null) {
-						foreach ($list_room as $k => $v) {
-
-						$room_name = $this->department_model->get_column('tb_department', 'name',$where=array('id'=>$v->department_id));
-						//pre($room_name[0]->name);
-						$v->department_name = $room_name[0]->name;
-						//$this->data_layout['room_name'] = $room_name;
-						//pre($room_name);
-						}
-
-					}
-					//pre($list_room);
-					$this->data_layout['list_room'] = $list_room;
-
 
 				}
 			}
 
-			$list_center = $this->home_model->get_columns('tb_department',$where=array('parent_id'=>'1'));
 
-			foreach ($list_center as $key => $value) {
-				# code...
-				$list_center[$key] = (array) $value;
-				$room_id = $value->id;
-				$list_room = $this->home_model->get_columns('tb_department',$where=array('parent_id'=>$room_id));
-				//pre($list_room);
-				foreach ($list_room as $k => $v) {
-					$list_center[$key]['child_room'][] =(array)$v;
-					//pre($v);
-				}
-				//$pm_name = $this->home_model->get_pm_name($pm_id);
-				
-			}
-
-			$this->data_layout['list_center'] = $list_center;
 
 			if($this->input->post()){
 
@@ -614,27 +586,6 @@ Class Home extends MY_Controller {
 					if($password) {
 						$password = md5($password);
 						$data_user['password'] = $password;
-					}
-
-					$rooms = $this->input->post('rooms');
-
-					$f2 = $this->input->post('rooms');
-
-					$f1 = $this->input->post('room');
-
-					$f3 = $this->input->post('lead');
-
-					//pre($f3);
-
-					if ($account_type_now==4) {
-						$fn = array('0' => $f1);
-					}
-
-					if ($account_type_now==3) {
-						$fn = $f2;
-					}
-					if ($account_type_now==2) {
-						$fn = array('0'=>'1');
 					}
 
 					if($this->acc_model->update($my_id, $data_user)) {

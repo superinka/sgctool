@@ -164,6 +164,46 @@
     </script>
     <script>
       $(document).ready(function() {
+        $('#old_start_date').daterangepicker({
+          singleDatePicker: true,
+          calender_style: "picker_4"
+        }, function(start, end, label) {
+          console.log(start.toISOString(), end.toISOString(), label);
+        });
+      });
+    </script>
+    <script>
+      $(document).ready(function() {
+        $('#old_end_date').daterangepicker({
+          singleDatePicker: true,
+          calender_style: "picker_4"
+        }, function(start, end, label) {
+          console.log(start.toISOString(), end.toISOString(), label);
+        });
+      });
+    </script>
+    <script>
+      $(document).ready(function() {
+        $('#new_start_date').daterangepicker({
+          singleDatePicker: true,
+          calender_style: "picker_4"
+        }, function(start, end, label) {
+          console.log(start.toISOString(), end.toISOString(), label);
+        });
+      });
+    </script>
+    <script>
+      $(document).ready(function() {
+        $('#new_end_date').daterangepicker({
+          singleDatePicker: true,
+          calender_style: "picker_4"
+        }, function(start, end, label) {
+          console.log(start.toISOString(), end.toISOString(), label);
+        });
+      });
+    </script>
+    <script>
+      $(document).ready(function() {
         $('#start_date').daterangepicker({
           singleDatePicker: true,
           calender_style: "picker_4"

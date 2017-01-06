@@ -139,7 +139,7 @@
 
               <div class="col-md-2">
               <ul style="list-style: none; display: inline-flex; padding-left: 0px;" class="task_request">
-                <li style="padding-right: 15px;"><a title="Xin sửa thời gian" href="<?php echo base_url('my_request/edit_time_task/'.$value->code) ?>"><i class="fa fa-clock-o" aria-hidden="true"></i></a></li>
+                <li style="padding-right: 15px;"><a title="Xin sửa thời gian" href="<?php echo base_url('request/request_time_task/'.'c101-'.$value->code) ?>"><i class="fa fa-clock-o" aria-hidden="true"></i></a></li>
                 <li style="padding-right: 15px;"><a title="Xin sửa tên" href="#"><i class="fa fa-info-circle" aria-hidden="true"></i></a></li>
                 <li><a title="Xin sửa tiến độ" href="#"><i class="fa fa-battery-full" aria-hidden="true"></i></a></li>
               </ul>
