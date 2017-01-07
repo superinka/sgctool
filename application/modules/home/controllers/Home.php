@@ -7,6 +7,7 @@ Class Home extends MY_Controller {
 		$this->load->model('home/acc_model');
 		$this->load->model('home/role_model');
 		$this->load->model('home/department_model');
+		$this->load->model('request/request_model');
 
 		global $account_type;
 
@@ -29,10 +30,21 @@ Class Home extends MY_Controller {
 	      redirect(base_url('login'), 'refresh');
 		}
 
+		//$a = get_list_notification();
+
+		
+
 	}
+
+
 	
 	function index() {
 		//$this->load->view('home/index');
+		//$a = get_list_notification();
+		//echo $a;
+
+		$a = $this->CI->get_list_notification();
+		//echo $a;
 
 		$message = $this->session->flashdata('message');
 	    $this->data_layout['message'] = $message;

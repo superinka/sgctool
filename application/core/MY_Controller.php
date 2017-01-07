@@ -16,5 +16,15 @@ Class MY_Controller extends CI_Controller {
 				//du lieu trang ngoai
 			}
 		}
+
+		$this->CI = & get_instance();
+
+
+		$this->load->model('request/request_model');
+
+	}
+
+	function get_list_notification(){
+		return 100;
 	}
 }

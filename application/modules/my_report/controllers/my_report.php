@@ -170,7 +170,49 @@ Class My_Report extends MY_Controller {
 	    		}
 	    	}
 
-	 	} 
+	 	}
+
+	 	$input_my_report['where'] = array('create_by'=>$my_id);
+	 	$input_my_report['order'] = array('id','ASC');
+	 	$all_report_by_me = $this->my_report_model->get_list($input_my_report); 
+
+	 	//pre($all_report_by_me);
+	 	$task_name = $mission_name = $project_name = 'chưa rõ'; $department_name='chưa rõ';
+
+	 	foreach ($all_report_by_me as $key => $value) {
+	 		$task_id = $value->task_id;
+	 		$task_id = intval($task_id);
+	 		$task_info = $this->task_model->get_info($task_id);
+	 		if($task_info) {
+	 			$task_name = $task_info->name;
+	 			$mission_id = $task_info->mission_id;
+	 			$mission_id = intval($mission_id);
+				$mission_info = $this->mission_model->get_info($mission_id);
+				if($mission_info) {
+					$mission_name = $mission_info->name;
+			 		$project_id = $mission_info->project_id;
+			 		$project_id = intval($project_id);
+			 		$department_id = $mission_info->department_id;
+			 		$department_id = intval($department_id);
+			 		$department_info = $this->department_model->get_info($department_id);
+			 		$department_name = $department_info->name;
+			 		$project_info = $this->project_model->get_info($project_id);
+			 		if($project_info){
+			 			$project_name = $project_info->project_name;
+			 		}
+			 							
+				}
+		 		
+	 		}
+	 		
+	 		$value->task_name = $task_name;
+	 		$value->mission_name = $mission_name;
+	 		$value->project_name = $project_name;
+	 		$value->department_name = $department_name; 
+	 	}
+
+	 	//pre($all_report_by_me);
+	 	$this->data_layout['all_report_by_me'] = $all_report_by_me;
 
 	 	//pre($list_room_by_me);
 	 	$this->data_layout['list_room_by_me'] = $list_room_by_me;

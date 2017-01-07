@@ -79,7 +79,7 @@
         var $datatable = $('#datatable-checkbox');
 
         $datatable.dataTable({
-          'order': [[ 1, 'asc' ]],
+          'order': [[ 0, 'desc' ]],
           'columnDefs': [
             { orderable: false, targets: [0] }
           ]

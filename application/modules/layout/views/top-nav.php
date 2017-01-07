@@ -1,5 +1,6 @@
 <!-- top navigation -->
-<?php //echo $my_id; ?>
+<?php //echo $id; ?>
+<?php //echo $account_type; ?>
 <div class="top_nav">
   <div class="nav_menu">
     <nav>
@@ -20,9 +21,10 @@
           </ul>
         </li>
 
-        <li role="presentation" class="dropdown">
-          <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
-            <i class="fa fa-envelope-o"></i>
+        <?php if($account_type == 4 || $account_type == 3) {?>
+        <li role="presentation" class="dropdown" style="padding-top: 5px;">
+          <a href="javascript:;" class="dropdown-toggle info-number btn btn-app" data-toggle="dropdown" aria-expanded="false">
+            <i class="fa fa-bullhorn"></i>
             <span class="badge bg-green">6</span>
           </a>
           <ul id="menu1" class="dropdown-menu list-unstyled msg_list" role="menu">
@@ -84,6 +86,7 @@
             </li>
           </ul>
         </li>
+        <?php }?>
       </ul>
     </nav>
   </div>

@@ -51,7 +51,7 @@
       <li><a><i class="fa fa-edit"></i> Dự án<span class="fa fa-chevron-down"></span></a>
         <ul class="nav child_menu">
           <li><a href="<?php echo base_url('project/index') ?>">Tổng quan</a></li>
-          <li><a href="<?php echo base_url('project/index') ?>">Xem danh sách dự án</a></li>
+          <li><a href="<?php echo base_url('project/my_project') ?>">Dự án của tôi</a></li>
         </ul>
       </li>
       <li><a><i class="fa fa-edit"></i> Danh sách nhân viên<span class="fa fa-chevron-down"></span></a>
