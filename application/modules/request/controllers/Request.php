@@ -63,7 +63,18 @@ Class Request extends MY_Controller {
 	    			$project_id = $depart->project_id;
 	    		}
 	    		break;
-	    	
+	    	case 'c102':
+	    		{
+	    			$old_info = $this->task_model->get_info_rule($where=array('code'=>$code));
+	    			$type='<strong>của công việc</strong>';
+	    			$level ='3';
+	    			$mission_id = $old_info->mission_id;
+	    			$depart = $this->mission_model->get_info($mission_id);
+	    			$department_id = $depart->department_id;
+	    			$project_id = $depart->project_id;
+	    		}
+	    		break;
+
 	    	default:
 	    		# code...
 	    		break;

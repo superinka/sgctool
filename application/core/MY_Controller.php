@@ -21,9 +21,12 @@ Class MY_Controller extends CI_Controller {
 
 
 		$this->load->model('request/request_model');
+		$this->load->model('home/home_model');
 		$this->load->model('login/login_model','',TRUE);
 
 		global $account_type;
+
+		date_default_timezone_set('Asia/Ho_Chi_Minh');
 
 		if( $this->uri->segment(1) =='login'){
 
@@ -57,9 +60,58 @@ Class MY_Controller extends CI_Controller {
 
 		$my_id = $this->data_layout['id'];
 		$input_request['where'] = array('create_by'=>$my_id);
+		//$input_request['limit'] = array('10' ,'0');
 		$list_request_by_me = $this->request_model->get_list($input_request);
 		//$this->data_layout['list_request_by_me'] = $list_request_by_me;
 		return $list_request_by_me;
+	}
+
+	function get_my_order(){
+		$my_id = $this->data_layout['id'];
+		$my_account_level = $this->data_layout['account_type'];
+
+		$list_order_for_me = array();
+
+		if($my_account_level==3) {
+			$input_room['where'] = array('user_id'=>$my_id);
+			//$input_room['limit'] = array('10' ,'0');
+			$list_my_room = $this->role_model->get_list($input_room);
+			$list_order_for_me = array();
+			foreach ($list_my_room as $key => $value) {
+				$input_request['where'] = array('department_id'=>$value->department_id,'review_status'=>0);
+				$list_request = $this->request_model->get_list($input_request);
+				foreach ($list_request as $k => $v) {
+					if($v->create_by == $my_id){
+						unset($list_request[$k]);
+					}
+					else {
+						$i = $this->home_model->get_fullname_employee($v->create_by);
+						$v->creater_name = $i[0]->fullname;
+						$list_order_for_me[] = $v;
+					}
+				}
+			}
+		}
+
+		if($my_account_level==2 || $my_account_level == 1) {
+			$list_order_for_me = array();
+			
+			$input_request['where'] = array('level_creater'=>3, 'review_status'=>0);
+			//$input_request['limit'] = array('10' ,'0');
+			$list_request = $this->request_model->get_list($input_request);
+			foreach ($list_request as $k => $v) {
+				if($v->create_by == $my_id){
+					unset($list_request[$k]);
+				}
+				else {
+					$i = $this->home_model->get_fullname_employee($v->create_by);
+					$v->creater_name = $i[0]->fullname;
+					$list_order_for_me[] = $v;
+				}
+			}
+			
+		}
+		return $list_order_for_me;
 	}
 
 	function logout()

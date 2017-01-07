@@ -21,6 +21,10 @@ Class Home extends MY_Controller {
 	
 	function index() {
 
+		$a = $this->CI->get_my_order();
+
+		//pre($a);
+
 
 		$message = $this->session->flashdata('message');
 	    $this->data_layout['message'] = $message;

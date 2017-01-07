@@ -187,12 +187,12 @@
     return $arrayA == $arrayB; 
 	}
 
-	function time_elapsed_string($ptime){
-	    $etime = time() - $ptime;
+	function time_elapsed_string($eventTime){
+	    $etime = time() - $eventTime;
 
 	    if ($etime < 1)
 	    {
-	        return 'vừa xong';
+	        return 'Vừa xong';
 	    }
 
 	    $a = array( 365 * 24 * 60 * 60  =>  'năm',

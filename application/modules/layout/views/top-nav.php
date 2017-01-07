@@ -3,6 +3,7 @@
 <?php //echo $account_type; ?>
 <?php //pre($list_request_by_me);?>
 <?php $list_request_by_me = $this->CI->get_my_request();?>
+<?php $list_order_for_me = $this->CI->get_my_order();?>
 <?php //pre($list_request_by_me);?>
 <?php //echo time_elapsed_string('2013-05-01 00:22:35'); ?>
 <div class="top_nav">
@@ -28,15 +29,16 @@
         <?php if($account_type == 4 || $account_type == 3) {?>
         <li role="presentation" class="dropdown" style="padding-top: 5px;">
           <a href="javascript:;" class="dropdown-toggle info-number btn btn-app" data-toggle="dropdown" aria-expanded="false">
-            <i class="fa fa-bullhorn"></i>
+            <i class="fa fa-bullhorn"></i>Request
             <span class="badge bg-green"><?php echo count($list_request_by_me) ?></span>
           </a>
           <ul id="menu1" class="dropdown-menu list-unstyled msg_list" role="menu">
           <?php if(count($list_request_by_me)==0){
             echo '<p style="text-align:center"><strong>Không có request nào</strong></p>';
           } ?>
-
+            <?php $i=0;?>
             <?php foreach ($list_request_by_me as $key => $value) { ?>
+            <?php if ($i<5) {?>
             <?php 
             $create_time = strtotime($value->create_time);
             $newformat_create_time = date('Y-m-d H:i:s',$create_time);
@@ -46,7 +48,7 @@
               <a>
                 <span class="image"><img src="<?php echo admin_theme('');?>/production/images/img.jpg" alt="Profile Image" /></span>
                 <span>
-                  <span>Tôi</span>
+                  <span>Tôi- <strong>Xin thêm thời gian</strong></span>
                   <span class="time"><?php echo time_elapsed_string($create_time); ?></span>
                 </span>
                 <span class="message">
@@ -54,6 +56,54 @@
                 </span>
               </a>
             </li>
+            <?php $i++;} ?>
+            <?php } ?>
+            <li>
+              <div class="text-center">
+                <a>
+                  <strong>Xem tất cả</strong>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+              </div>
+            </li>
+          </ul>
+        </li>
+        <?php }?>
+
+        <?php if($account_type == 3 || $account_type == 2 || $account_type == 1) {?>
+        <li role="presentation" class="dropdown" style="padding-top: 5px;padding-right: 10px">
+          <a href="javascript:;" class="dropdown-toggle info-number btn btn-app" data-toggle="dropdown" aria-expanded="false">
+            <i class="fa fa-inbox"></i>Order
+            <span class="badge bg-orange"><?php echo count($list_order_for_me) ?></span>
+          </a>
+          <ul id="menu1" class="dropdown-menu list-unstyled msg_list" role="menu">
+          <?php if(count($list_order_for_me)==0){
+            echo '<p style="text-align:center"><strong>Không có request nào</strong></p>';
+          } ?>
+
+          <?php if(count($list_order_for_me)>10){$max = 10;}?>
+          <?php if(count($list_order_for_me)<=10){$max = count($list_order_for_me);}?>
+          <?php $i=0;?>
+          <?php foreach ($list_order_for_me as $key => $value) { ?>
+          <?php if ($i<5) {?>
+            <?php 
+            $create_time = strtotime($value->create_time);
+            $newformat_create_time = date('Y-m-d H:i:s',$create_time);
+            //echo $newformat_create_time; echo time();
+            ?>
+            <li>
+              <a>
+                <span class="image"><img src="<?php echo admin_theme('');?>/production/images/img.jpg" alt="Profile Image" /></span>
+                <span>
+                  <span><?php echo $value->creater_name ?> <p><strong>Xin ra hạn</strong></p></span>
+                  <span class="time"><?php echo time_elapsed_string($create_time); ?></span>
+                </span>
+                <span class="message">
+                  <?php echo $value->note ?>
+                </span>
+              </a>
+            </li>
+            <?php $i++;} ?>
             <?php } ?>
             <li>
               <div class="text-center">
