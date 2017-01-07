@@ -9,24 +9,6 @@ Class Acc extends MY_Controller {
 		$this->load->model('home/role_model');
 		$this->form_validation->set_error_delimiters('<div class="error" style="color:red; font-weight:600">', '</div>'); 
 
-		if($this->session->userdata('logged_in'))
-	    {
-	      $session_data = $this->session->userdata('logged_in');
-	      $this->data_layout['username'] = $session_data['username'];
-	      $this->data_layout['id'] = $session_data['id'];
-	      $id = $this->data_layout['id'];
-	      $this->data_layout['account_type'] = $session_data['account_type'];
-	      $my_id = $this->data_layout['id'];
-
-	      $this->data_layout['my_id'] = $my_id;
-	      //echo '0';
-	    }
-	    else
-	    {
-	      //If no session, redirect to login page
-	      redirect(base_url('login'), 'refresh');
-		}
-
 	}
 	
 	function index() {

@@ -9,26 +9,7 @@ Class Home extends MY_Controller {
 		$this->load->model('home/department_model');
 		$this->load->model('request/request_model');
 
-		global $account_type;
-
-		if($this->session->userdata('logged_in'))
-	    {
-	      $session_data = $this->session->userdata('logged_in');
-	      $this->data_layout['username'] = $session_data['username'];
-	      $this->data_layout['account_type'] = $session_data['account_type'];
-	      $this->data_layout['id'] = $session_data['id'];
-	      $id = $this->data_layout['id'];
-	      $my_id = $this->data_layout['id'];
-
-	      $this->data_layout['my_id'] = $my_id;
-	      //echo $this->data_layout['id'];
-	      //echo '0';
-	    }
-	    else
-	    {
-	      //If no session, redirect to login page
-	      redirect(base_url('login'), 'refresh');
-		}
+	
 
 		//$a = get_list_notification();
 
@@ -39,12 +20,7 @@ Class Home extends MY_Controller {
 
 	
 	function index() {
-		//$this->load->view('home/index');
-		//$a = get_list_notification();
-		//echo $a;
 
-		$a = $this->CI->get_list_notification();
-		//echo $a;
 
 		$message = $this->session->flashdata('message');
 	    $this->data_layout['message'] = $message;
@@ -659,12 +635,5 @@ Class Home extends MY_Controller {
 		//redirect(base_url('home/index'), 'refresh');
 
 	}
-
-	function logout()
-    {
-	    $this->session->unset_userdata('logged_in');
-	    session_destroy();
-	    redirect(base_url('login'), 'refresh');
-    }
 
 }

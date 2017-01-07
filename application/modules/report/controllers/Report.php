@@ -7,18 +7,6 @@ Class Report extends MY_Controller {
 		$this->load->model('home/home_model');
 		$this->load->model('report_model');
 
-		if($this->session->userdata('logged_in'))
-	    {
-	      $session_data = $this->session->userdata('logged_in');
-	      $this->data_layout['username'] = $session_data['username'];
-	      $this->data_layout['id'] = $session_data['id'];
-	      //echo '0';
-	    }
-	    else
-	    {
-	      //If no session, redirect to login page
-	      redirect(base_url('login'), 'refresh');
-		}
 
 	}
 	

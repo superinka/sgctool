@@ -1,5 +1,6 @@
 <?php //pre($list_report_today); ?>
 <div class="row">
+<?php if ($message){$this->load->view('layout/message',$this->data_layout); }?>
 <div class="col-md-12 col-sm-12 col-xs-12">
 <?php if($list_report_today==null){echo'<p>Hôm nay chưa có báo cáo !</p>';} ?>
 <?php if($list_report_today!=null) {?>

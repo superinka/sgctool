@@ -15,20 +15,6 @@ Class My_Mission extends MY_Controller {
 		$this->load->model('project/proportion_department_model');
 		$this->load->model('my_mission_model');
 
-		if($this->session->userdata('logged_in'))
-	    {
-	      $session_data = $this->session->userdata('logged_in');
-	      $this->data_layout['username'] = $session_data['username'];
-	      $this->data_layout['account_type'] = $session_data['account_type'];
-	      $this->data_layout['id'] = $session_data['id'];
-	      $id = $this->data_layout['id'];
-	      //echo '0';
-	    }
-	    else
-	    {
-	      //If no session, redirect to login page
-	      redirect(base_url('login'), 'refresh');
-		}
 
 	}
 	

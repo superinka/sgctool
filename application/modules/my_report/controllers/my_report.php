@@ -16,21 +16,6 @@ Class My_Report extends MY_Controller {
 		$this->load->model('my_mission/my_mission_model');
 		$this->load->model('my_report_model');
 
-		if($this->session->userdata('logged_in'))
-	    {
-	      $session_data = $this->session->userdata('logged_in');
-	      $this->data_layout['username'] = $session_data['username'];
-	      $this->data_layout['account_type'] = $session_data['account_type'];
-	      $this->data_layout['id'] = $session_data['id'];
-	      $id = $this->data_layout['id'];
-	      //echo '0';
-	    }
-	    else
-	    {
-	      //If no session, redirect to login page
-	      redirect(base_url('login'), 'refresh');
-		}
-
 	}
 	
 	function index() {
@@ -606,6 +591,7 @@ Class My_Report extends MY_Controller {
 	    $this->data_layout['today'] = $today;
 
 	    if ($this->data_layout['account_type'] > 3) {
+	    	echo $this->data_layout['account_type'];
 			$this->session->set_flashdata('message','Bạn không đủ quyền hạn');
 			redirect(base_url('my_report/index'));
 		}
@@ -619,29 +605,45 @@ Class My_Report extends MY_Controller {
 
 			if(!$info_report) {
 				$this->session->set_flashdata('message','Không tồn tại thông tin report');
-				redirect(base_url('my_report/check_report_leader'));
+				redirect(base_url('my_report/index'));
 			}
 			else {
 				if($my_id==1) {$i = '53';}
 				else {$i = $my_id;}
 				$data_report = array ('review_status'=>'1','review_by'=>$i);
 
-				if ($this->data_layout['account_type'] = 3){
+				if ($this->data_layout['account_type'] == 3){
+					//pre($info_report);
 					$create_by = $info_report->create_by;
 					if ($create_by == $my_id) {
 						$this->session->set_flashdata('message','Bạn không check được report của chính mình');
-						redirect(base_url('my_report/check_report_leader'));
+						redirect(base_url('my_report/check_report'));
+					}
+					else {
+						if($this->my_report_model->update($report_id,$data_report)){
+							$this->session->set_flashdata('message','Update thành công');
+							redirect(base_url('my_report/check_report'), 'refresh');
+						}
+						else {
+							$this->session->set_flashdata('message','Update không thành công');
+							redirect(base_url('my_report/check_report'), 'refresh');
+						}
 					}
 				}
 
-				if($this->my_report_model->update($report_id,$data_report)){
-					$this->session->set_flashdata('message','Update thành công');
-					redirect(base_url('my_report/check_report_leader'), 'refresh');
+				else if($this->data_layout['account_type'] < 3){
+
+					if($this->my_report_model->update($report_id,$data_report)){
+						$this->session->set_flashdata('message','Update thành công');
+						redirect(base_url('view_report/index'), 'refresh');
+					}
+					else {
+						$this->session->set_flashdata('message','Update không thành công');
+						redirect(base_url('view_report/index'), 'refresh');
+					}					
 				}
-				else {
-					$this->session->set_flashdata('message','Update không thành công');
-					redirect(base_url('my_report/check_report_leader'), 'refresh');
-				}
+
+
 			}
 		}
 	}
@@ -670,28 +672,42 @@ Class My_Report extends MY_Controller {
 
 			if(!$info_report) {
 				$this->session->set_flashdata('message','Không tồn tại thông tin report');
-				redirect(base_url('my_report/check_report_leader'));
+				redirect(base_url('my_report/index'));
 			}
 			else {
 				if($my_id==1) {$i = '53';}
 				else {$i = $my_id;}
 				$data_report = array ('review_status'=>'0','review_by'=>$i);
 
-				if ($this->data_layout['account_type'] = 3){
+				if ($this->data_layout['account_type'] == 3){
+					//pre($info_report);
 					$create_by = $info_report->create_by;
 					if ($create_by == $my_id) {
 						$this->session->set_flashdata('message','Bạn không check được report của chính mình');
-						redirect(base_url('my_report/check_report_leader'));
+						redirect(base_url('my_report/check_report'));
+					}
+					else {
+						if($this->my_report_model->update($report_id,$data_report)){
+							$this->session->set_flashdata('message','Update thành công');
+							redirect(base_url('my_report/check_report'), 'refresh');
+						}
+						else {
+							$this->session->set_flashdata('message','Update không thành công');
+							redirect(base_url('my_report/check_report'), 'refresh');
+						}
 					}
 				}
 
-				if($this->my_report_model->update($report_id,$data_report)){
-					$this->session->set_flashdata('message','Update thành công');
-					redirect(base_url('my_report/check_report_leader'), 'refresh');
-				}
-				else {
-					$this->session->set_flashdata('message','Update không thành công');
-					redirect(base_url('my_report/check_report_leader'), 'refresh');
+				else if($this->data_layout['account_type'] < 3){
+					
+					if($this->my_report_model->update($report_id,$data_report)){
+						$this->session->set_flashdata('message','Update thành công');
+						redirect(base_url('view_report/index'), 'refresh');
+					}
+					else {
+						$this->session->set_flashdata('message','Update không thành công');
+						redirect(base_url('view_report/index'), 'refresh');
+					}					
 				}
 			}
 		}
@@ -708,7 +724,7 @@ Class My_Report extends MY_Controller {
 	    $this->data_layout['today'] = $today;
 
 	    if ($this->data_layout['account_type'] > 2) {
-			$this->session->set_flashdata('message','Bạn không đủ quyền hạn');
+			//$this->session->set_flashdata('message','Bạn không đủ quyền hạn');
 			redirect(base_url('my_report/index'));
 		}
 		else {

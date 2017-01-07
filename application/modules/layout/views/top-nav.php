@@ -1,6 +1,10 @@
 <!-- top navigation -->
 <?php //echo $id; ?>
 <?php //echo $account_type; ?>
+<?php //pre($list_request_by_me);?>
+<?php $list_request_by_me = $this->CI->get_my_request();?>
+<?php //pre($list_request_by_me);?>
+<?php //echo time_elapsed_string('2013-05-01 00:22:35'); ?>
 <div class="top_nav">
   <div class="nav_menu">
     <nav>
@@ -25,61 +29,36 @@
         <li role="presentation" class="dropdown" style="padding-top: 5px;">
           <a href="javascript:;" class="dropdown-toggle info-number btn btn-app" data-toggle="dropdown" aria-expanded="false">
             <i class="fa fa-bullhorn"></i>
-            <span class="badge bg-green">6</span>
+            <span class="badge bg-green"><?php echo count($list_request_by_me) ?></span>
           </a>
           <ul id="menu1" class="dropdown-menu list-unstyled msg_list" role="menu">
+          <?php if(count($list_request_by_me)==0){
+            echo '<p style="text-align:center"><strong>Không có request nào</strong></p>';
+          } ?>
+
+            <?php foreach ($list_request_by_me as $key => $value) { ?>
+            <?php 
+            $create_time = strtotime($value->create_time);
+            $newformat_create_time = date('Y-m-d H:i:s',$create_time);
+            //echo $newformat_create_time; echo time();
+            ?>
             <li>
               <a>
                 <span class="image"><img src="<?php echo admin_theme('');?>/production/images/img.jpg" alt="Profile Image" /></span>
                 <span>
-                  <span>John Smith</span>
-                  <span class="time">3 mins ago</span>
+                  <span>Tôi</span>
+                  <span class="time"><?php echo time_elapsed_string($create_time); ?></span>
                 </span>
                 <span class="message">
-                  Film festivals used to be do-or-die moments for movie makers. They were where...
+                  <?php echo $value->note ?>
                 </span>
               </a>
             </li>
-            <li>
-              <a>
-                <span class="image"><img src="<?php echo admin_theme('');?>/production/images/img.jpg" alt="Profile Image" /></span>
-                <span>
-                  <span>John Smith</span>
-                  <span class="time">3 mins ago</span>
-                </span>
-                <span class="message">
-                  Film festivals used to be do-or-die moments for movie makers. They were where...
-                </span>
-              </a>
-            </li>
-            <li>
-              <a>
-                <span class="image"><img src="<?php echo admin_theme('');?>/production/images/img.jpg" alt="Profile Image" /></span>
-                <span>
-                  <span>John Smith</span>
-                  <span class="time">3 mins ago</span>
-                </span>
-                <span class="message">
-                  Film festivals used to be do-or-die moments for movie makers. They were where...
-                </span>
-              </a>
-            </li>
-            <li>
-              <a>
-                <span class="image"><img src="<?php echo admin_theme('');?>/production/images/img.jpg" alt="Profile Image" /></span>
-                <span>
-                  <span>John Smith</span>
-                  <span class="time">3 mins ago</span>
-                </span>
-                <span class="message">
-                  Film festivals used to be do-or-die moments for movie makers. They were where...
-                </span>
-              </a>
-            </li>
+            <?php } ?>
             <li>
               <div class="text-center">
                 <a>
-                  <strong>See All Alerts</strong>
+                  <strong>Xem tất cả</strong>
                   <i class="fa fa-angle-right"></i>
                 </a>
               </div>
