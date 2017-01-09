@@ -1,7 +1,6 @@
 <?php //pre($list_mission_leader_today); ?>
 <?php //pre($list_mission_leader_uncheck_today); ?>
 <div class="row">
-<?php if ($message){$this->load->view('layout/message',$this->data_layout); }?>
 	<div class="col-md-12 col-sm-12">
 		<div class="row">
 		<h3>Báo cáo cần duyệt hôm nay</h3>

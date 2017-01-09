@@ -46,6 +46,11 @@ Class Add extends MY_Controller {
 					$value->emp[] = $u[0];
 					//unset($list_department_employee[$key]);
 				}
+				if ($acc_type[0]->account_type==3) {
+					# code...
+					$value->emp[] = $u[0];
+					//unset($list_department_employee[$key]);
+				}
 				
 			}
 			//pre($list_emp);
@@ -116,6 +121,8 @@ Class Add extends MY_Controller {
 
 				//pre($project_users);
 				//pre($project_leader_rooms);
+
+				$project_users = array_unique($project_users);
 
 				$holidays = array();
 

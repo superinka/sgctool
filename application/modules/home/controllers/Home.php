@@ -9,11 +9,7 @@ Class Home extends MY_Controller {
 		$this->load->model('home/department_model');
 		$this->load->model('request/request_model');
 
-	
-
 		//$a = get_list_notification();
-
-		
 
 	}
 
@@ -21,7 +17,7 @@ Class Home extends MY_Controller {
 	
 	function index() {
 
-		$a = $this->CI->get_my_order();
+		//$a = $this->CI->get_my_order();
 
 		//pre($a);
 

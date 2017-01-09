@@ -31,10 +31,8 @@
 		  <div class="form-group">
 		      <label class="control-label col-md-2 col-sm-2 col-xs-12">Tiến độ</label>
 			  <div class="col-md-4 col-sm-4 col-xs-12" style="padding-top: 8px">
-				Hoàn thành:
-			    <input type="radio" class="flat" name="status" id="status1" value="100" checked="" required /> 
 			    Chưa Hoàn thành:
-			    <input type="radio" class="flat" name="status" id="status2" value="0" />
+			    <input type="radio" class="flat" name="status" id="status2" checked value="0" />
 			  </div>
 	      </div>
 	      <?php 

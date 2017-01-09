@@ -2,8 +2,8 @@
 <?php //echo $id; ?>
 <?php //echo $account_type; ?>
 <?php //pre($list_request_by_me);?>
-<?php $list_request_by_me = $this->CI->get_my_request();?>
-<?php $list_order_for_me = $this->CI->get_my_order();?>
+<?php //$list_request_by_me = $this->CI->get_my_request();?>
+<?php //$list_order_for_me = $this->CI->get_my_order();?>
 <?php //pre($list_request_by_me);?>
 <?php //echo time_elapsed_string('2013-05-01 00:22:35'); ?>
 <div class="top_nav">
@@ -27,7 +27,7 @@
         </li>
 
         <?php if($account_type == 4 || $account_type == 3) {?>
-        <li role="presentation" class="dropdown" style="padding-top: 5px;">
+<!--          <li role="presentation" class="dropdown" style="padding-top: 5px;">
           <a href="javascript:;" class="dropdown-toggle info-number btn btn-app" data-toggle="dropdown" aria-expanded="false">
             <i class="fa fa-bullhorn"></i>Request
             <span class="badge bg-green"><?php echo count($list_request_by_me) ?></span>
@@ -65,13 +65,13 @@
                   <i class="fa fa-angle-right"></i>
                 </a>
               </div>
-            </li>
+            </li> -->
           </ul>
         </li>
         <?php }?>
 
         <?php if($account_type == 3 || $account_type == 2 || $account_type == 1) {?>
-        <li role="presentation" class="dropdown" style="padding-top: 5px;padding-right: 10px">
+<!--         <li role="presentation" class="dropdown" style="padding-top: 5px;padding-right: 10px">
           <a href="javascript:;" class="dropdown-toggle info-number btn btn-app" data-toggle="dropdown" aria-expanded="false">
             <i class="fa fa-inbox"></i>Order
             <span class="badge bg-orange"><?php echo count($list_order_for_me) ?></span>
@@ -114,7 +114,7 @@
               </div>
             </li>
           </ul>
-        </li>
+        </li> -->
         <?php }?>
       </ul>
     </nav>

@@ -28,6 +28,8 @@ Class Mission extends MY_Controller {
 		//$this->load->view('home/index');
 		$id = $this->data_layout['id'];
 
+		$account_type = $this->data_layout['account_type'];
+
 		$message = $this->session->flashdata('message');
 	    $this->data_layout['message'] = $message;
 		
@@ -234,15 +236,39 @@ Class Mission extends MY_Controller {
 					//pre($list_room_by_project);
 
 					foreach ($list_room_by_project as $key => $value) {
-						$score =0;
+						$score =0; $score_leader = 0;
 						# code...
-						if(array_key_exists('mission',$value)) {
+						$count_mission =0;
+						$count_mission_leader = 0;
+						if(array_key_exists('mission',$value)) { 
 							$count_mission = count($value['mission']);
+						}
+
+						if(array_key_exists('mission-leader',$value)) { 
+							$count_mission_leader = count($value['mission-leader']);
+						}
+
+						$total_mission = $count_mission + $count_mission_leader;
+						if(array_key_exists('mission',$value)) {
 							foreach ($value['mission'] as $k => $v) {
 								# code...
 								$a = intval($v['progress']);
 								$score = $score + (1/$count_mission)*($a/100);
-								
+								$v['score'] =  (1/$count_mission)*($a/100);
+
+								$list_room_by_project[$key]['mission'][$k] = $v;
+							}
+							$list_room_by_project[$key]['score'] =$score;
+						}
+						if(array_key_exists('mission-leader',$value)) {
+
+							foreach ($value['mission-leader'] as $k => $v) {
+								# code...
+								$a = intval($v->progress);
+								$score_leader = $score + (1/$count_mission)*($a/100);
+								$v->score_leader =  (1/$count_mission)*($a/100);
+
+								$list_room_by_project[$key]['mission-leader'][$k] = $v;
 							}
 							$list_room_by_project[$key]['score'] =$score;
 						}
@@ -272,6 +298,26 @@ Class Mission extends MY_Controller {
 
 				$value->department_name = $department_name->name;
 
+			}
+
+			foreach ($list_mission as $key => $value) {
+				if($account_type == 4) {
+					$mission_id = $value->id;
+					$user_id = $this->mission_user_model->get_info_rule($where=array('mission_id'=>$mission_id));
+					if($user_id){
+						$user_id = $user_id->user_id;
+						if($user_id != $id) {
+							unset($list_mission[$key]);
+						}
+					}
+				}
+
+				if($account_type == 3) {
+					$department_id = $value->department_id;
+					if($this->role_model->check_exists($where=array('department_id'=>$department_id, 'user_id'=> $id))==false){
+						unset($list_mission[$key]);
+					}
+				}
 			}
 
 			//pre($list_mission);
@@ -396,6 +442,9 @@ Class Mission extends MY_Controller {
 							}
 
 							//pre($list_emp);
+							if($this->proportion_department_model->check_exists($where=array('project_id'=>$project_id))==true) {
+									$this->proportion_department_model->del_rule($where=array('project_id'=>$project_id));
+								}
 
 							foreach ($list_emp['new'] as $k => $v) {
 								$data = array(
@@ -406,6 +455,8 @@ Class Mission extends MY_Controller {
 								);
 
 								//pre($data);
+
+
 								if($this->proportion_department_model->create($data)) {
 									$this->session->set_flashdata('message','Sửa dữ liệu thành công');
 								}
@@ -994,7 +1045,7 @@ Class Mission extends MY_Controller {
 		}
 
 
-		$list_task = $this->task_model->get_columns('tb_task',$where=array('mission_id'=>$mission_view_id));;
+		$list_task = $this->task_model->get_columns('tb_task',$where=array('mission_id'=>$mission_view_id));
 		$this->data_layout['list_task'] = $list_task;
 
 		$input = array();
@@ -1007,7 +1058,6 @@ Class Mission extends MY_Controller {
 
 		$input_success = array();
 		$input_success['where']['mission_id'] = $mission_view_id;
-		$input_success['where']['create_by'] = $info_mission->mission_user_id;
 		$input_success['where']['status'] = 100;
 		$count_task_success = $this->task_model->get_total($input_success);
 
@@ -1018,6 +1068,60 @@ Class Mission extends MY_Controller {
 		if($count_task>0 && $count_task_success>0) {
 			$progress_task = (round($count_task_success/$count_task,2)*100);
 		}
+
+		foreach ($list_task as $key => $value) {
+			$uid = $value->create_by;
+			$uid_info = $this->acc_model->get_info($uid);
+			//pre($uid_info);
+			$uid_status = $uid_info->status;
+			$value->lock = $uid_status;
+
+			$n = $this->home_model->get_fullname_employee($uid);
+			if($n){
+				$create_by_name = $n[0]->fullname;
+
+
+			}
+			$value->create_by_name = $create_by_name;
+		}
+
+		$input_complete = array();
+		$input_complete['where']['mission_id'] = $mission_view_id;
+		$input_complete['where']['status'] = 100;
+		$count_task_complete = $this->task_model->get_total($input_complete);
+
+
+		$count_task_incomplete = $this->task_model->get_total($input_complete);
+
+		$count_all_task = count($list_task);
+
+		$list_task_lock = $list_task_unlock = null;
+
+		foreach ($list_task as $key => $value) {
+			if($value->lock == 1) {
+				$list_task_unlock[] = $value;
+			}
+			else {
+				$list_task_lock[] = $value;
+			}
+		}
+
+		if($count_all_task == 0) {
+			$per_task = 0;
+		}
+		else {
+			$per_task = round(100/($count_task_complete + count($list_task_unlock)),2);
+		}
+
+		$final_progress = $per_task * $count_task_complete;
+		$this->data_layout['final_progress'] = $final_progress;
+
+		$data_progress_task = array('progress'=>$final_progress);
+		//$this->project_model->update($project_id,$data_progress_task);
+
+		
+
+		//pre($list_task_unlock);
 
 		//pre($list_task);
 
@@ -1145,7 +1249,7 @@ Class Mission extends MY_Controller {
 						$start_date = $this->input->post('start_date');
 						$end_date = $this->input->post('end_date');
 
-						$new_user_id = $this->input->post('mission_user');
+						$user_id_info = $this->input->post('mission_user');
 
 						$start_date = strtotime($start_date);
 						$newformat_start_date = date('Y-m-d',$start_date);
@@ -1154,6 +1258,12 @@ Class Mission extends MY_Controller {
 
 						//pre($code);
 
+						$user_id_info = explode('/', $user_id_info);
+						$new_user_id = $user_id_info[0];
+						$department_id = $user_id_info[1];
+
+						$ifo = $this->acc_model->get_info($new_user_id);
+						$acc_level = $ifo->account_type;
 
 						$code = $info_mission->code;
 
@@ -1165,6 +1275,8 @@ Class Mission extends MY_Controller {
 							'update_time'   => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s'),
 							'update_by'     => $now_user_id,
 							'status'        => '1',
+							'department_id' => $department_id,
+							'level'         => $acc_level
 						);
 
 						//pre($data_mission);
@@ -1363,5 +1475,22 @@ Class Mission extends MY_Controller {
 		$this->data_layout['temp'] = 'add_task';
 	    $this->load->view('layout/main', $this->data_layout);
 
+	}
+
+	function update_progress() {
+
+		$project_id = $this->uri->segment(4);
+		$mission_id = $this->uri->segment(5);
+		$progress = $this->uri->segment(6);
+
+		$data_progress = array('progress'=>$progress);
+		if($this->mission_model->update($mission_id,$data_progress)) {
+			$this->session->set_flashdata('message','thành công');
+			redirect(base_url('project/mission/view_detail/'.$project_id.'/'.$mission_id));
+		}
+		else {
+			$this->session->set_flashdata('message','không thành công');
+			redirect(base_url('project/mission/view_detail/'.$project_id.'/'.$mission_id));
+		}
 	}
 }

@@ -54,41 +54,45 @@ Class My_Report extends MY_Controller {
 	    				$mission_id = $v->id;
 	    				$project_id = $v->project_id;
 	    				$project = $this->project_model->get_info($project_id);
-	    				$project_name = $project->project_name;
-	    				$v->project_name = $project_name;
 
-	    				if($v->end_date >= $today) {
-		    				$list_task = $this->mission_model->get_columns('tb_task',$where=array('mission_id'=>$mission_id, 'status'=>0));
-		    				foreach ($list_task as $x => $y) {
-		    					if($y->end_date < $today){
-		    						unset($list_task[$x]);
-		    					}
+	    				if($project) {
+		    				$project_name = $project->project_name;
+		    				$v->project_name = $project_name;
+
+		    				if($v->end_date >= $today) {
+			    				$list_task = $this->mission_model->get_columns('tb_task',$where=array('mission_id'=>$mission_id, 'status'=>0));
+			    				foreach ($list_task as $x => $y) {
+			    					if($y->end_date < $today){
+			    						unset($list_task[$x]);
+			    					}
+			    				}
+			    				$list_task = array_values($list_task);
+
+			    				foreach ($list_task as $x => $y) {
+
+			    					$list_reported_today =  $this->my_report_model->get_columns('tb_daily_report',$where=array('task_id'=>$y->id, 'create_date'=>$today,'create_by'=>$my_id, 'review_status'=>1));
+
+			    					if($list_reported_today!=null){
+			    						$list_task[$x]->list_reported_today = $list_reported_today;
+			    					}
+
+			    					$list_un_report_today = $this->my_report_model->get_columns('tb_daily_report',$where=array('task_id'=>$y->id, 'create_date'=>$today,'create_by'=>$my_id, 'review_status'=>0));
+
+			    					if($list_un_report_today!=null){
+			    						$list_task[$x]->list_un_report_today = $list_un_report_today;
+			    					}
+
+			    					$list_report_today = $this->my_report_model->get_columns('tb_daily_report',$where=array('task_id'=>$y->id, 'create_date'=>$today,'create_by'=>$my_id));
+
+			    					if($list_report_today!=null){
+			    						$list_task[$x]->list_report_today = $list_report_today;
+			    					}
+			    					
+			    				}
+			    				$v->list_task = $list_task;	    					
 		    				}
-		    				$list_task = array_values($list_task);
-
-		    				foreach ($list_task as $x => $y) {
-
-		    					$list_reported_today =  $this->my_report_model->get_columns('tb_daily_report',$where=array('task_id'=>$y->id, 'create_date'=>$today,'create_by'=>$my_id, 'review_status'=>1));
-
-		    					if($list_reported_today!=null){
-		    						$list_task[$x]->list_reported_today = $list_reported_today;
-		    					}
-
-		    					$list_un_report_today = $this->my_report_model->get_columns('tb_daily_report',$where=array('task_id'=>$y->id, 'create_date'=>$today,'create_by'=>$my_id, 'review_status'=>0));
-
-		    					if($list_un_report_today!=null){
-		    						$list_task[$x]->list_un_report_today = $list_un_report_today;
-		    					}
-
-		    					$list_report_today = $this->my_report_model->get_columns('tb_daily_report',$where=array('task_id'=>$y->id, 'create_date'=>$today,'create_by'=>$my_id));
-
-		    					if($list_report_today!=null){
-		    						$list_task[$x]->list_report_today = $list_report_today;
-		    					}
-		    					
-		    				}
-		    				$v->list_task = $list_task;	    					
 	    				}
+
 
 	    			}
 
@@ -156,6 +160,8 @@ Class My_Report extends MY_Controller {
 	    	}
 
 	 	}
+
+	 	$all_report_by_me = null;
 
 	 	$input_my_report['where'] = array('create_by'=>$my_id);
 	 	$input_my_report['order'] = array('id','ASC');
@@ -746,15 +752,18 @@ Class My_Report extends MY_Controller {
 
 				$project_id = $value->project_id;
 				$project_name = $this->project_model->get_info($project_id,'project_name');
-				$project_name = $project_name->project_name;
-				$value->project_name = $project_name;
+				if($project_name){
+					$project_name = $project_name->project_name;
+					$value->project_name = $project_name;
 
-				foreach ($list_task as $k => $v) {
-					if($v->end_date >= $today){
-						$list_task_today[] = $v;
-						$value->list_task_today[] = $v;
+					foreach ($list_task as $k => $v) {
+						if($v->end_date >= $today){
+							$list_task_today[] = $v;
+							$value->list_task_today[] = $v;
+						}
 					}
 				}
+
 
 				//$list_mission_leader_today[$key]->list_task_today = $list_task_today;
 
@@ -802,15 +811,18 @@ Class My_Report extends MY_Controller {
 
 				$project_id = $value->project_id;
 				$project_name = $this->project_model->get_info($project_id,'project_name');
-				$project_name = $project_name->project_name;
-				$value->project_name = $project_name;
+				if($project_name) {
+					$project_name = $project_name->project_name;
+					$value->project_name = $project_name;
 
-				foreach ($list_task as $k => $v) {
-					if($v->end_date >= $today){
-						$list_task_checked_today[] = $v;
-						$value->list_task_checked_today[] = $v;
-					}
+					foreach ($list_task as $k => $v) {
+						if($v->end_date >= $today){
+							$list_task_checked_today[] = $v;
+							$value->list_task_checked_today[] = $v;
+						}
+					}					
 				}
+
 
 				//$list_mission_leader_today[$key]->list_task_today = $list_task_today;
 

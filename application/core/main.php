@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
   <head>
     <?php $this->load->view('head');?>
@@ -14,11 +14,6 @@
 
             <div class="clearfix"></div>
 
-            <?php 
-              $my_name = $this->CI->get_my_fullname();
-              //pre($my_name);
-            ?>
-
             <!-- menu profile quick info -->
             <div class="profile clearfix">
               <div class="profile_pic">
@@ -26,7 +21,7 @@
               </div>
               <div class="profile_info">
                 <span>Xin chào !,</span>
-                <h2><?php echo $my_name; ?></h2>
+                <h2><?php echo $username; ?></h2>
               </div>
             </div>
             <!-- /menu profile quick info -->
@@ -35,22 +30,6 @@
 
             <?php $this->load->view('left-menu'); ?>            
 
-            <!-- /menu footer buttons -->
-            <div class="sidebar-footer hidden-small">
-              <a data-toggle="tooltip" data-placement="top" title="Settings">
-                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-              </a>
-              <a data-toggle="tooltip" data-placement="top" title="FullScreen">
-                <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
-              </a>
-              <a data-toggle="tooltip" data-placement="top" title="Lock">
-                <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
-              </a>
-              <a data-toggle="tooltip" data-placement="top" title="Logout">
-                <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
-              </a>
-            </div>
-            <!-- /menu footer buttons -->
           </div>
         </div>
 

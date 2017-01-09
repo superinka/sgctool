@@ -252,6 +252,11 @@ Class Project extends MY_Controller {
 							$value->emp[] = $u[0];
 							//unset($list_department_employee[$key]);
 						}
+						if ($acc_type[0]->account_type==3) {
+							# code...
+							$value->emp[] = $u[0];
+							//unset($list_department_employee[$key]);
+						}
 						
 					}
 					//pre($list_emp);
@@ -327,9 +332,9 @@ Class Project extends MY_Controller {
 
 						//$uid = $this->acc_model->get_column('tb_user', 'id',$where=array('username'=>$username));
 
-						//pre($project_users);
+						$project_users = array_unique($project_users);
 						//pre($old_data);
-
+						//pre($project_users);
 						if($this->project_model->update($project_id, $data_project)) {
 
 							$this->session->set_flashdata('message','Sửa dữ liệu thành công');

@@ -56,6 +56,19 @@ Class MY_Controller extends CI_Controller {
 		return 100;
 	}
 
+	function get_my_fullname() {
+		$my_id = $this->data_layout['id'];
+		if($my_id == 1){
+			return 'Administrator';
+		}
+		else {
+			$input['where'] = array('user_id'=>$my_id);
+			$my_name = $this->home_model->get_info_rule($where=array('user_id'=>$my_id));
+			return $my_name->fullname;
+		}
+
+	}
+
 	function get_my_request() {
 
 		$my_id = $this->data_layout['id'];
@@ -105,8 +118,10 @@ Class MY_Controller extends CI_Controller {
 				}
 				else {
 					$i = $this->home_model->get_fullname_employee($v->create_by);
-					$v->creater_name = $i[0]->fullname;
-					$list_order_for_me[] = $v;
+					if($i){
+						$v->creater_name = $i[0]->fullname;
+						$list_order_for_me[] = $v;
+					}
 				}
 			}
 			

@@ -1,5 +1,6 @@
 <?php //pre($info_mission); ?>
 <?php //pre($info_project); ?>
+<?php //pre($list_task);?>
 <?php if ($message){$this->load->view('layout/message',$this->data_layout); }?>
 <style type="text/css">
   ul.task-request li a i {padding-right: 15px;}
@@ -14,17 +15,24 @@
           </div>
         </div>
         <div class="x_title">
-          <h2><?php echo $info_mission->name ?></h2>
+          <h2>Nhiệm vụ</h2>
           <div class="clearfix"></div>
         </div>
         <div class="x_content">
 
           <div style="text-align: center; margin-bottom: 17px">
-            <span class="chart" data-percent="<?php echo $progress_task ?>">
+            <span class="chart" data-percent="<?php echo $final_progress ?>">
             <span class="percent"></span>
             </span>
           </div>
-
+          <?php  if ($account_type == 2 || $account_type == 3 || $account_type == 1) {?>
+          <p>
+            <a href="<?php echo base_url('project/mission/update_progress/'.$project_id.'/'.$mission_view_id .'/' .$final_progress) ?>">
+              <i class="fa fa-repeat"></i> Cập nhật
+            </a>
+          </p>
+          
+          <?php } ?>
           <h3 class="name_title"><?php echo $info_mission->name ?></h3>
           <p><?php echo $info_mission->description ?></p>
 
@@ -33,62 +41,13 @@
           <p>Ngày tạo : <?php echo $info_mission->create_date  ?></p>
           <p>Ngày bắt đầu : <?php echo $info_mission->start_date  ?></p>
           <p>Ngày kết thúc : <?php echo $info_mission->end_date  ?></p>
-          <p>Đây là nhiệm vụ </p>
-          <p>Thuộc dự án : <strong><a href="<?php echo base_url('project/mission/index/'.$project_id) ?>"><?php echo $info_project->project_name;?></a></strong></p>
+          <p>Dự án : <strong><a href="<?php echo base_url('project/mission/index/'.$project_id) ?>"><?php echo $info_project->project_name;?></a></strong></p>
+          <p>Giao cho : <strong><?php echo $info_mission->mission_user_name ?></strong></p>
 
         </div>
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-md-12 col-xs-12 widget widget_tally_box">
-        <div class="x_panel fixed_height_390">
-          <div class="x_content">
-          <p>Nhiệm vụ của :</p>
-
-            <div class="flex">
-              <ul class="list-inline widget_profile_box">
-                <li>
-                  <a>
-                    <i class="fa fa-facebook"></i>
-                  </a>
-                </li>
-                <li>
-                  <img src="<?php echo admin_theme('');?>/production/images/default-avatar.jpg"" alt="..." class="img-circle profile_img">
-                </li>
-                <li>
-                  <a>
-                    <i class="fa fa-twitter"></i>
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            <h3 class="name"><?php echo $info_mission->mission_user_name ?></h3>
-
-            <div class="flex">
-              <ul class="list-inline count2">
-                <li>
-                  <h3><?php echo $info_mission->mission_user_id ?></h3>
-                  <span>ID</span>
-                </li>
-                <li>
-                  <h3>1234</h3>
-                  <span>Followers</span>
-                </li>
-                <li>
-                  <h3>123</h3>
-                  <span>Following</span>
-                </li>
-              </ul>
-            </div>
-<!--             <p>
-              If you've decided to go in development mode and tweak all of this a bit, there are few things you should do.
-            </p> -->
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 	<div class="col-md-8 col-sm-8 col-xs-12">
   <div class="row">
@@ -128,24 +87,62 @@
               <?php
               foreach ($list_task as $key => $value) {
                 if ($value->status==0) {$c = 'danger'; $t = 'Chưa Hoàn Thành';} else {$c = 'success'; $t = 'Hoàn Thành';}
+                if($value->lock == 1) {$cl = '#5cb85c';$lo = '<i class="fa fa-unlock" aria-hidden="true"></i>';} else {$cl = '#d9534f';$lo ='<i class="fa fa-lock" aria-hidden="true"></i>';}
                 ?>
                 <div class="row">
-                <div class="col-md-10">
+                <div class="col-md-4">
                 <div>
-                  <p><i class="fa fa-angle-double-right"></i> <a href="<?php echo base_url('project/mission/view_detail/'.$value->id) ?>"><?php echo $value->name ?></a>  <span class="label label-<?php echo $c; ?> pull-right"><?php  echo $t?></span></p>
+                  <p style="color:<?php echo $cl ?>">
+                  <i class="fa fa-angle-double-right"></i> 
+                  <strong><a style="color:<?php echo $cl ?>" title ="bởi <?php echo $value->create_by_name ?>" href="#"><?php echo $value->name ?> <?php echo ''.$lo.'' ?></a></strong></p>
 
                 </div>
                 </div>
+              <?php 
+                $start_date = strtotime($value->start_date);
+                $end_date = strtotime($value->end_date);
+                $today_date = strtotime(date_create('now')->format('Y-m-d'));
+                $nwd = networkdays($start_date, $end_date, $holidays);
+                //$nwd = $nwd+1;
+                $percent_day = 0;
 
+                $date1 = strtotime($value->start_date);
+                $date2 = strtotime($value->end_date);
+                $total_day = ($date2 - $date1) / (60 * 60 * 24);
+                $total_day = $total_day + 1;
+                $pass_day = ($today_date - $date1) / (60 * 60 * 24);
+                $pass_day = $pass_day + 1 ;
+
+                $percent_day = percent_day($pass_day, $total_day);
+
+                $color = 'green';
+                if($percent_day>70) {
+                  $color = 'red';
+                }
+
+                if ($percent_day<25){
+                  $color = '#5cb85c';
+                }
+              ?>
+              <div class="col-md-4">
+                <small><?php echo 'Tổng :' .$total_day.' Ngày'.' - Đã qua  :';printf( "%.2f",  $percent_day ); ?>%</small>
+                <div class="progress progress_sm">
+                  <div class="progress-bar bg-<?php echo $color;?>" role="progressbar" data-transitiongoal="<?php echo $percent_day ?>">
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-2">
+                <span class="label label-<?php echo $c; ?> pull-right"><?php  echo $t?></span>
+              </div>
               <div class="col-md-2">
               <ul style="list-style: none; display: inline-flex; padding-left: 0px;" class="task_request">
               <?php if ($account_type==4) {?>
-                <li style="padding-right: 15px;"><a title="Xin sửa thời gian" href="<?php echo base_url('request/request_time_task/'.'c101-'.$value->code) ?>"><i class="fa fa-clock-o" aria-hidden="true"></i></a></li>
-                <li style="padding-right: 15px;"><a title="Xin sửa tên" href="#"><i class="fa fa-info-circle" aria-hidden="true"></i></a></li>
+                <li style="padding-right: 5px;"><a title="Xin sửa thời gian" href="<?php echo base_url('request/request_time_task/'.'c101-'.$value->code) ?>"><i class="fa fa-clock-o" aria-hidden="true"></i></a></li>
+                <li style="padding-right: 5px;"><a title="Xin sửa tên" href="#"><i class="fa fa-info-circle" aria-hidden="true"></i></a></li>
                 <li><a title="Xin sửa tiến độ" href="#"><i class="fa fa-battery-full" aria-hidden="true"></i></a></li>
               <?php }?>
               <?php if ($account_type==3) {?>
-                <li style="padding-right: 15px;"><a title="Xin sửa thời gian" href="<?php echo base_url('request/request_time_task/'.'c102-'.$value->code) ?>"><i class="fa fa-clock-o" aria-hidden="true"></i></a></li>
+                <li style="padding-right: 5px;"><a title="Xin sửa thời gian" href="<?php echo base_url('request/request_time_task/'.'c102-'.$value->code) ?>"><i class="fa fa-clock-o" aria-hidden="true"></i></a></li>
                 <li style="padding-right: 15px;"><a title="Xin sửa tên" href="#"><i class="fa fa-info-circle" aria-hidden="true"></i></a></li>
                 <li><a title="Xin sửa tiến độ" href="#"><i class="fa fa-battery-full" aria-hidden="true"></i></a></li>
               <?php }?>

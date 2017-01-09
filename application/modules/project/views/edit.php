@@ -1,4 +1,6 @@
 <h1>Sửa dự án <b><?php echo $info_project->project_name ?></b></h1>
+
+<?php //pre($list_department_employee);  ?>
 <div class="row">
 	<div class="col-md-9">
 		<p style="color:red; font-weight:600"><?php echo validation_errors(); ?></p>
