@@ -153,6 +153,7 @@
 			              <th>Tình trạng</th>
 			              <th>Duyệt bởi</th>
 			              <th>Tình trạng duyệt</th>
+			              <th>Sửa</th>
 			            </tr>
 	                  </thead>
 	                  <tbody>
@@ -185,6 +186,13 @@
 							          	<td><?php echo check_progress_report($n->progress)?></td>
 							          	<td><?php echo $pm[0]->fullname ?></td>
 					                    <td><?php echo check_status_report($n->review_status); ?></td>
+					                    <td>
+					                    <?php if($n->review_status==0){ ?>
+					                    	<a href="<?php echo base_url('my_report/edit/'.$n->id) ?>"><i class="fa fa-lock" aria-hidden="true"></i></a>
+
+					                    <?php }?>
+					                    	
+					                    </td>
 							          </tr>
 							          <?php }?>
 						          	<?php }?>
@@ -247,6 +255,7 @@
               <?php 
 				$create_time = strtotime($value->create_time);
 	          	$newformat_create_time = date('Y-m-d H:i:s',$create_time);
+	          	$pm = ($this->my_report_model->get_fullname_employee($value->review_by));
               ?>
 
 		          <tr>
@@ -258,7 +267,7 @@
 		          	<td><?php echo $newformat_create_time ?></td>
 		          	<td><?php echo $value->time_spend ?></td>
 		          	<td><?php echo check_progress_report($value->progress)?></td>
-		          	<td><?php echo $value->review_by ?></td>
+		          	<td><?php echo $pm[0]->fullname ?></td>
 	                <td><?php echo check_status_report($value->review_status); ?></td>
 		          </tr>
 

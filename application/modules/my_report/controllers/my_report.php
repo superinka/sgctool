@@ -409,11 +409,18 @@ Class My_Report extends MY_Controller {
 												'review_status'=>'0', 
 												'create_date'=>$today
 											));
+										$list_report_all = $this->my_report_model->get_columns('tb_daily_report',$where=array(
+												'task_id'=>$z->id, 
+												'review_status'=>'0'
+											));
 
 										if($list_report!=null) {
 											$z->list_report = $list_report;
 										}
 										
+										if($list_report_all!=null) {
+											$z->list_report_all = $list_report_all;
+										}										
 									}
 									//$list_report = 
 									$list_miss[$i]->task = $list_task;
@@ -505,9 +512,16 @@ Class My_Report extends MY_Controller {
 												'review_status'=>'1', 
 												'create_date'=>$today
 											));
+										$list_report_all = $this->my_report_model->get_columns('tb_daily_report',$where=array(
+												'task_id'=>$z->id, 
+												'review_status'=>'1'
+											));
 
 										if($list_report!=null) {
 											$z->list_report = $list_report;
+										}
+										if($list_report_all!=null) {
+											$z->list_report_all = $list_report_all;
 										}
 										
 									}
@@ -855,5 +869,124 @@ Class My_Report extends MY_Controller {
 		}
 		$this->data_layout['temp'] = 'check_report_leader';
 	    $this->load->view('layout/main', $this->data_layout);
+	}
+
+	function edit() {
+
+
+		$report_id = $this->uri->segment(3);
+
+		$report_info = $this->my_report_model->get_info($report_id);
+
+		$this->data_layout['report_info'] = $report_info;
+
+		$today = date("Y-m-d"); 
+	    $this->data_layout['today'] = $today;
+
+		if(!$report_info) {
+			$this->session->set_flashdata('message','Không tồn tại thông tin');
+			redirect(base_url('my_report/index'));	
+		}
+
+		else {
+			//pre($my_id);
+			$my_id = $this->data_layout['id'];
+	    	$this->data_layout['my_id'] = $my_id;
+
+			if ($report_info->create_by!= $my_id){
+				$this->session->set_flashdata('message','Không phải report của bạn');
+				redirect(base_url('my_report/index'));	
+			}
+			else {
+				if ($report_info->review_status== 1){
+					$this->session->set_flashdata('message','Không thể sửa vì chưa được duyệt !');
+					redirect(base_url('my_report/index'));	
+				}
+				else{
+
+					$old_note = $report_info->note;
+
+					$input_task = array();
+				    $input_task['where']['create_by'] = $my_id;
+				    $input_task['where']['status'] = 0;
+
+				    $list_task_active  = $this->task_model->get_list($input_task);
+
+					//pre($list_task_active);
+
+				    foreach ($list_task_active as $key => $value) {
+				    	if($value->end_date < $today) {
+				    		unset($list_task_active[$key]);
+				    	}
+				    }
+
+				    foreach ($list_task_active as $key => $value) {
+				    	$mission_id = $value->mission_id;
+				    	$mission = $this->mission_model->get_info($mission_id);
+				    	if($mission){
+				    		if($mission->end_date < $today) {
+				    			unset($list_task_active[$key]);
+				    		}
+				    	}
+				    }
+
+				    //pre($list_task_active);
+
+				    //$list_task_active = array_unique($list_task_active);
+
+				    //pre($list_task_active);
+
+				    $this->data_layout['list_task_active'] = $list_task_active;
+
+
+				    if($this->input->post()){
+						$this->form_validation->set_rules('description', 'description', 'trim');
+						$this->form_validation->set_rules('message', 'Mô tả', 'trim');
+						$this->form_validation->set_rules('progress', 'Tình Trạng');
+
+						$this->form_validation->set_rules('time_spend', 'Thời gian làm');
+
+						if($this->form_validation->run()){
+							$description = $this->input->post('description');
+							$message = $this->input->post('message');
+							$progress = $this->input->post('progress');
+							$time_spend = $this->input->post('time_spend');
+							$task = $this->input->post('task');
+
+							if($message == null) {
+								$message = $old_note;
+							}
+
+							$data_report = array(
+								'description'   => $description,
+								'note'          => $message,
+								'status'        => '1',
+								'time_spend'    => $time_spend,
+								'task_id'       => $task,
+								'update_time'   => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s'),
+								'progress'      => $progress,
+								'review_by'     => $my_id
+
+							);
+
+							if($this->my_report_model->update($report_id, $data_report)) {
+								$this->session->set_flashdata('message','Sửa dữ liệu thành công');
+
+							}
+							else {
+								$this->session->set_flashdata('message','Sửa dữ liệu không thành công');
+							}
+							redirect(base_url('my_report/index'));
+
+						}
+				    }
+				}
+
+			}
+		}
+
+		$this->data_layout['temp'] = 'edit_report';
+	    $this->load->view('layout/main', $this->data_layout);
+
 	}
 }

@@ -90,6 +90,20 @@
           });
         });
 
+        var $datatable2 = $('#datatable-checkbox2');
+
+        $datatable2.dataTable({
+          'order': [[ 0, 'desc' ]],
+          'columnDefs': [
+            { orderable: false, targets: [0] }
+          ]
+        });
+        $datatable2.on('draw.dt', function() {
+          $('input').iCheck({
+            checkboxClass: 'icheckbox_flat-green'
+          });
+        });
+
         TableManageButtons.init();
       });
     </script>
