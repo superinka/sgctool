@@ -160,7 +160,7 @@
 	function color_room($room_name) {
 		switch ($room_name) {
 			case 'Phòng Lập Trình':
-				return '#BDC3C7';
+				return '#F39C12';
 				break;
 			case 'Phòng Hệ Thống':
 				return '#9B59B6';
@@ -171,7 +171,10 @@
 			case 'Phòng Đồ Họa':
 				return '#26B99A';
 				break;
-			
+			case 'Phòng Vận Hành':
+				return '#1ABB9C';
+				break;
+
 			default:
 				# code...
 				return "#BDC3C7";
@@ -219,6 +222,43 @@
 	            return $r . ' ' . ($r > 1 ? $a_plural[$str] : $str) . ' trước';
 	        }
 	    }
+	}
+
+
+	function type_of_request($type){
+		switch ($type) {
+			case 'c101':
+				return 'Xin thêm thời gian' ;
+				break;
+			case 'c102':
+				return 'Xin thêm thời gian' ;
+				break;
+			case 'c201':
+				return 'Xin sửa tiến độ' ;
+				break;							
+			default:
+				# code...
+				break;
+		}
+	}
+	function link_of_request($type){
+		switch ($type) {
+			case 'c101':
+				return 'request/view_all_request_time' ;
+				break;
+			case 'c102':
+				return 'request/view_all_request_time' ;
+				break;
+			case 'c201':
+				return 'request/view_all_request_progress' ;
+				break;							
+			default:
+				# code...
+				break;
+		}
+	}
+	function generateRandomString($length = 10) {
+    	return substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($length/strlen($x)) )),1,$length);
 	}
 
 

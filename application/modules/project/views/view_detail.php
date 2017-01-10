@@ -125,7 +125,23 @@
                 }
               ?>
               <div class="col-md-4">
-                <small><?php echo 'Tổng :' .$total_day.' Ngày'.' - Đã qua  :';printf( "%.2f",  $percent_day ); ?>%</small>
+                <small>
+                <?php echo 'Tổng :' .$total_day.' Ngày -';
+                if($percent_day == 100 ) {
+                  echo "Quá hạn";
+                }
+                else if($percent_day < 0 ){
+                  echo "Chưa bắt đầu";
+                }
+                else {
+                  echo 'đã qua ';
+                  printf( "%.2f",  $percent_day ); 
+                  echo  '%';
+                  echo '('.$pass_day.' ngày)';
+                }
+                
+
+                ?></small>
                 <div class="progress progress_sm">
                   <div class="progress-bar bg-<?php echo $color;?>" role="progressbar" data-transitiongoal="<?php echo $percent_day ?>">
                   </div>
@@ -139,7 +155,7 @@
               <?php if ($account_type==4) {?>
                 <li style="padding-right: 5px;"><a title="Xin sửa thời gian" href="<?php echo base_url('request/request_time_task/'.'c101-'.$value->code) ?>"><i class="fa fa-clock-o" aria-hidden="true"></i></a></li>
                 <li style="padding-right: 5px;"><a title="Xin sửa tên" href="#"><i class="fa fa-info-circle" aria-hidden="true"></i></a></li>
-                <li><a title="Xin sửa tiến độ" href="#"><i class="fa fa-battery-full" aria-hidden="true"></i></a></li>
+                <li><a title="Xin sửa tiến độ" href="<?php echo base_url('request/request_progress_task/'.'c201-'.$value->code) ?>"><i class="fa fa-battery-full" aria-hidden="true"></i></a></li>
               <?php }?>
               <?php if ($account_type==3) {?>
                 <li style="padding-right: 5px;"><a title="Xin sửa thời gian" href="<?php echo base_url('request/request_time_task/'.'c102-'.$value->code) ?>"><i class="fa fa-clock-o" aria-hidden="true"></i></a></li>

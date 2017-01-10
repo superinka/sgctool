@@ -40,6 +40,7 @@
             <?php foreach ($list_request_by_me as $key => $value) { ?>
             <?php if ($i<5) {?>
             <?php 
+            $type = $value->type;
             $create_time = strtotime($value->create_time);
             $newformat_create_time = date('Y-m-d H:i:s',$create_time);
             //echo $newformat_create_time; echo time();
@@ -48,7 +49,7 @@
               <a>
                 <span class="image"><img src="<?php echo admin_theme('');?>/production/images/img.jpg" alt="Profile Image" /></span>
                 <span>
-                  <span>Tôi- <strong>Xin thêm thời gian</strong></span>
+                  <span>Tôi- <strong><?php echo type_of_request($type) ?></strong></span>
                   <span class="time"><?php echo time_elapsed_string($create_time); ?></span>
                 </span>
                 <span class="message">
@@ -87,15 +88,17 @@
           <?php foreach ($list_order_for_me as $key => $value) { ?>
           <?php if ($i<5) {?>
             <?php 
+            $type = $value->type;
             $create_time = strtotime($value->create_time);
             $newformat_create_time = date('Y-m-d H:i:s',$create_time);
+            $code  = $value->code;
             //echo $newformat_create_time; echo time();
             ?>
             <li>
-              <a>
+              <a href="<?php echo base_url(link_of_request($type).'/'.$type.'/'.$code) ?>">
                 <span class="image"><img src="<?php echo admin_theme('');?>/production/images/img.jpg" alt="Profile Image" /></span>
                 <span>
-                  <span><?php echo $value->creater_name ?> <p><strong>Xin ra hạn</strong></p></span>
+                  <span><?php echo $value->creater_name ?> <p><strong><?php echo type_of_request($type) ?></strong></p></span>
                   <span class="time"><?php echo time_elapsed_string($create_time); ?></span>
                 </span>
                 <span class="message">

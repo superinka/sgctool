@@ -1098,7 +1098,7 @@ Class Mission extends MY_Controller {
 		$list_task_lock = $list_task_unlock = null;
 
 		foreach ($list_task as $key => $value) {
-			if($value->lock == 1) {
+			if($value->lock == 1 && $value->status == 0) {
 				$list_task_unlock[] = $value;
 			}
 			else {
@@ -1111,6 +1111,8 @@ Class Mission extends MY_Controller {
 		}
 		else {
 			$per_task = round(100/($count_task_complete + count($list_task_unlock)),2);
+
+			
 		}
 
 		$final_progress = $per_task * $count_task_complete;

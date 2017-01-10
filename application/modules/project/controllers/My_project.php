@@ -59,10 +59,16 @@ Class My_Project extends MY_Controller {
 	    	//pre($list_depart);
 
 	    	foreach ($list_depart as $key => $value) {
-	    		
-	    		$p = $this->proportion_department_model->get_info_rule($where = array('department_id'=>$value->department_id));
 
-	    		$ar[] = $p->project_id;
+	    		$input_depart['where'] = array('department_id'=>$value->department_id);
+
+	    		$p = $this->proportion_department_model->get_list($input_depart);
+
+				foreach ($p as $k => $v) {
+
+					$ar[] = $v->project_id;
+				}
+	    		
 
 	    	}
 	    	//pre($ar);
@@ -77,15 +83,25 @@ Class My_Project extends MY_Controller {
 	    		$list_project[$key] = new stdClass;
 	    		$list_project[$key]->project_id = $value;
 	    		$project_info = $this->project_model->get_info($value);
-	    		$list_project[$key]->project_info = $project_info;
-	    		$list_project[$key]->type = '<strong>Trưởng nhóm<strong>';
+	    		if(!$project_info) {
+		    		$list_project[$key]->project_info = $project_info;
+		    		$list_project[$key]->type = '<strong>Trưởng nhóm<strong>';
+
+		    		unset($list_project[$key]);	    			
+	    		}
+
+	    		if($project_info){
+	    			$list_project[$key]->project_info = $project_info;
+		    		$list_project[$key]->type = '<strong>Trưởng nhóm<strong>';
+	    		}
+
 	    		//$list_project[$key]['list_project'] = $project_info;
 	    	}
 
 	    	//pre($list_project);
 	    }
 
-	    //pre($list_project);
+	    // /pre($list_project);
 
 	    $this->data_layout['list_project'] = $list_project;
 

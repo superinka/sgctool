@@ -292,8 +292,18 @@ Class My_Report extends MY_Controller {
 
 				$project_id = $project_id->project_id;
 
-				$code = $project_id. $mission_id .rand(0,9999). md5($task);
+				$code = $project_id. $mission_id .rand(0,9999). md5($task.generateRandomString(8));
 				$code = strtolower($code);
+
+				$account_type = $this->data_layout['account_type'] ;
+
+				if($this->data_layout['account_type'] == 3 ) {
+					$rvstt = 1;
+				}
+
+				else if ($this->data_layout['account_type'] == 4) {
+					$rvstt = 0;
+				}
 
 				$data_report = array(
 					'description'   => $description,
@@ -307,7 +317,7 @@ Class My_Report extends MY_Controller {
 					'create_time'   => date_create('now' ,new \DateTimeZone( 'Asia/Ho_Chi_Minh' ))->format('Y-m-d H:i:s'),
 					'progress'      => $progress,
 					'review_by'     => $my_id,
-					'review_status' => '0',
+					'review_status' => $rvstt,
 					'code'          => $code
 
 				);
@@ -366,7 +376,17 @@ Class My_Report extends MY_Controller {
 
 		    $input_unchecked_all = array();
 		    $input_unchecked_all['where']['review_status'] = 0;
-		    $list_report_checked_all = $this->my_report_model->get_list($input_unchecked_all);
+		    $list_report_un_checked_all = $this->my_report_model->get_list($input_unchecked_all);
+
+		    $count_uncheck_all = count($list_report_un_checked_all);
+		    $this->data_layout['count_uncheck_all'] = $count_uncheck_all;
+
+		    $count_uncheck = 0;
+		    $count_checked = 0;
+
+		    $count_checked_all = count($list_report_checked_all);
+		    $this->data_layout['count_checked_all'] = $count_checked_all;
+
 
 			if($this->data_layout['account_type'] = 3) {
 				$list_room = $this->role_model->get_columns('tb_role',$where = array('user_id'=>$my_id));
@@ -420,6 +440,7 @@ Class My_Report extends MY_Controller {
 										
 										if($list_report_all!=null) {
 											$z->list_report_all = $list_report_all;
+											$count_uncheck ++ ;
 										}										
 									}
 									//$list_report = 
@@ -429,6 +450,9 @@ Class My_Report extends MY_Controller {
 							}
 						$list_room_manager[$key]['list_miss'] = $list_miss;
 						}
+
+						$this->data_layout['count_uncheck'] = $count_uncheck;
+
 						// $list_pro = $this->proportion_department_model->get_columns('tb_proportion_department',$where = array('department_id'=>$department_id));
 						// if($list_pro!=null) {
 						// 	foreach ($list_pro as $k => $v) {
@@ -522,6 +546,8 @@ Class My_Report extends MY_Controller {
 										}
 										if($list_report_all!=null) {
 											$z->list_report_all = $list_report_all;
+
+											$count_checked ++;
 										}
 										
 									}
@@ -533,6 +559,7 @@ Class My_Report extends MY_Controller {
 						$list_report_checked_today[$key]['list_miss'] = $list_miss;
 						}
 
+						$this->data_layout['count_checked'] = $count_checked;
 						//pre($list_miss);
 						
 
@@ -898,8 +925,8 @@ Class My_Report extends MY_Controller {
 				redirect(base_url('my_report/index'));	
 			}
 			else {
-				if ($report_info->review_status== 1){
-					$this->session->set_flashdata('message','Không thể sửa vì chưa được duyệt !');
+				if ($report_info->review_status== 1 && $this->data_layout['account_type'] == 4){
+					$this->session->set_flashdata('message','Không thể sửa vì đã được duyệt !');
 					redirect(base_url('my_report/index'));	
 				}
 				else{

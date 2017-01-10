@@ -12,7 +12,7 @@ foreach ($list_room_by_project as $k=>$v) {
 
 }
 $data = array('progress'=>$total);
-$this->project_model->update($project_id,$data);
+//$this->project_model->update($project_id,$data);
 ?>
 <?php if ($message){$this->load->view('layout/message',$this->data_layout); }?>
 <div class="row">

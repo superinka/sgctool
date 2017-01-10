@@ -36,7 +36,7 @@
 			  </div>
 	      </div>
 	      <?php 
-	      $code_task = md5(uniqid(rand(), TRUE));
+	      $code_task = md5(uniqid(generateRandomString(12), TRUE));
 	      $code_task = $info_project->id . $info_mission->id .$code_task;
 	      ?>
 	      <div class="form-group">

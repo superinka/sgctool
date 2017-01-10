@@ -71,8 +71,9 @@ Class MY_Controller extends CI_Controller {
 
 	function get_my_request() {
 
+		$list_request_by_me = null;
 		$my_id = $this->data_layout['id'];
-		$input_request['where'] = array('create_by'=>$my_id);
+		$input_request['where'] = array('create_by'=>$my_id, 'review_status'=>0);
 		//$input_request['limit'] = array('10' ,'0');
 		$list_request_by_me = $this->request_model->get_list($input_request);
 		//$this->data_layout['list_request_by_me'] = $list_request_by_me;

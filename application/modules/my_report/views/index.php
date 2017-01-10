@@ -187,11 +187,18 @@
 							          	<td><?php echo $pm[0]->fullname ?></td>
 					                    <td><?php echo check_status_report($n->review_status); ?></td>
 					                    <td>
+					                    <?php if($account_type == 4){?>
 					                    <?php if($n->review_status==0){ ?>
 					                    	<a href="<?php echo base_url('my_report/edit/'.$n->id) ?>"><i class="fa fa-lock" aria-hidden="true"></i></a>
 
 					                    <?php }?>
-					                    	
+					                    <?php }?>
+					                    <?php if($account_type == 3){?>
+					 
+					                    	<a href="<?php echo base_url('my_report/edit/'.$n->id) ?>"><i class="fa fa-lock" aria-hidden="true"></i></a>
+
+					              
+					                    <?php }?>					                    	
 					                    </td>
 							          </tr>
 							          <?php }?>
